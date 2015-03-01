@@ -1,0 +1,127 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.town.small.brewtopia.Brews.CreateBrew">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/BrewName"
+        android:id="@+id/textViewBrewName"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editTextBrewName"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/textViewBrewName"
+        android:layout_toEndOf="@+id/textViewBrewName"
+        android:layout_marginLeft="37dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Primary"
+        android:id="@+id/textViewPrimary"
+        android:layout_below="@+id/editTextBrewName"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/editTextPrimary"
+        android:layout_below="@+id/editTextBrewName"
+        android:layout_alignLeft="@+id/editTextBrewName"
+        android:layout_alignStart="@+id/editTextBrewName" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Secondary"
+        android:id="@+id/textViewSecondary"
+        android:layout_below="@+id/editTextPrimary"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/editTextSecondary"
+        android:layout_alignTop="@+id/textViewSecondary"
+        android:layout_alignLeft="@+id/editTextPrimary"
+        android:layout_alignStart="@+id/editTextPrimary" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Bottle"
+        android:id="@+id/textViewBottle"
+        android:layout_below="@+id/editTextSecondary"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/editTextBottle"
+        android:layout_below="@+id/editTextSecondary"
+        android:layout_alignLeft="@+id/editTextSecondary"
+        android:layout_alignStart="@+id/editTextSecondary" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Description"
+        android:id="@+id/textViewDescription"
+        android:layout_below="@+id/editTextBottle"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/editTextDescription"
+        android:layout_alignTop="@+id/textViewDescription"
+        android:layout_alignLeft="@+id/editTextBottle"
+        android:layout_alignStart="@+id/editTextBottle"
+        android:lines="4"
+        android:maxLines="4"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/AddBrew"
+        android:id="@+id/AddBrewButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="onSubmitClick"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/ErrorTextView"
+        android:layout_above="@+id/AddBrewButton"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ffff1800"/>
+</RelativeLayout>
