@@ -96,16 +96,19 @@ public class UserBrews extends ActionBarActivity {
     {
         if(isDelete)
         {
-            HashMap<String,String> temp = list.get(aPos);
-            dbManager.DeleteBrew(temp.get("Name"));
+            HashMap<String,String> selectedRow = list.get(aPos);
+            dbManager.DeleteBrew(selectedRow.get("Name"));
             LoadBrews();
         }
         else{
             //Display selected brew
-            HashMap<String,String> temp = list.get(aPos);
+            HashMap<String,String> selectedRow = list.get(aPos);
 
-            Intent intent = new Intent(this, ViewBrew.class);
-            intent.putExtra(EXTRA_MESSAGE, temp.get("Name"));
+            Intent intent = new Intent(this, AddEditViewBrew.class);
+
+            // Set the state of display if View brew cannot be null
+            BrewActivityData.getInstance().setViewStateAndBrew("View",dbManager.getBrew(selectedRow.get("Name")));
+
             //start next activity
             startActivity(intent);
         }
@@ -116,7 +119,11 @@ public class UserBrews extends ActionBarActivity {
     {
         Log.e(LOG, "Entering: onCreateClick");
 
-        Intent intent = new Intent(this, CreateBrew.class);
+        Intent intent = new Intent(this, AddEditViewBrew.class);
+
+        // Set the state of display if Add brew can be null
+        BrewActivityData.getInstance().setViewStateAndBrew("Add",null);
+
         //start next activity
         startActivity(intent);
     }

@@ -21,6 +21,9 @@
     <string name="title_activity_user_schedule">UserSchedule</string>
     <string name="title_activity_user_inventory">UserInventory</string>
     <string name="title_activity_create_brew">CreateBrew</string>
-    <string name="title_activity_view_brew">ViewBrew</string>
+    <string name="title_activity_add_edit_view_brew">AddEditViewBrew</string>
+    <string name="title_activity_boil_additions">BoilAdditions</string>
+    <string name="title_activity_add_edit_view_boil_additions">AddEditViewBoilAdditions</string>
+    <string name="title_activity_brew_timer">BrewTimer</string>
 
 </resources>

@@ -33,12 +33,16 @@
             android:label="@string/title_activity_user_inventory" >
         </activity>
         <activity
-            android:name=".Brews.CreateBrew"
-            android:label="@string/title_activity_create_brew" >
+            android:name=".Brews.AddEditViewBrew"
+            android:label="@string/title_activity_add_edit_view_brew" >
         </activity>
         <activity
-            android:name=".Brews.ViewBrew"
-            android:label="@string/title_activity_view_brew" >
+            android:name=".Brews.AddEditViewBoilAdditions"
+            android:label="@string/title_activity_add_edit_view_boil_additions" >
+        </activity>
+        <activity
+            android:name=".Timer.BrewTimer"
+            android:label="@string/title_activity_brew_timer" >
         </activity>
     </application>
 
