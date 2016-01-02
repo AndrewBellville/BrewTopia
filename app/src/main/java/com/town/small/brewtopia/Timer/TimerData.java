@@ -15,6 +15,7 @@ public class TimerData {
 
     private BrewSchema brew;
     private long totalTime;
+    private List<BoilAdditionsSchema> cloneAdditionsList = new ArrayList<BoilAdditionsSchema>();
     private List<BoilAdditionsSchema> additionsList = new ArrayList<BoilAdditionsSchema>();
 
 
@@ -37,7 +38,8 @@ public class TimerData {
 
         totalTime = brew.getBoilTime()*60000;
         //set ordered list largest to smallest time
-        setAdditionsList(brew.getBoilAdditionlist());
+        cloneAdditionsList.addAll(brew.getBoilAdditionlist());
+        setAdditionsList(cloneAdditionsList);
     }
 
     private void setAdditionsList(List<BoilAdditionsSchema> list)

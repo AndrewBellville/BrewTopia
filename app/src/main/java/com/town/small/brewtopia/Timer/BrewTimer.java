@@ -89,6 +89,7 @@ public class BrewTimer extends ActionBarActivity {
 
     public void StopTimerClick(View aView)
     {
+        r.stop();
         timer.cancel();
         this.finish();
     }
@@ -97,6 +98,7 @@ public class BrewTimer extends ActionBarActivity {
     public void PauseTimerClick(View aView)
     {
         //if  pause save timer  value  then cancel
+        r.stop();
         timer.cancel();
     }
 

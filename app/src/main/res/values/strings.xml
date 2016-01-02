@@ -19,11 +19,13 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_user_brews">UserBrews</string>
     <string name="title_activity_user_schedule">UserSchedule</string>
-    <string name="title_activity_user_inventory">UserInventory</string>
+    <string name="title_activity_user_inventory">Coming Soon</string>
     <string name="title_activity_create_brew">CreateBrew</string>
     <string name="title_activity_add_edit_view_brew">AddEditViewBrew</string>
     <string name="title_activity_boil_additions">BoilAdditions</string>
     <string name="title_activity_add_edit_view_boil_additions">AddEditViewBoilAdditions</string>
     <string name="title_activity_brew_timer">BrewTimer</string>
+    <string name="title_activity_user_calculations">UserCalculations</string>
+    <string name="title_activity_alcohol_by_volume">AlcoholByVolume</string>
 
 </resources>

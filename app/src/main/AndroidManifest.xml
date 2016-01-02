@@ -44,6 +44,14 @@
             android:name=".Timer.BrewTimer"
             android:label="@string/title_activity_brew_timer" >
         </activity>
+        <activity
+            android:name=".UserCalculations"
+            android:label="@string/title_activity_user_calculations" >
+        </activity>
+        <activity
+            android:name=".Calculations.AlcoholByVolume"
+            android:label="@string/title_activity_alcohol_by_volume" >
+        </activity>
     </application>
 
 </manifest>

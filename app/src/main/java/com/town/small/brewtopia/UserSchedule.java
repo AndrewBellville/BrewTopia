@@ -1,40 +1,46 @@
 package com.town.small.brewtopia;
 
+
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CalendarView;
+import android.widget.Toast;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashSet;
+
+import com.town.small.brewtopia.Calendar.MyCalendar;
 
 
 public class UserSchedule extends ActionBarActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        CalendarView calendar = new CalendarView(this);
-        setContentView(calendar);
-        //setContentView(R.layout.activity_user_schedule);
+        setContentView(R.layout.activity_user_schedule);
 
-    }
+        HashSet<Date> events = new HashSet<Date>();
+        events.add(new Date());
 
+        MyCalendar mc = ((MyCalendar)findViewById(R.id.calendar_view));
+        mc.updateCalendar(events);
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.user_schedule, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        // assign event handler
+        mc.setEventHandler(new MyCalendar.EventHandler()
+        {
+            @Override
+            public void onDayLongPress(Date date)
+            {
+                Log.e("UserSchedule", "Entering: setEventHandler");
+                // show returned day
+                DateFormat df = SimpleDateFormat.getDateInstance();
+                //Toast.makeText(getApplicationContext(), df.format(date), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
