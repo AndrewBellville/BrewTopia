@@ -17,13 +17,19 @@ package com.town.small.brewtopia.Calendar;
         import android.widget.LinearLayout;
         import android.widget.TextView;
 
+        import com.town.small.brewtopia.DataClass.CurrentUser;
+        import com.town.small.brewtopia.DataClass.DataBaseManager;
+        import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
         import com.town.small.brewtopia.R;
 
+        import java.text.ParseException;
         import java.text.SimpleDateFormat;
         import java.util.ArrayList;
         import java.util.Calendar;
         import java.util.Date;
         import java.util.HashSet;
+        import java.util.List;
+        import java.util.Locale;
 
 public class MyCalendar extends LinearLayout
 {
@@ -35,6 +41,8 @@ public class MyCalendar extends LinearLayout
 
     // default date format
     private static final String DATE_FORMAT = "MMM yyyy";
+    private SimpleDateFormat formatter = new SimpleDateFormat(
+            "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
     // date format
     private String dateFormat;
@@ -89,6 +97,7 @@ public class MyCalendar extends LinearLayout
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.my_calendar, this);
 
+
         loadDateFormat(attrs);
         assignUiElements();
         assignClickHandlers();
@@ -134,7 +143,7 @@ public class MyCalendar extends LinearLayout
             public void onClick(View v)
             {
                 currentDate.add(Calendar.MONTH, 1);
-                updateCalendar();
+                eventHandler.OnClickListener();
             }
         });
 
@@ -145,7 +154,7 @@ public class MyCalendar extends LinearLayout
             public void onClick(View v)
             {
                 currentDate.add(Calendar.MONTH, -1);
-                updateCalendar();
+                eventHandler.OnClickListener();
             }
         });
 
@@ -212,11 +221,50 @@ public class MyCalendar extends LinearLayout
         header.setBackgroundColor(getResources().getColor(color));
     }
 
+    /**
+     * Display dates correctly in grid
+     */
+    public void updateCalendarList(List<ScheduledBrewSchema> events)
+    {
+        Log.e(LOG, "Entering: updateCalendar");
+        ArrayList<Date> cells = new ArrayList<Date>();
+        Calendar calendar = (Calendar)currentDate.clone();
+
+        // determine the cell for current month's beginning
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        int monthBeginningCell = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+
+        // move calendar backwards to the beginning of the week
+        calendar.add(Calendar.DAY_OF_MONTH, -monthBeginningCell);
+
+        // fill cells
+        while (cells.size() < DAYS_COUNT)
+        {
+            cells.add(calendar.getTime());
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        // update grid
+        grid.setAdapter(new CalendarAdapter(getContext(), cells, events));
+
+        // update title
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        txtDate.setText(sdf.format(currentDate.getTime()));
+
+        // set header color according to current season
+        int month = currentDate.get(Calendar.MONTH);
+        int season = monthSeason[month];
+        int color = rainbow[season];
+
+        header.setBackgroundColor(getResources().getColor(color));
+    }
+
 
     private class CalendarAdapter extends ArrayAdapter<Date>
     {
         // days with events
         private HashSet<Date> eventDays;
+        private List<ScheduledBrewSchema> listEventDays;
 
         // for view inflation
         private LayoutInflater inflater;
@@ -225,6 +273,13 @@ public class MyCalendar extends LinearLayout
         {
             super(context, R.layout.calendar_day_view, days);
             this.eventDays = eventDays;
+            inflater = LayoutInflater.from(context);
+        }
+
+        public CalendarAdapter(Context context, ArrayList<Date> days, List<ScheduledBrewSchema> eventDays)
+        {
+            super(context, R.layout.calendar_day_view, days);
+            this.listEventDays = eventDays;
             inflater = LayoutInflater.from(context);
         }
 
@@ -262,6 +317,23 @@ public class MyCalendar extends LinearLayout
                 }
             }
 
+            //Update based on list
+            if(listEventDays != null)
+            {
+                for (ScheduledBrewSchema eventDate : listEventDays)
+                {
+                    //TODO: Need to handle multiple events on the same day and handle day press and ability to remove a schedule
+                    if (DateHasEvent(date,eventDate))
+                    {
+                        // mark this day for event
+                       LinearLayout  eventsLayout  = (LinearLayout)view.findViewById(R.id.eventsLayout);
+                       eventsLayout.addView(CreateDateEvent(view.getContext()));
+                        view.refreshDrawableState();
+                        break;
+                    }
+                }
+            }
+
             TextView dateText = (TextView)view.findViewById(R.id.dateText);
             // clear styling
             dateText.setTypeface(null, Typeface.NORMAL);
@@ -284,6 +356,35 @@ public class MyCalendar extends LinearLayout
 
             return view;
         }
+
+        private boolean DateHasEvent(Date d, ScheduledBrewSchema sBrew)
+        {
+            Date startDate = new Date();
+            Date endDate = new Date();
+            try {
+                startDate = formatter.parse(sBrew.getStartDate());
+                endDate = formatter.parse(sBrew.getEndBrewDate());
+            }
+            catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return d.after(startDate) && d.before(endDate);
+        }
+
+        private LinearLayout CreateDateEvent(Context context)
+        {
+            // inflate item if it does not exist yet
+            LinearLayout ll = new LinearLayout(context);
+            LayoutParams LLParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+
+            ll.setLayoutParams(LLParams);
+            ll.setBackgroundColor(Color.CYAN);
+            ll.setOrientation(LinearLayout.HORIZONTAL);
+            ll.setMinimumHeight(10);
+            ll.setPadding(2,2,2,2);
+
+            return ll;
+        }
     }
 
     /**
@@ -301,5 +402,6 @@ public class MyCalendar extends LinearLayout
     public interface EventHandler
     {
         void onDayLongPress(Date date);
+        void OnClickListener();
     }
 }

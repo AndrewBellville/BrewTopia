@@ -14,6 +14,9 @@ import com.town.small.brewtopia.DataClass.*;
 import com.town.small.brewtopia.Timer.BrewTimer;
 import com.town.small.brewtopia.Timer.TimerData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AddEditViewBrew extends ActionBarActivity {
 
     // Log cat tag
@@ -27,6 +30,7 @@ public class AddEditViewBrew extends ActionBarActivity {
     private TextView description;
     private TextView boilTime;
     private TextView errorText;
+    private String  UserName;
 
     private KeyListener brewNameListener;
     private KeyListener primaryListener;
@@ -61,6 +65,8 @@ public class AddEditViewBrew extends ActionBarActivity {
         bottleListener = bottle.getKeyListener();
         descriptionListener = description.getKeyListener();
         boilTimeListener = boilTime.getKeyListener();
+
+        UserName = CurrentUser.getInstance().getUser().getUserName();
 
         String tempState = BrewActivityData.getInstance().getAddEditViewState();
         if(tempState.equals("Add"))
@@ -115,6 +121,11 @@ public class AddEditViewBrew extends ActionBarActivity {
     {
         if(addEditButton.getText().equals("Start Brew"))
         {
+            //Create Schedule for Brew
+            ScheduledBrewSchema sBrew = new ScheduledBrewSchema(brewName.getText().toString(), UserName);
+            sBrew.SetScheduledDates(Integer.parseInt(primary.getText().toString()), Integer.parseInt(secondary.getText().toString()), Integer.parseInt(bottle.getText().toString()));
+            dbManager.CreateAScheduledBrew(sBrew);
+
             //Create and intent which will open Timer Activity
             Intent intent = new Intent(this, BrewTimer.class);
 
@@ -148,6 +159,7 @@ public class AddEditViewBrew extends ActionBarActivity {
         //Create Brew
         BrewSchema brew = new BrewSchema();
         brew.setBrewName(brewName.getText().toString());
+        brew.setUserName(UserName);
         brew.setPrimary(pf);
         brew.setSecondary(sf);
         brew.setBottle(bc);
@@ -155,9 +167,12 @@ public class AddEditViewBrew extends ActionBarActivity {
         brew.setBoilTime(bt);
 
         //Add Boil additions
-        brew.setBoilAdditionlist(BrewActivityData.getInstance().getBaArray());
+        brew.setBoilAdditionlist(cloneList(BrewActivityData.getInstance().getBaArray()));
         //add brew name to boil list
         brew.setListBrewName();
+
+        //remove all additions after submission
+        BrewActivityData.getInstance().getBaArray().clear();
 
         if(!dbManager.CreateABrew(brew))
         {
@@ -166,6 +181,12 @@ public class AddEditViewBrew extends ActionBarActivity {
         }
 
         this.finish();
+    }
+
+    public static List<BoilAdditionsSchema> cloneList(List<BoilAdditionsSchema> list) {
+        List<BoilAdditionsSchema> clone = new ArrayList<BoilAdditionsSchema>(list.size());
+        for(BoilAdditionsSchema item: list) clone.add(item);
+        return clone;
     }
 
     //TODO: MAKE TAB VIEW FOR THIS

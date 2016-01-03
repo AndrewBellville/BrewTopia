@@ -63,7 +63,7 @@ public class UserBrews extends ActionBarActivity {
     private void LoadBrews() {
         Log.e(LOG, "Entering: LoadBrews");
 
-        List<BrewSchema> brewList = dbManager.getAllBrews();
+        List<BrewSchema> brewList = dbManager.getAllBrews(userName);
         list = new ArrayList<HashMap<String, String>>();
 
         if(brewList.size() == 0 && list.size() > 0) {
@@ -97,7 +97,7 @@ public class UserBrews extends ActionBarActivity {
         if(isDelete)
         {
             HashMap<String,String> selectedRow = list.get(aPos);
-            dbManager.DeleteBrew(selectedRow.get("Name"));
+            dbManager.DeleteBrew(selectedRow.get("Name"), userName);
             LoadBrews();
         }
         else{
@@ -107,7 +107,7 @@ public class UserBrews extends ActionBarActivity {
             Intent intent = new Intent(this, AddEditViewBrew.class);
 
             // Set the state of display if View brew cannot be null
-            BrewActivityData.getInstance().setViewStateAndBrew("View",dbManager.getBrew(selectedRow.get("Name")));
+            BrewActivityData.getInstance().setViewStateAndBrew("View",dbManager.getBrew(selectedRow.get("Name"),userName));
 
             //start next activity
             startActivity(intent);

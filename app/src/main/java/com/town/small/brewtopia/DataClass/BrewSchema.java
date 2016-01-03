@@ -15,6 +15,7 @@ public class BrewSchema {
 
     private int id;
     private String BrewName;
+    private String UserName;
     private int boilTime;
     private int Primary;
     private int Secondary;
@@ -39,6 +40,7 @@ public class BrewSchema {
         {
             BoilAdditionsSchema baSchema = i.next();
             baSchema.setBrewName(getBrewName());
+            baSchema.setUserName(getUserName());
         }
     }
 
@@ -48,6 +50,13 @@ public class BrewSchema {
     }
     public String getBrewName() {
         return BrewName;
+    }
+    public String getUserName() {
+        if(UserName.equals(""))
+        {
+           return CurrentUser.getInstance().getUser().UserName;
+        }
+        return UserName;
     }
     public int getBoilTime() {
         return boilTime;
@@ -77,6 +86,9 @@ public class BrewSchema {
     }
     public void setBrewName(String brewName) {
         BrewName = brewName;
+    }
+    public void setUserName(String userName) {
+        UserName = userName;
     }
     public void setBoilTime(int boilTime) {
         this.boilTime = boilTime;

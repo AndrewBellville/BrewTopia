@@ -13,6 +13,7 @@ import com.town.small.brewtopia.R;
 public class BoilAdditionsSchema {
 
     private String brewName;
+    private String userName;
     private String additionName = "";
     private int additionTime = 0;
 
@@ -30,6 +31,9 @@ public class BoilAdditionsSchema {
     public String getBrewName() {
         return brewName;
     }
+    public String getUserName() {
+        return userName;
+    }
 
     //setters
     public void setAdditionName(String additionName) {
@@ -40,6 +44,9 @@ public class BoilAdditionsSchema {
     }
     public void setBrewName(String brewName) {
         this.brewName = brewName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
 }

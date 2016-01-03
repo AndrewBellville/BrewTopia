@@ -4,43 +4,60 @@ package com.town.small.brewtopia;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
 import com.town.small.brewtopia.Calendar.MyCalendar;
-
+import com.town.small.brewtopia.DataClass.*;
 
 public class UserSchedule extends ActionBarActivity {
 
+    private DataBaseManager dbManager;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_schedule);
 
-        HashSet<Date> events = new HashSet<Date>();
-        events.add(new Date());
+        dbManager = DataBaseManager.getInstance(getApplicationContext());
 
-        MyCalendar mc = ((MyCalendar)findViewById(R.id.calendar_view));
-        mc.updateCalendar(events);
+        List<ScheduledBrewSchema> sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
+        MyCalendar mc = ((MyCalendar) findViewById(R.id.calendar_view));
+        mc.updateCalendarList(sBrewList);
 
         // assign event handler
-        mc.setEventHandler(new MyCalendar.EventHandler()
-        {
+        mc.setEventHandler(new MyCalendar.EventHandler() {
             @Override
-            public void onDayLongPress(Date date)
-            {
+            public void onDayLongPress(Date date) {
                 Log.e("UserSchedule", "Entering: setEventHandler");
                 // show returned day
                 DateFormat df = SimpleDateFormat.getDateInstance();
                 //Toast.makeText(getApplicationContext(), df.format(date), Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+        public void OnClickListener(){
+                updateCalendarView();
+            }
         });
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+        updateCalendarView();
+    }
+
+    private void  updateCalendarView()
+    {
+        List<ScheduledBrewSchema> sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
+        MyCalendar mc = ((MyCalendar) findViewById(R.id.calendar_view));
+        mc.updateCalendarList(sBrewList);
     }
 }
