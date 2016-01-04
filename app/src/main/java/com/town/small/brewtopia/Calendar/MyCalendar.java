@@ -5,6 +5,7 @@ package com.town.small.brewtopia.Calendar;
         import android.content.res.TypedArray;
         import android.graphics.Color;
         import android.graphics.Typeface;
+        import android.provider.CalendarContract;
         import android.util.AttributeSet;
         import android.util.Log;
         import android.view.LayoutInflater;
@@ -322,14 +323,29 @@ public class MyCalendar extends LinearLayout
             {
                 for (ScheduledBrewSchema eventDate : listEventDays)
                 {
-                    //TODO: Need to handle multiple events on the same day and handle day press and ability to remove a schedule
+                    //TODO: Need to handle multiple events on the same day (Color change) and handle day press and ability to remove a schedule
                     if (DateHasEvent(date,eventDate))
                     {
                         // mark this day for event
                        LinearLayout  eventsLayout  = (LinearLayout)view.findViewById(R.id.eventsLayout);
-                       eventsLayout.addView(CreateDateEvent(view.getContext()));
+                       int childCount = eventsLayout.getChildCount();
+
+                        if(eventDate.getDisplayLevel() == 0 )
+                            eventDate.setDisplayLevel(childCount);
+
+                        if(eventDate.getDisplayLevel() != childCount)
+                        {
+                            int i = eventDate.getDisplayLevel() - childCount;
+                            do{
+                                eventsLayout.addView(CreateDateEvent(view.getContext(),Color.TRANSPARENT));
+                                i--;
+                            }while(i != 0);
+                            childCount = eventsLayout.getChildCount();
+                        }
+
+                       eventsLayout.addView(CreateDateEvent(view.getContext(),Color.BLUE));
                         view.refreshDrawableState();
-                        break;
+                        //break;
                     }
                 }
             }
@@ -368,21 +384,25 @@ public class MyCalendar extends LinearLayout
             catch (ParseException e) {
                 e.printStackTrace();
             }
-            return d.after(startDate) && d.before(endDate);
+            if((d.getDate()>= startDate.getDate() && d.getMonth()>= startDate.getMonth() && d.getYear()>= startDate.getYear()) &&
+                    (d.getDate()<= endDate.getDate() && d.getMonth()<= endDate.getMonth() && d.getYear()<= endDate.getYear()) )
+            {
+                return true;
+            }
+            return false;
         }
 
-        private LinearLayout CreateDateEvent(Context context)
+        private LinearLayout CreateDateEvent(Context context, int color)
         {
             // inflate item if it does not exist yet
             LinearLayout ll = new LinearLayout(context);
             LayoutParams LLParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+            LLParams.setMargins(0,2,0,2);
 
             ll.setLayoutParams(LLParams);
-            ll.setBackgroundColor(Color.CYAN);
+            ll.setBackgroundColor(color);
             ll.setOrientation(LinearLayout.HORIZONTAL);
             ll.setMinimumHeight(10);
-            ll.setPadding(2,2,2,2);
-
             return ll;
         }
     }

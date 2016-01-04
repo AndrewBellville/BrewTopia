@@ -424,7 +424,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         List<ScheduledBrewSchema> sBrewList = new ArrayList<ScheduledBrewSchema>();
         String selectQuery = "SELECT  * FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
                 + ACTIVE + " = 1 "
-                + "AND " + USER_NAME + " = '" + aUserName+"'";
+                + "AND " + USER_NAME + " = '" + aUserName+"'"
+                + "ORDER BY " + CREATED_ON;
 
         Log.e(LOG, selectQuery);
 

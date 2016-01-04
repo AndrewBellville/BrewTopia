@@ -17,6 +17,7 @@ public class ScheduledBrewSchema {
     private String AlertBottleDate;
     private String EndBrewDate;
     private int Active;
+    private int displayLevel = 0;
 
     // constructors
     public ScheduledBrewSchema() {
@@ -75,6 +76,9 @@ public class ScheduledBrewSchema {
     public int getActive() {
         return Active;
     }
+    public int getDisplayLevel() {
+        return displayLevel;
+    }
 
     //Setters
     public void setUserName(String userName) {
@@ -98,4 +102,8 @@ public class ScheduledBrewSchema {
     public void setActive(int active) {
         Active = active;
     }
+    public void setDisplayLevel(int displayLevel) {
+        this.displayLevel = displayLevel;
+    }
+
 }
