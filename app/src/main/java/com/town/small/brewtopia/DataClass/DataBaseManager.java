@@ -445,8 +445,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
                 Log.e(LOG, Integer.toString(sBrew.getEndBrewDate().compareTo(getDateTime())));
                 Log.e(LOG, Integer.toString(getDateTime().compareTo(sBrew.getEndBrewDate())));
+
                 // adding to Scheduled list if still active else set not active
-                //1 is returned if current date is  logically greater then End Date
                 if(sBrew.getEndBrewDate().compareTo(getDateTime()) >= 0)
                     sBrewList.add(sBrew);
                 else
