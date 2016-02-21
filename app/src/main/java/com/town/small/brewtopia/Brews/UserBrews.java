@@ -34,7 +34,6 @@ public class UserBrews extends ActionBarActivity {
     ArrayList<HashMap<String, String>> list;
     private boolean isDelete = false;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,18 +83,19 @@ public class UserBrews extends ActionBarActivity {
 
             //instantiate custom adapter
             CustomListAdapter adapter = new CustomListAdapter(list, this.getApplicationContext());
+            adapter.setDeleteView(isDelete);
+            adapter.setEventHandler(new CustomListAdapter.EventHandler() {
+                @Override
+                public void OnDeleteClickListener(String aName, String aDate) {
+                    dbManager.DeleteBrew(aName, userName);
+                }
+            });
             BrewListView.setAdapter(adapter);
         }
     }
 
     private void BrewSelect(String aBrewName)
     {
-        if(isDelete)
-        {
-            dbManager.DeleteBrew(aBrewName, userName);
-            LoadBrews();
-        }
-        else{
             Intent intent = new Intent(this, AddEditViewBrew.class);
 
             // Set the state of display if View brew cannot be null
@@ -103,8 +103,6 @@ public class UserBrews extends ActionBarActivity {
 
             //start next activity
             startActivity(intent);
-        }
-
     }
 
     public void onCreateClick(View aView)
@@ -124,5 +122,7 @@ public class UserBrews extends ActionBarActivity {
         // Is the button now checked?
         if(isDelete) ((RadioButton) view).setChecked(false);
         isDelete = ((RadioButton) view).isChecked();
+
+        LoadBrews();
     }
 }

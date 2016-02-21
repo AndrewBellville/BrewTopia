@@ -15,10 +15,10 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="00:00:00"
         android:id="@+id/BrewTimeTextView"
-        android:layout_alignParentTop="true"
+        android:textSize="70dp"
+        android:layout_above="@+id/AdditionTextView"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="84dp"
-        android:textSize="70dp" />
+        android:layout_marginBottom="60dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -26,9 +26,12 @@
         android:text="Acknowledge"
         android:id="@+id/AcknowledgeButton"
         android:onClick="onAckClick"
-        android:layout_below="@+id/AdditionTextView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp" />
+        android:layout_above="@+id/StopButton"
+        android:layout_alignRight="@+id/StopButton"
+        android:layout_alignEnd="@+id/StopButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="40dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -46,7 +49,20 @@
         android:text="Stop"
         android:id="@+id/StopButton"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="StopTimerClick"/>
+        android:onClick="StopTimerClick"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/TimerBrewNametextView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
 
 </RelativeLayout>

@@ -153,16 +153,20 @@ public class AddEditViewBrew extends ActionBarActivity {
     {
         if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.VIEW)
         {
-            //Create Schedule for Brew
-            ScheduledBrewSchema sBrew = new ScheduledBrewSchema(brewName.getText().toString(), UserName);
-            sBrew.SetScheduledDates(Integer.parseInt(primary.getText().toString()), Integer.parseInt(secondary.getText().toString()), Integer.parseInt(bottle.getText().toString()));
-            dbManager.CreateAScheduledBrew(sBrew);
+            //If we have an active timer we dont want to create a new one
+            if(!(TimerData.getInstance().isTimerActive()))
+            {
+                //Create Schedule for Brew
+                ScheduledBrewSchema sBrew = new ScheduledBrewSchema(brewName.getText().toString(), UserName);
+                sBrew.SetScheduledDates(Integer.parseInt(primary.getText().toString()), Integer.parseInt(secondary.getText().toString()), Integer.parseInt(bottle.getText().toString()));
+                dbManager.CreateAScheduledBrew(sBrew);
+
+                //Set Brew into TimerData
+                TimerData.getInstance().setTimerData(dbManager.getBrew(brewName.getText().toString(), UserName));
+            }
 
             //Create and intent which will open Timer Activity
             Intent intent = new Intent(this, BrewTimer.class);
-
-            //Set Brew into TimerData
-            TimerData.getInstance().setTimeData(BrewActivityData.getInstance().getAddEditViewBrew());
 
             //start next activity
             startActivity(intent);

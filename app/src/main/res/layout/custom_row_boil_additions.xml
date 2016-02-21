@@ -2,10 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:descendantFocusability="blocksDescendants">
+    android:background="#ffc3faff"
+    android:minHeight="100dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp">
 
     <TextView
-        android:id="@+id/list_item_string"
+        android:id="@+id/list_item_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="8dp"
@@ -23,7 +26,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Small Text"
-        android:id="@+id/list_item_string1"
+        android:id="@+id/list_item_label1"
         android:paddingLeft="8dp"
         android:layout_alignBottom="@+id/delete_btn"
         android:layout_alignParentLeft="true"
@@ -44,24 +47,25 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
-        android:layout_alignBottom="@+id/list_item_string"
-        android:layout_toRightOf="@+id/list_item_string"
-        android:layout_toEndOf="@+id/list_item_string"
+        android:id="@+id/list_item_edit"
+        android:layout_alignBottom="@+id/list_item_label"
+        android:layout_toRightOf="@+id/list_item_label"
+        android:layout_toEndOf="@+id/list_item_label"
         android:layout_toLeftOf="@+id/delete_btn"
-        android:layout_toStartOf="@+id/delete_btn" />
+        android:layout_toStartOf="@+id/delete_btn"
+        android:textColor="#ff000000" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:id="@+id/editText2"
-        android:layout_below="@+id/list_item_string"
-        android:layout_toRightOf="@+id/list_item_string1"
-        android:layout_toEndOf="@+id/list_item_string1"
-        android:layout_alignRight="@+id/editText"
-        android:layout_alignEnd="@+id/editText" />
+        android:id="@+id/list_item_edit1"
+        android:layout_below="@+id/list_item_label"
+        android:layout_toRightOf="@+id/list_item_label1"
+        android:layout_toEndOf="@+id/list_item_label1"
+        android:layout_alignRight="@+id/list_item_edit"
+        android:textColor="#ff000000" />
 
 
 </RelativeLayout>

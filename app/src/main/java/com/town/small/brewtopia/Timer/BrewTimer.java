@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
@@ -17,25 +18,17 @@ import com.town.small.brewtopia.R;
 
 public class BrewTimer extends ActionBarActivity {
 
-    CountDownTimer timer;
-
     long hours;
     long min;
     long seconds;
-    long millisRemaining;
-
-    boolean isFinished = false;
-    boolean allAdditionsComplete = false;
-
-    BoilAdditionsSchema nextAddition;
-    int nextAdditionIterator = 0;
-
 
     private TextView brewTimer;
     private TextView addition;
+    private TextView brewName;
     private Button AckButton;
-    private Ringtone r;
-    Uri notification;
+
+    private TimerData td;
+    private boolean isBackground = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,80 +36,85 @@ public class BrewTimer extends ActionBarActivity {
         setContentView(R.layout.activity_brew_timer);
         getActionBar().hide();
 
-        //Set Alarm Manager
-        notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-
         brewTimer = (TextView)findViewById(R.id.BrewTimeTextView);
         addition = (TextView)findViewById(R.id.AdditionTextView);
+        brewName = (TextView)findViewById(R.id.TimerBrewNametextView);
+
         AckButton = (Button)findViewById(R.id.AcknowledgeButton);
         AckButton.setVisibility(View.INVISIBLE);
 
-        startTimer(TimerData.getInstance().getTotalTime());
+        addition.setText("");
+
+        td = TimerData.getInstance();
+        brewName.setText(td.getBrewName());
+        // assign event handler
+        td.setEventHandler(new TimerData.EventHandler() {
+            @Override
+            public void onTimerTick(long millisUntilFinished, BoilAdditionsSchema nextAddition ) {
+                setTimeDisplay(millisUntilFinished,nextAddition);
+            }
+
+            @Override
+            public void onTimerFinish(){
+                TimerFinished();
+            }
+        });
+        td.startTimer(getApplicationContext());
     }
 
     @Override
     public void onPause() {
         super.onPause();  // Always call the superclass method first
-        r.stop();
-        timer.cancel();
-        this.finish();
+        isBackground= true;
     }
 
-    public void startTimer(long totalTimeInMilli)
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        isBackground= false;
+    }
+
+    private void CheckForBackground()
     {
-        //Set First addition
-        nextAddition = TimerData.getInstance().getAdditionsList().get(nextAdditionIterator);
-
-        addition.setText("");
-
-        timer = new CountDownTimer(totalTimeInMilli, 1000){
-            @Override
-            public void onTick(long millisUntilFinished) {
-                millisRemaining = millisUntilFinished;//save if we want a pause feature
-                setTimeDisplay(millisUntilFinished);
-            }
-
-            @Override
-            public void onFinish() {
-                brewTimer.setText("Done");
-                isFinished = true;
-                FireAlarm();
-            }
-        }.start();
+        if(isBackground)
+        {
+            this.finish();
+            startActivity(getIntent());
+        }
     }
 
     public void onAckClick(View aView)
     {
-        r.stop();
+        td.AckTimer();
         AckButton.setVisibility(View.INVISIBLE);
-
-        if(isFinished)
-            this.finish();
     }
 
     public void StopTimerClick(View aView)
     {
-        r.stop();
-        timer.cancel();
+        td.StopTimer();
         this.finish();
     }
 
      //TODO: IF WANTED
     public void PauseTimerClick(View aView)
     {
-        //if  pause save timer  value  then cancel
-        r.stop();
-        timer.cancel();
+        td.PauseTimer();
     }
 
     private void FireAlarm()
     {
-        AckButton.setVisibility(View.VISIBLE);
-        r.play();
+        CheckForBackground();
+        td.FireAlarm();
     }
 
-    private void setTimeDisplay(long millisUntilFinished)
+    public void TimerFinished() {
+        brewTimer.setText("Done");
+        FireAlarm();
+        if (td.isAlarmActive())
+            AckButton.setVisibility(View.VISIBLE);
+    }
+
+    private void setTimeDisplay(long millisUntilFinished, BoilAdditionsSchema nextAddition)
     {
         long x = millisUntilFinished/1000;
         seconds = x % 60;
@@ -139,16 +137,18 @@ public class BrewTimer extends ActionBarActivity {
 
         brewTimer.setText(str_hours + hours + ":" + str_mins + min +  ":"  + str_secs +  seconds);
 
+        if (td.isAlarmActive())
+            AckButton.setVisibility(View.VISIBLE);
+
         //Time for next addition fire alarm and move to next addition
-        if(nextAddition.getAdditionTime()*60000 >= millisUntilFinished && !allAdditionsComplete)
+        if(nextAddition == null)
+            return;
+
+        if(nextAddition.getAdditionTime()*60000 >= millisUntilFinished )
         {
-            FireAlarm();
+            if(!td.isAllAdditionsComplete())FireAlarm();
+
             addition.setText("Add: " + nextAddition.getAdditionName());
-            nextAdditionIterator++;
-            if(nextAdditionIterator < TimerData.getInstance().getAdditionsList().size())
-                nextAddition = TimerData.getInstance().getAdditionsList().get(nextAdditionIterator);
-            else
-                allAdditionsComplete = true;
         }
     }
 }

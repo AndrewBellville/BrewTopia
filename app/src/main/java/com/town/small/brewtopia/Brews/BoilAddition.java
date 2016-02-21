@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.InputType;
 import android.text.Layout;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,12 +24,13 @@ public class BoilAddition {
 
     private BoilAdditionsSchema baSchema;
 
-    private LinearLayout layout;
     private TextView additionNameLabel;
     private EditText additionName;
     private TextView timeLabel;
     private EditText time;
     private Button deleteButton;
+
+    private View view;
 
     //event handling
     private EventHandler eventHandler = null;
@@ -37,28 +39,20 @@ public class BoilAddition {
 
         baSchema = new BoilAdditionsSchema();
 
-        layout = new LinearLayout(context);
-        layout.setBackgroundColor(Color.argb(50,153,225,204));
-        layout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
+        LayoutInflater inflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+        view = inflater.inflate(R.layout.custom_row_boil_additions, null, false);
 
-        additionNameLabel = new TextView(context);
-        additionNameLabel.setText("Addition");
+        additionName = (EditText) view.findViewById(R.id.list_item_edit);
+        time = (EditText) view.findViewById(R.id.list_item_edit1);
 
-        additionName = new EditText(context);
-        additionName.setWidth(200);
-
-        timeLabel = new TextView(context);
+        additionNameLabel = (TextView) view.findViewById(R.id.list_item_label);
+        additionNameLabel.setText("Addition:");
+        timeLabel = (TextView) view.findViewById(R.id.list_item_label1);
         timeLabel.setText("Min:");
 
-        time = new EditText(context);
-        time.setInputType(InputType.TYPE_CLASS_NUMBER);
-        time.setWidth(100);
-
-        deleteButton = new Button(context);
-        deleteButton.setText("-");
-        //deleteButton.setBackgroundResource(R.drawable.minus);
-        deleteButton.setMaxHeight(100);
+        deleteButton = (Button) view.findViewById(R.id.delete_btn);
         deleteButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 if(additionName.getText().toString().equals("") || eventHandler == null)
@@ -66,12 +60,6 @@ public class BoilAddition {
                 eventHandler.OnDeleteClickListener(additionName.getText().toString());
             }
         });
-
-        layout.addView(additionNameLabel);
-        layout.addView(additionName);
-        layout.addView(timeLabel);
-        layout.addView(time);
-        layout.addView(deleteButton);
     }
 
     public void setSelf()
@@ -88,10 +76,12 @@ public class BoilAddition {
 
     public boolean isPopulated()
     {
-        if(additionName.getText().equals("") || time.getText().equals(""))
-        {
+        String an = additionName.getText().toString();
+        String t = time.getText().toString();
+
+        if(an.matches("") || t.matches(""))
             return false;
-        }
+
         return true;
     }
 
@@ -100,6 +90,7 @@ public class BoilAddition {
         //always false
         additionName.setKeyListener(null);
         time.setKeyListener(null);
+        deleteButton.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -116,16 +107,16 @@ public class BoilAddition {
     }
 
     //getters
-    public LinearLayout getLayout() {
-        return layout;
+    public View getView() {
+        return view;
     }
     public BoilAdditionsSchema getBaSchema() {
         return baSchema;
     }
 
     //setters
-    public void setLayout(LinearLayout layout) {
-        this.layout = layout;
+    public void setView (View view) {
+        this.view = view;
     }
     public void setBaSchema(BoilAdditionsSchema baSchema) {
         this.baSchema = baSchema;
