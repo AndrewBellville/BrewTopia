@@ -18,7 +18,10 @@ public class BrewActivityData {
     private List<BoilAdditionsSchema> baArray = new ArrayList<BoilAdditionsSchema>();
 
     //State for AddEditView Brew and Brew Name if Edit/View
-    private String AddEditViewState = "Add"; // STATES: Add, Edit, View
+    public enum DisplayMode {
+        ADD, EDIT, VIEW
+    };
+    private DisplayMode AddEditViewState = DisplayMode.ADD; // STATES: Add, Edit, View
     private BrewSchema AddEditViewBrew;
 
     //Singleton
@@ -34,7 +37,7 @@ public class BrewActivityData {
     private BrewActivityData() {
     }
 
-    public void setViewStateAndBrew(String aState, BrewSchema aBrewSchema)
+    public void setViewStateAndBrew(DisplayMode aState, BrewSchema aBrewSchema)
     {
         AddEditViewState = aState;
         AddEditViewBrew = aBrewSchema;
@@ -47,7 +50,7 @@ public class BrewActivityData {
     public BrewSchema getAddEditViewBrew() {
         return AddEditViewBrew;
     }
-    public String getAddEditViewState() {
+    public DisplayMode getAddEditViewState() {
         return AddEditViewState;
     }
 
@@ -58,7 +61,7 @@ public class BrewActivityData {
     public void setAddEditViewBrew(BrewSchema addEditViewBrew) {
         AddEditViewBrew = addEditViewBrew;
     }
-    public void setAddEditViewState(String addEditViewState) {
+    public void setAddEditViewState(DisplayMode addEditViewState) {
         AddEditViewState = addEditViewState;
     }
 }

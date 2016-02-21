@@ -3,6 +3,7 @@ package com.town.small.brewtopia.Calculations;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.view.View;
@@ -28,6 +29,8 @@ public class AlcoholByVolume extends ActionBarActivity {
         setContentView(R.layout.activity_alcohol_by_volume);
         Log.e(LOG, "Entering: onCreate");
 
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle("Alcohol By Volume");
 
         OG = (EditText)findViewById(R.id.OGeditText);
         FG = (EditText)findViewById(R.id.FGeditText);
@@ -42,6 +45,12 @@ public class AlcoholByVolume extends ActionBarActivity {
         double abv = (og - fg)/.75;
 
         ABV.setText(Double.toString(abv));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        onBackPressed();
+        return true;
     }
 
 }

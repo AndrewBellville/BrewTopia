@@ -93,20 +93,13 @@ public class UserCalculations extends ActionBarActivity {
             for(CalculationsSchema calculation : Calculations)
             {
                 HashMap<String,String> temp = new HashMap<String,String>();
-                temp.put("Abv",calculation.getCalculationAbv());
-                temp.put("Name",calculation.getCalculationName());
+                temp.put("text1",calculation.getCalculationAbv());
+                temp.put("text2",calculation.getCalculationName());
                 list.add(temp);
             }
 
-            SimpleAdapter adapter = new SimpleAdapter(
-                    this,
-                    list,
-                    R.layout.custom_row_view,
-                    new String[] {"Abv","Name"},
-                    new int[] {R.id.text1,R.id.text2}
-
-            );
-
+            //instantiate custom adapter
+            CustomListAdapter adapter = new CustomListAdapter(list, this.getApplicationContext());
             CalculationsListView.setAdapter(adapter);
         }
     }
@@ -117,7 +110,7 @@ public class UserCalculations extends ActionBarActivity {
         HashMap<String,String> selectedRow = list.get(aPos);
 
         Intent intent;
-        if(selectedRow.get("Abv").equals("ABV")) {
+        if(selectedRow.get("text1").equals("ABV")) {
             intent = new Intent(this, AlcoholByVolume.class);
             startActivity(intent);
         }

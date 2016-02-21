@@ -160,18 +160,27 @@ public class MyCalendar extends LinearLayout
         });
 
         // long-pressing a day
-        grid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
-        {
+        grid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             @Override
-            public boolean onItemLongClick(AdapterView<?> view, View cell, int position, long id)
-            {
+            public boolean onItemLongClick(AdapterView<?> view, View cell, int position, long id) {
                 // handle long-press
                 if (eventHandler == null)
                     return false;
 
-                eventHandler.onDayLongPress((Date)view.getItemAtPosition(position));
+                eventHandler.onDayLongPress((Date) view.getItemAtPosition(position));
                 return true;
+            }
+        });
+
+        grid.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+            @Override
+            public void onItemClick(AdapterView<?> view, View cell, int position,long id)  {
+                // handle press
+                if (eventHandler == null)
+                    return;
+                eventHandler.onDayLongPress((Date) view.getItemAtPosition(position));
             }
         });
     }

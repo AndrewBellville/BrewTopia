@@ -28,4 +28,21 @@
     <string name="title_activity_user_calculations">UserCalculations</string>
     <string name="title_activity_alcohol_by_volume">AlcoholByVolume</string>
 
+    <string-array name="BeerStyles">
+        <item>Amber</item>
+        <item>Blonde</item>
+        <item>Brown</item>
+        <item>Cream</item>
+        <item>Dark</item>
+        <item>Fruit</item>
+        <item>Golden</item>
+        <item>Honey</item>
+        <item>India Pale Ale</item>
+        <item>Wheat</item>
+        <item>Red</item>
+        <item>Pilsner</item>
+        <item>Pale</item>
+        <item>Light</item>
+    </string-array>
+
 </resources>

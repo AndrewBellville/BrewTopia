@@ -33,6 +33,7 @@ public class UserSchedule extends ActionBarActivity {
     List<ScheduledBrewSchema> sBrewList;
     ArrayList<HashMap<String, String>> list;
     private ListView ScheduledBrewListView;
+    private String userName;
 
     private SimpleDateFormat formatter = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -43,6 +44,7 @@ public class UserSchedule extends ActionBarActivity {
         setContentView(R.layout.activity_user_schedule);
 
         dbManager = DataBaseManager.getInstance(getApplicationContext());
+        userName = CurrentUser.getInstance().getUser().getUserName();
 
         sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
         MyCalendar mc = ((MyCalendar) findViewById(R.id.calendar_view));
@@ -106,20 +108,22 @@ public class UserSchedule extends ActionBarActivity {
                 if(DateHasEvent(date,sbrew))
                 {
                     HashMap<String, String> temp = new HashMap<String, String>();
-                    temp.put("Name", "Brew Name: " + sbrew.getBrewName());
-                    temp.put("Date", "Started: " + sbrew.getStartDate());
+                    temp.put("text1", sbrew.getBrewName());
+                    temp.put("text2", sbrew.getStartDate());
                     list.add(temp);
                 }
             }
 
-            SimpleAdapter adapter = new SimpleAdapter(
-                    this,
-                    list,
-                    R.layout.custom_row_view,
-                    new String[] {"Name","Date"},
-                    new int[] {R.id.text1,R.id.text2}
-
-            );
+            //instantiate custom adapter
+            CustomListAdapter adapter = new CustomListAdapter(list, this.getApplicationContext());
+            adapter.setDeleteView(true);
+            adapter.setEventHandler(new CustomListAdapter.EventHandler() {
+                @Override
+                public void OnDeleteClickListener(String aName, String aDate) {
+                    dbManager.deleteBrewScheduled(aName,userName,aDate);
+                    updateCalendarView();
+                }
+            });
 
             ScheduledBrewListView.setAdapter(adapter);
         }

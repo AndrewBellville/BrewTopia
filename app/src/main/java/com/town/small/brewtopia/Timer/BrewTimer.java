@@ -55,6 +55,14 @@ public class BrewTimer extends ActionBarActivity {
         startTimer(TimerData.getInstance().getTotalTime());
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();  // Always call the superclass method first
+        r.stop();
+        timer.cancel();
+        this.finish();
+    }
+
     public void startTimer(long totalTimeInMilli)
     {
         //Set First addition

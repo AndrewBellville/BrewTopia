@@ -35,20 +35,20 @@ public class UserProfile extends TabActivity {
         TabHost tabHost = getTabHost();
 
         Intent intent;
-        //Add image tab
+        //Add Brew tab
         intent = new Intent(this, UserBrews.class);
-        tabHost.addTab(tabHost.newTabSpec("brews").setIndicator("Brews").setContent(intent));
+        tabHost.addTab(tabHost.newTabSpec("brews").setIndicator("",getApplicationContext().getResources().getDrawable(R.drawable.beer)).setContent(intent));
 
-        //Add Reference Object tab
+        //Add Schedule tab
         intent = new Intent(this, UserSchedule.class);
-        tabHost.addTab(tabHost.newTabSpec("schedule").setIndicator("Schedule").setContent(intent));
+        tabHost.addTab(tabHost.newTabSpec("schedule").setIndicator("",getApplicationContext().getResources().getDrawable(R.drawable.calendar)).setContent(intent));
 
         //Add Inventory tab
         intent = new Intent(this, UserInventory.class);
-        tabHost.addTab(tabHost.newTabSpec("inventory").setIndicator("Inventory").setContent(intent));
+        tabHost.addTab(tabHost.newTabSpec("inventory").setIndicator("",getApplicationContext().getResources().getDrawable(R.drawable.document)).setContent(intent));
 
         //Add Calculations tab
         intent = new Intent(this, UserCalculations.class);
-        tabHost.addTab(tabHost.newTabSpec("calculations").setIndicator("Calculations").setContent(intent));
+        tabHost.addTab(tabHost.newTabSpec("calculations").setIndicator("",getApplicationContext().getResources().getDrawable(R.drawable.calculator)).setContent(intent));
     }
 }

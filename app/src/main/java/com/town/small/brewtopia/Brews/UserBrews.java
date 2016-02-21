@@ -1,5 +1,6 @@
 package com.town.small.brewtopia.Brews;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
 
+import com.town.small.brewtopia.CustomListAdapter;
 import com.town.small.brewtopia.R;
 
 import java.util.*;
@@ -45,7 +47,8 @@ public class UserBrews extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                BrewSelect(position);
+                HashMap<String,String> selectedRow = list.get(position);
+                BrewSelect(selectedRow.get("text1"));
             }
         });
         dbManager = DataBaseManager.getInstance(getApplicationContext());
@@ -74,40 +77,29 @@ public class UserBrews extends ActionBarActivity {
             for(BrewSchema brew : brewList)
             {
                 HashMap<String,String> temp = new HashMap<String,String>();
-                temp.put("Name",brew.getBrewName());
-                temp.put("Date", "Create: " + brew.getCreatedOn());
+                temp.put("text1",brew.getBrewName());
+                temp.put("text2", "Create: " + brew.getCreatedOn());
                 list.add(temp);
             }
 
-            SimpleAdapter adapter = new SimpleAdapter(
-                    this,
-                    list,
-                    R.layout.custom_row_view,
-                    new String[] {"Name","Date"},
-                    new int[] {R.id.text1,R.id.text2}
-
-            );
-
+            //instantiate custom adapter
+            CustomListAdapter adapter = new CustomListAdapter(list, this.getApplicationContext());
             BrewListView.setAdapter(adapter);
         }
     }
 
-    private void BrewSelect(int aPos)
+    private void BrewSelect(String aBrewName)
     {
         if(isDelete)
         {
-            HashMap<String,String> selectedRow = list.get(aPos);
-            dbManager.DeleteBrew(selectedRow.get("Name"), userName);
+            dbManager.DeleteBrew(aBrewName, userName);
             LoadBrews();
         }
         else{
-            //Display selected brew
-            HashMap<String,String> selectedRow = list.get(aPos);
-
             Intent intent = new Intent(this, AddEditViewBrew.class);
 
             // Set the state of display if View brew cannot be null
-            BrewActivityData.getInstance().setViewStateAndBrew("View",dbManager.getBrew(selectedRow.get("Name"),userName));
+            BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.EDIT,dbManager.getBrew(aBrewName,userName));
 
             //start next activity
             startActivity(intent);
@@ -122,7 +114,7 @@ public class UserBrews extends ActionBarActivity {
         Intent intent = new Intent(this, AddEditViewBrew.class);
 
         // Set the state of display if Add brew can be null
-        BrewActivityData.getInstance().setViewStateAndBrew("Add",null);
+        BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.ADD,null);
 
         //start next activity
         startActivity(intent);

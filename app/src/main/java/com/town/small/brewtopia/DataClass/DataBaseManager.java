@@ -292,6 +292,37 @@ public class DataBaseManager extends SQLiteOpenHelper {
     }
 
     /*
+ * Updating a Brew
+ */
+    public Boolean updateABrew(BrewSchema aBrew) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "updateABrew Name["+aBrew.getBrewName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(BREW_NAME, aBrew.getBrewName());
+        values.put(USER_NAME, aBrew.getUserName());
+        values.put(BOIL_TIME, aBrew.getBoilTime());
+        values.put(PRIMARY, aBrew.getPrimary());
+        values.put(SECONDARY, aBrew.getSecondary());
+        values.put(BOTTLE, aBrew.getBottle());
+        values.put(DESCRIPTION, aBrew.getDescription());
+        //values.put(CREATED_ON, getDateTime());
+
+        // updating row
+        int retVal = db.update(TABLE_BREWS, values, BREW_NAME + " = ? AND " + USER_NAME + " = ?",
+                new String[] { aBrew.getBrewName(), aBrew.getUserName()});
+
+        //Update brew
+        if(!(retVal > 0) )
+            return false;
+        //Update Boil Additions
+        if(!(add_all_boil_additions(aBrew.getBoilAdditionlist())))
+            return false;
+
+        return true;
+    }
+
+    /*
 * Delete a Brew
 */
     public void DeleteBrew(String aBrewName, String aUserName) {
@@ -380,14 +411,52 @@ public class DataBaseManager extends SQLiteOpenHelper {
     }
 
     /*
+* getting Boil additions for brew name and addition name
+*/
+    public BoilAdditionsSchema get_boil_additions_by_brew_name_addition_name(String aBrewName, String aAdditionName, String aUserName) {
+        String selectQuery = "SELECT * FROM " + TABLE_BOIL_ADDITIONS + " WHERE "
+                + BREW_NAME + " = '" + aBrewName+"'"
+                + "AND " + USER_NAME + " = '" + aUserName+"'"
+                + "AND " + ADDITION_NAME + " = '" + aAdditionName+"'";
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        BoilAdditionsSchema baSchema = new BoilAdditionsSchema();
+        baSchema.setAdditionName("");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+
+                baSchema.setAdditionName(c.getString(c.getColumnIndex(ADDITION_NAME)));
+                baSchema.setAdditionTime(c.getInt(c.getColumnIndex(ADDITION_TIME)));
+        }
+
+        c.close();
+        return baSchema;
+    }
+
+    /*
 * Delete All boil additions by Brew Name
 */
     public void delete_all_boil_additions_by_brew_name(String aBrewName, String aUserName) {
         SQLiteDatabase db = this.getWritableDatabase();
         Log.e(LOG, "delete_all_boil_additions_by_brew_name Name["+aBrewName+"]");
 
-        db.delete(TABLE_BOIL_ADDITIONS, BREW_NAME + " = ? AND "+ USER_NAME +  " = ?",
+        db.delete(TABLE_BOIL_ADDITIONS, BREW_NAME + " = ? AND "+ USER_NAME +  " = ? ",
                 new String[] { aBrewName, aUserName});
+    }
+
+    /*
+* Delete boil additions by Brew Name and addition name
+*/
+    public void delete_boil_additions_by_brew_name_addition_name(String aBrewName, String aAdditionName, String aUserName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "delete_boil_additions_by_brew_name_addition_name Name["+aBrewName+"] AdditionName["+aAdditionName+"]");
+
+        db.delete(TABLE_BOIL_ADDITIONS, BREW_NAME + " = ? AND "+ ADDITION_NAME +  " = ? AND "+ USER_NAME +  " = ? ",
+                new String[] { aBrewName, aAdditionName, aUserName});
     }
 
 //******************************Scheduled Table function*********************************
@@ -424,7 +493,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         List<ScheduledBrewSchema> sBrewList = new ArrayList<ScheduledBrewSchema>();
         String selectQuery = "SELECT  * FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
                 + ACTIVE + " = 1 "
-                + "AND " + USER_NAME + " = '" + aUserName+"'"
+                + "AND " + USER_NAME + " = '" + aUserName+"' "
                 + "ORDER BY " + CREATED_ON;
 
         Log.e(LOG, selectQuery);
@@ -450,7 +519,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 if(sBrew.getEndBrewDate().compareTo(getDateTime()) >= 0)
                     sBrewList.add(sBrew);
                 else
-                    setBrewScheduledNotActive(sBrew.getBrewName(), sBrew.getUserName());
+                    setBrewScheduledNotActive(sBrew.getBrewName(), sBrew.getUserName(), sBrew.getStartDate());
 
             } while (c.moveToNext());
         }
@@ -460,17 +529,29 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
     * Set A users Scheduled brew to not active
      */
-    public void setBrewScheduledNotActive(String aBrewName, String aUserName)
+    public void setBrewScheduledNotActive(String aBrewName, String aUserName, String aStartDate)
     {
         SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "setBrewScheduledNotActive Brew Name["+aBrewName+"] Started Date["+aStartDate+"]");
 
         ContentValues values = new ContentValues();
         values.put(ACTIVE, 0);
 
         // updating row
-        db.update(TABLE_BREWS_SCHEDULED, values, BREW_NAME + " = ? AND "+ USER_NAME +  " = ?",
-                new String[] { aBrewName, aUserName});
+        db.update(TABLE_BREWS_SCHEDULED, values, BREW_NAME + " = ? AND "+ USER_NAME +  " = ? AND "+ CREATED_ON +  " = ? ",
+                new String[] { aBrewName, aUserName, aStartDate});
+    }
 
+    /*
+* delete A users Scheduled brew
+ */
+    public void deleteBrewScheduled(String aBrewName, String aUserName, String aStartDate)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteBrewScheduled Brew Name["+aBrewName+"] Started Date["+aStartDate+"]");
+
+        db.delete(TABLE_BREWS_SCHEDULED, BREW_NAME + " = ? AND "+ USER_NAME +  " = ? AND "+ CREATED_ON +  " = ? ",
+                new String[] { aBrewName, aUserName, aStartDate});
     }
 
     //************************************Helper functions***************

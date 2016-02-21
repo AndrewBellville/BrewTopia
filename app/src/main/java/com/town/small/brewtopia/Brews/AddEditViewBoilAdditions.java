@@ -3,6 +3,7 @@ package com.town.small.brewtopia.Brews;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
+import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.R;
 
 import java.util.ArrayList;
@@ -27,10 +29,12 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
     private Button addButton;
     private Button confirmButton;
 
-    private String state;
+    private BrewActivityData.DisplayMode state;
     private BrewSchema brew;
 
     private ArrayList<BoilAddition> baArray = new ArrayList<BoilAddition>();
+
+    private DataBaseManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,10 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
         setContentView(R.layout.activity_add_edit_view_boil_additions);
         Log.e(LOG, "Entering: onCreate");
 
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle("Boil Additions");
+
+        dbManager = DataBaseManager.getInstance(getApplicationContext());
 
         addButton = (Button)findViewById(R.id.AddNewButton);
         confirmButton = (Button)findViewById(R.id.ConfirmButton);
@@ -45,31 +53,27 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
         brewData = BrewActivityData.getInstance();
         layout = (LinearLayout)findViewById(R.id.boilAdditionsLayout);
 
-        state = BrewActivityData.getInstance().getAddEditViewState();
-        brew = BrewActivityData.getInstance().getAddEditViewBrew();
-
         loadAll();
     }
 
     private void loadAll()
     {
+        state = BrewActivityData.getInstance().getAddEditViewState();
+        brew = BrewActivityData.getInstance().getAddEditViewBrew();
+        layout.removeAllViews();
+        layout.invalidate();
 
-        if(state.equals("Add"))
+        if(state == BrewActivityData.DisplayMode.ADD || state == BrewActivityData.DisplayMode.EDIT)
         {
-            BuildBoilAdditionArray(brewData.getBaArray());
+            BuildBoilAdditionArray();
 
             if(baArray.size() > 0)
             {
                 DisplayBoilAddition();
             }
             else {
-                BoilAddition ba = new BoilAddition(this);
-                layout.addView(ba.getLayout());
-                baArray.add(ba);
+                createBoilAddition();
             }
-        }
-        else if(state.equals("Edit")){
-            DisplayBrewAdditions();
         }
         else // display View
         {
@@ -83,22 +87,34 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
 
     private void DisplayBrewAdditions()
     {
-        BuildBoilAdditionArray(brew.getBoilAdditionlist());
+        BuildBoilAdditionArray();
 
         if(baArray.size() > 0)
         {
             DisplayBoilAddition();
         }
         else {
-            BoilAddition ba = new BoilAddition(this);
-            layout.addView(ba.getLayout());
-            baArray.add(ba);
+            if(!(BrewActivityData.getInstance().getAddEditViewState() == BrewActivityData.DisplayMode.VIEW))
+                createBoilAddition();
         }
     }
 
-    private void BuildBoilAdditionArray(List<BoilAdditionsSchema> baSchemaArray) {
+    private void BuildBoilAdditionArray() {
         Log.e(LOG, "Entering: BuildBoilAdditionArray");
-        for(Iterator<BoilAdditionsSchema> i = baSchemaArray.iterator(); i.hasNext();)
+
+        if(baArray.size()> 0)
+            baArray.clear();
+
+        for(Iterator<BoilAdditionsSchema> i = brew.getBoilAdditionlist().iterator(); i.hasNext();)
+        {
+            BoilAdditionsSchema baSchema = i.next();
+            BoilAddition ba = new BoilAddition(this);
+            ba.setBaSchema(baSchema);
+            ba.setDisplay();
+            baArray.add(ba);
+        }
+
+        for(Iterator<BoilAdditionsSchema> i = brewData.getBaArray().iterator(); i.hasNext();)
         {
             BoilAdditionsSchema baSchema = i.next();
             BoilAddition ba = new BoilAddition(this);
@@ -126,7 +142,20 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
         for(Iterator<BoilAddition> i = baArray.iterator(); i.hasNext();) {
             BoilAddition ba = i.next();
 
-            if(state.equals("View"))
+            // assign event handler
+            ba.setEventHandler(new BoilAddition.EventHandler() {
+                @Override
+                public void OnDeleteClickListener(String aAdditionName) {
+                    //delete boil addition
+                    dbManager.delete_boil_additions_by_brew_name_addition_name(brew.getBrewName(),aAdditionName,brew.getUserName());
+                    //update brewActivity brew
+                    BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(brew.getBrewName(),brew.getUserName()));
+                    //re-load all
+                    loadAll();
+                }
+            });
+
+            if(state == BrewActivityData.DisplayMode.VIEW)
                 ba.setEditable(false);//Set non editable
 
             layout.addView(ba.getLayout());
@@ -135,9 +164,7 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
 
     public void onAddClick(View aView) {
         Log.e(LOG, "Entering: onAddClick");
-        BoilAddition ba = new BoilAddition(this);
-        layout.addView(ba.getLayout());
-        baArray.add(ba);
+        createBoilAddition();
     }
 
     public void onConfirmClick(View aView) {
@@ -147,13 +174,8 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
             return;
         }
 
-        if(state.equals("Add")) {
-            brewData.setBaArray(ConvertToSchemaArray());
-        }
-        else //edit
-        {
+        brewData.setBaArray(ConvertToSchemaArray());
 
-        }
         this.finish();
     }
 
@@ -168,6 +190,33 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
                 return false;
         }
 
+        return true;
+    }
+
+    private void createBoilAddition()
+    {
+        BoilAddition ba = new BoilAddition(this);
+
+        // assign event handler
+        ba.setEventHandler(new BoilAddition.EventHandler() {
+            @Override
+            public void OnDeleteClickListener(String aAdditionName) {
+                //delete boil addition
+                dbManager.delete_boil_additions_by_brew_name_addition_name(brew.getBrewName(),aAdditionName,brew.getUserName());
+                //update brewActivity brew
+                BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(brew.getBrewName(),brew.getUserName()));
+                //re-load all
+                loadAll();
+            }
+        });
+
+        layout.addView(ba.getLayout());
+        baArray.add(ba);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        onBackPressed();
         return true;
     }
 }
