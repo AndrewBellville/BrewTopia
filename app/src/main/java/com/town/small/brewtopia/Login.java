@@ -42,7 +42,7 @@ public class Login extends ActionBarActivity {
 
         //TODO better verification
         //verify user record exists
-        return dbManager.DoesUserExist(userName.getText().toString(),password.getText().toString());
+        return dbManager.DoesUserLoginExist(userName.getText().toString(),password.getText().toString());
     }
 
     private boolean validateUserCreate()

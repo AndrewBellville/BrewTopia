@@ -1,6 +1,5 @@
 package com.town.small.brewtopia.Brews;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RadioButton;
-import android.widget.SimpleAdapter;
 
 import com.town.small.brewtopia.CustomListAdapter;
 import com.town.small.brewtopia.R;
@@ -25,7 +23,7 @@ public class UserBrews extends ActionBarActivity {
     private static final String LOG = "UserBrews";
 
     //intent message
-    public final static String EXTRA_MESSAGE = "com.town.small.brewtopia.Brews";
+    //public final static String EXTRA_MESSAGE = "com.town.small.brewtopia.Brews";
 
     private String userName;
     private ListView BrewListView;
@@ -99,7 +97,7 @@ public class UserBrews extends ActionBarActivity {
             Intent intent = new Intent(this, AddEditViewBrew.class);
 
             // Set the state of display if View brew cannot be null
-            BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.EDIT,dbManager.getBrew(aBrewName,userName));
+            BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.VIEW,dbManager.getBrew(aBrewName,userName));
 
             //start next activity
             startActivity(intent);

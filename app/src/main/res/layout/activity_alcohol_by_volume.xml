@@ -60,7 +60,16 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/ABVTextView"
+        android:text=""
         android:layout_above="@+id/ABVCalculateButton"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="45dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:id="@+id/ABVCalculationsTextView"
+        android:layout_above="@+id/ABVTextView"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

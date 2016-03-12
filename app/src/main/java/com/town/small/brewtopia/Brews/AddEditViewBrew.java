@@ -2,7 +2,6 @@ package com.town.small.brewtopia.Brews;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.method.KeyListener;
@@ -39,6 +38,8 @@ public class AddEditViewBrew extends ActionBarActivity {
     private TextView boilTime;
     private String  UserName;
     private ScrollView ScrollView;
+    private Spinner styleSpinner;
+    ArrayAdapter<String> styleAdapter;
 
     private KeyListener brewNameListener;
     private KeyListener primaryListener;
@@ -74,6 +75,7 @@ public class AddEditViewBrew extends ActionBarActivity {
         description = (TextView)findViewById(R.id.editTextDescription);
         boilTime = (TextView)findViewById(R.id.editTextBoilTime);
         addStartButton = (Button)findViewById(R.id.AddStartBrewButton);
+        styleSpinner = (Spinner) findViewById(R.id.beerStylespinner);
 
         brewNameListener = brewName.getKeyListener();
         primaryListener = primary.getKeyListener();
@@ -86,6 +88,8 @@ public class AddEditViewBrew extends ActionBarActivity {
 
         brewActivityDataData = BrewActivityData.getInstance();
 
+        setBrewStyleSpinner();
+
         if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD) {
             ifAdd();
             setTitle("Create");
@@ -95,17 +99,6 @@ public class AddEditViewBrew extends ActionBarActivity {
             ifView();
             setTitle(BrewActivityData.getInstance().getAddEditViewBrew().getBrewName());
         }
-
-        //TODO: Add this to db / brewSchema
-        Spinner spinner = (Spinner) findViewById(R.id.beerStylespinner);
-// Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.BeerStyles, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-
     }
 
     public void ifAdd()
@@ -136,6 +129,23 @@ public class AddEditViewBrew extends ActionBarActivity {
 
     }
 
+    private void setBrewStyleSpinner()
+    {
+        int MAX_STYLES = dbManager.getBrewStyleCount();
+        String[] brewStyles = new String[MAX_STYLES];
+        List<BrewStyleSchema> bs = dbManager.getAllBrewsStyles();
+
+        for(int i=0;i < bs.size();i++)
+        {
+            brewStyles[i]= bs.get(i).getBrewStyleName();
+        }
+        styleAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, brewStyles); //selected item will look like a spinner set from XML
+        // Specify the layout to use when the list of choices appears
+        styleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        styleSpinner.setAdapter(styleAdapter);
+    }
+
     private void DisplayBrew(BrewSchema aBrewSchema)
     {
         Log.e(LOG, "Entering: DisplayBrew");
@@ -146,6 +156,24 @@ public class AddEditViewBrew extends ActionBarActivity {
         bottle.setText(Integer.toString(aBrewSchema.getBottle()));
         description.setText(aBrewSchema.getDescription());
         boilTime.setText(Integer.toString(aBrewSchema.getBoilTime()));
+        // set to brew Style this might be deleted if its user created
+        try
+        {
+            styleSpinner.setSelection(styleAdapter.getPosition(aBrewSchema.getStyle()));
+        }
+        catch (Exception e)
+        {
+            //if we are here user must have deleted brew style try to set to None
+            try
+            {
+                styleSpinner.setSelection(styleAdapter.getPosition("None"));
+            }
+            catch (Exception ex)
+            {
+                // if all else fails set to index 0
+                styleSpinner.setSelection(0);
+            }
+        }
     }
 
 
@@ -192,10 +220,31 @@ public class AddEditViewBrew extends ActionBarActivity {
             return;
         }
 
-        int pf = Integer.parseInt(primary.getText().toString());
-        int sf = Integer.parseInt(secondary.getText().toString());
-        int bc = Integer.parseInt(bottle.getText().toString());
-        int bt = Integer.parseInt(boilTime.getText().toString());
+        int pf=0;
+        int sf=0;
+        int bc=0;
+        int bt=0;
+        try
+        {
+            pf  = Integer.parseInt(primary.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            sf = Integer.parseInt(secondary.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            bc = Integer.parseInt(bottle.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            bt = Integer.parseInt(boilTime.getText().toString());
+        }
+        catch (Exception e){}
+
 
         //Create Brew
         BrewSchema brew = new BrewSchema();
@@ -206,18 +255,16 @@ public class AddEditViewBrew extends ActionBarActivity {
         brew.setBottle(bc);
         brew.setDescription(description.getText().toString());
         brew.setBoilTime(bt);
+        brew.setStyle(styleSpinner.getSelectedItem().toString());
 
         //Add Boil additions
         brew.setBoilAdditionlist(cloneList(BrewActivityData.getInstance().getBaArray()));
         //add brew name to boil list
         brew.setListBrewName();
 
-        //remove all additions after submission
-        BrewActivityData.getInstance().getBaArray().clear();
-
         if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD)
         {
-            if(!dbManager.CreateABrew(brew))
+            if(dbManager.CreateABrew(brew) == 0)// 0 brews failed to create
             {
                 Toast.makeText(getApplicationContext(), "Duplicate Brew Name", Toast.LENGTH_LONG).show();
                 return;
@@ -228,6 +275,8 @@ public class AddEditViewBrew extends ActionBarActivity {
             dbManager.updateABrew(brew);
         }
 
+        //remove all additions after submission
+        BrewActivityData.getInstance().getBaArray().clear();
 
         this.finish();
     }
@@ -257,6 +306,17 @@ public class AddEditViewBrew extends ActionBarActivity {
         bottle.setText("");
         description.setText("");
         boilTime.setText("");
+        // set to None there should always be a None
+        try
+        {
+            styleSpinner.setSelection(styleAdapter.getPosition("None"));
+        }
+        catch (Exception e)
+        {
+            // if for some reason None doesn't exist set to index 0
+            styleSpinner.setSelection(0);
+        }
+
     }
 
     private void ToggleFieldEditable(boolean aEditable)
@@ -271,6 +331,7 @@ public class AddEditViewBrew extends ActionBarActivity {
             bottle.setKeyListener(null);
             description.setKeyListener(null);
             boilTime.setKeyListener(null);
+            styleSpinner.setClickable(false);
         }
         else
         {
@@ -282,6 +343,7 @@ public class AddEditViewBrew extends ActionBarActivity {
             bottle.setKeyListener(bottleListener);
             description.setKeyListener(descriptionListener);
             boilTime.setKeyListener(boilTimeListener);
+            styleSpinner.setClickable(true);
         }
     }
 

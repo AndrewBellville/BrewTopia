@@ -22,7 +22,7 @@ import java.util.Locale;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 8;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 11;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -31,6 +31,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     // Table Names
     private static final String TABLE_USERS = "Users";
     private static final String TABLE_BREWS = "Brews";
+    private static final String TABLE_BREWS_STYLES = "BrewsStyles";
     private static final String TABLE_BOIL_ADDITIONS = "BoilAdditions";
     private static final String TABLE_BREWS_SCHEDULED = "BrewsScheduled";
 
@@ -49,6 +50,10 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String SECONDARY = "Secondary";
     private static final String BOTTLE = "Bottle";
     private static final String DESCRIPTION = "Description";
+    private static final String STYLE = "Style";
+
+    // TABLE_BREWS_STYLES column names
+    private static final String STYLE_NAME = "StyleName";
 
     // BOIL_ADDITIONS column names
     private static final String ADDITION_NAME = "AdditionName";
@@ -69,7 +74,12 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_BREWS
     private static final String CREATE_TABLE_BREWS = "CREATE TABLE "
             + TABLE_BREWS + "(" + BREW_NAME + " TEXT," + USER_NAME + " TEXT," + BOIL_TIME + " INTEGER," + PRIMARY + " INTEGER," + SECONDARY + " INTEGER," + BOTTLE + " INTEGER,"
-            + DESCRIPTION + " TEXT," + CREATED_ON + " DATETIME, PRIMARY KEY ("+ BREW_NAME +", "+ USER_NAME +" ) )";
+            + DESCRIPTION + " TEXT," + STYLE + " TEXT," + CREATED_ON + " DATETIME, PRIMARY KEY ("+ BREW_NAME +", "+ USER_NAME +" ) )";
+
+    //CREATE_TABLE_BREWS_STYLES
+    private static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
+            + TABLE_BREWS_STYLES + "(" + STYLE_NAME + " TEXT," + USER_NAME + " TEXT, PRIMARY KEY ("+ STYLE_NAME +", "+ USER_NAME +" ) )";
+
 
     //CREATE_TABLE_BOIL_ADDITIONS
     private static final String CREATE_TABLE_BOIL_ADDITIONS = "CREATE TABLE "
@@ -101,8 +111,13 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Log.e(LOG, "Entering: onCreate");
         aSQLiteDatabase.execSQL(CREATE_TABLE_USERS);
         aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS);
+        aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS_STYLES);
         aSQLiteDatabase.execSQL(CREATE_TABLE_BOIL_ADDITIONS);
         aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS_SCHEDULED);
+
+        //Pre Load Data
+        PreLoadAdminUser(aSQLiteDatabase);
+        PreLoadBrewStyles(aSQLiteDatabase);
     }
 
     @Override
@@ -111,6 +126,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Log.e(LOG, "Entering: onUpgrade OldVersion["+aOldVersion+"] NewVersion["+aNewVersion+"]");
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS);
+        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_STYLES);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BOIL_ADDITIONS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_SCHEDULED);
 
@@ -125,6 +141,36 @@ public class DataBaseManager extends SQLiteOpenHelper {
             db.close();
     }
 
+    private void PreLoadAdminUser(SQLiteDatabase aSQLiteDatabase)
+    {
+        SQLiteDatabase db = aSQLiteDatabase;
+
+        ContentValues values = new ContentValues();
+        values.put(USER_NAME, "ADMIN");
+        values.put(PASSWORD, "");
+        values.put(CREATED_ON, getDateTime());
+
+        db.insert(TABLE_USERS,null,values);
+
+    }
+    private void PreLoadBrewStyles(SQLiteDatabase aSQLiteDatabase)
+    {
+        SQLiteDatabase db = aSQLiteDatabase;
+        String[] brewStylesPreLoad = new String[] {"None", "Amber", "Blonde", "Brown",
+                                                   "Cream", "Dark", "Fruit", "Golden",
+                                                   "Honey", "India Pale Ale", "Wheat", "Red",
+                                                   "Pilsner","Pale", "Light"};
+
+        for(String brewStyle : brewStylesPreLoad)
+        {
+            ContentValues values = new ContentValues();
+            values.put(STYLE_NAME, brewStyle);
+            values.put(USER_NAME, "ADMIN");
+
+            db.insert(TABLE_BREWS_STYLES,null,values);
+        }
+    }
+
     //******************************User Table function*********************************
 
     /*
@@ -132,6 +178,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
     */
     public boolean CreateAUser(UserSchema aUser) {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        if(DoesUserExist(aUser.getUserName()))
+            return false;
 
         ContentValues values = new ContentValues();
         values.put(USER_NAME, aUser.getUserName());
@@ -169,9 +218,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
     }
 
     /*
-    * Return true if user exists
+    * Return true if user login exists
     */
-    public boolean DoesUserExist(String aUserName, String aPassword) {
+    public boolean DoesUserLoginExist(String aUserName, String aPassword) {
         SQLiteDatabase db = this.getReadableDatabase();
         boolean retVal = false;
 
@@ -191,11 +240,33 @@ public class DataBaseManager extends SQLiteOpenHelper {
         return retVal;
     }
 
+    /*
+* Return true if user exists
+*/
+    public boolean DoesUserExist(String aUserName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        boolean retVal = false;
+
+        String selectQuery = "SELECT  * FROM " + TABLE_USERS + " WHERE "
+                + USER_NAME + " = '" + aUserName + "'";
+
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // record found return true
+        if (c.getCount() > 0)
+            retVal = true;
+
+        c.close();
+        return retVal;
+    }
+
     //******************************Brews Table function*********************************
     /*
     * Creating a Brew
     */
-    public boolean CreateABrew(BrewSchema aBrew) {
+    public int CreateABrew(BrewSchema aBrew) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         Log.e(LOG, "Insert: Brew["+aBrew.getBrewName()+"]");
@@ -208,16 +279,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(SECONDARY, aBrew.getSecondary());
         values.put(BOTTLE, aBrew.getBottle());
         values.put(DESCRIPTION, aBrew.getDescription());
+        values.put(STYLE, aBrew.getStyle());
         values.put(CREATED_ON, getDateTime());
 
         //Add brew
         if(!(db.insert(TABLE_BREWS,null,values) > 0) )
-            return false;
+            return 0; // 0 nothing created
         //Add Boil Additions
         if(!(add_all_boil_additions(aBrew.getBoilAdditionlist())))
-            return false;
+            return 1;// 1 brews created
 
-        return true;
+        return 2; // 2 both created
     }
 
 
@@ -245,6 +317,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         brew.setSecondary((c.getInt(c.getColumnIndex(SECONDARY))));
         brew.setBottle((c.getInt(c.getColumnIndex(BOTTLE))));
         brew.setDescription((c.getString(c.getColumnIndex(DESCRIPTION))));
+        brew.setStyle((c.getString(c.getColumnIndex(STYLE))));
         brew.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
 
         //set boil additions
@@ -280,6 +353,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 brewSchema.setSecondary(c.getInt(c.getColumnIndex(SECONDARY)));
                 brewSchema.setBottle(c.getInt(c.getColumnIndex(BOTTLE)));
                 brewSchema.setDescription(c.getString(c.getColumnIndex(DESCRIPTION)));
+                brewSchema.setStyle(c.getString(c.getColumnIndex(STYLE)));
                 brewSchema.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
 
                 // adding to brewList
@@ -306,6 +380,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(SECONDARY, aBrew.getSecondary());
         values.put(BOTTLE, aBrew.getBottle());
         values.put(DESCRIPTION, aBrew.getDescription());
+        values.put(STYLE, aBrew.getStyle());
         //values.put(CREATED_ON, getDateTime());
 
         // updating row
@@ -334,6 +409,70 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         //Delete all additions for this brew name
         delete_all_boil_additions_by_brew_name(aBrewName,aUserName);
+    }
+
+    //******************************Brews Style Table function*********************************
+    /*
+    * Creating a Brew styles
+    */
+    public Boolean CreateABrewStyle(BrewStyleSchema aBrewStyle) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Log.e(LOG, "Insert: Brew Style["+aBrewStyle.getBrewStyleName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(STYLE_NAME, aBrewStyle.getBrewStyleName());
+        values.put(USER_NAME, aBrewStyle.getUserName());
+
+        //Add brew style
+        if(!(db.insert(TABLE_BREWS_STYLES,null,values) > 0) )
+            return false;
+
+        return true;
+    }
+
+    /*
+* getting all Brews styles
+*/
+    public List<BrewStyleSchema> getAllBrewsStyles() {
+        List<BrewStyleSchema> brewStyleList = new ArrayList<BrewStyleSchema>();
+        String selectQuery = "SELECT  * FROM " + TABLE_BREWS_STYLES ;
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllBrewsStyles Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                BrewStyleSchema brewStyleSchema = new BrewStyleSchema();
+                //brewSchema.setId((c.getInt(c.getColumnIndex(ROW_ID))));
+                brewStyleSchema.setBrewStyleName(c.getString(c.getColumnIndex(STYLE_NAME)));
+                brewStyleSchema.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
+
+                // adding to brewStyleList
+                brewStyleList.add(brewStyleSchema);
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return brewStyleList;
+    }
+    /*
+* getting all Brews styles count
+*/
+    public int getBrewStyleCount(){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + TABLE_BREWS_STYLES ;
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        int cnt = cursor.getCount();
+        cursor.close();
+
+        return cnt;
     }
 
     //********************Boil Additions Table function*************

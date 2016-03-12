@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.town.small.brewtopia.R;
 
+import java.math.BigDecimal;
+
 public class AlcoholByVolume extends ActionBarActivity {
 
     // Log cat tag
@@ -21,6 +23,7 @@ public class AlcoholByVolume extends ActionBarActivity {
     private EditText OG;
     private EditText FG;
     private TextView ABV;
+    private TextView CalcABV;
 
 
     @Override
@@ -35,6 +38,7 @@ public class AlcoholByVolume extends ActionBarActivity {
         OG = (EditText)findViewById(R.id.OGeditText);
         FG = (EditText)findViewById(R.id.FGeditText);
         ABV = (TextView)findViewById(R.id.ABVTextView);
+        CalcABV = (TextView)findViewById(R.id.ABVCalculationsTextView);
         CalculateButton = (Button)findViewById(R.id.ABVCalculateButton);
     }
 
@@ -44,7 +48,19 @@ public class AlcoholByVolume extends ActionBarActivity {
         double fg = Double.parseDouble(FG.getText().toString());
         double abv = (og - fg)/.75;
 
-        ABV.setText(Double.toString(abv));
+        //Calculation
+        Double truncatedDouble = new BigDecimal(Double.toString(abv))
+                .setScale(4, BigDecimal.ROUND_HALF_UP)
+                .doubleValue();
+
+        CalcABV.setText(truncatedDouble.toString());
+
+        //Percent
+        truncatedDouble = new BigDecimal(Double.toString(abv*100))
+                .setScale(1, BigDecimal.ROUND_HALF_UP)
+                .doubleValue();
+
+        ABV.setText(truncatedDouble.toString() + " %");
     }
 
     @Override
