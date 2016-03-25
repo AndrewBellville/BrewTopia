@@ -26,6 +26,7 @@ public class BrewTimer extends ActionBarActivity {
     private TextView addition;
     private TextView brewName;
     private Button AckButton;
+    private Button StartStopButton;
 
     private TimerData td;
     private boolean isBackground = false;
@@ -39,6 +40,9 @@ public class BrewTimer extends ActionBarActivity {
         brewTimer = (TextView)findViewById(R.id.BrewTimeTextView);
         addition = (TextView)findViewById(R.id.AdditionTextView);
         brewName = (TextView)findViewById(R.id.TimerBrewNametextView);
+
+        StartStopButton = (Button)findViewById(R.id.StartStopButton);
+        StartStopButton.setText("Start");
 
         AckButton = (Button)findViewById(R.id.AcknowledgeButton);
         AckButton.setVisibility(View.INVISIBLE);
@@ -59,7 +63,8 @@ public class BrewTimer extends ActionBarActivity {
                 TimerFinished();
             }
         });
-        td.startTimer(getApplicationContext());
+
+        td.setStartTimeDisplay();
     }
 
     @Override
@@ -72,6 +77,7 @@ public class BrewTimer extends ActionBarActivity {
     public void onResume() {
         super.onResume();  // Always call the superclass method first
         isBackground= false;
+        SetStartStopButtonText();
     }
 
     private void CheckForBackground()
@@ -89,10 +95,29 @@ public class BrewTimer extends ActionBarActivity {
         AckButton.setVisibility(View.INVISIBLE);
     }
 
-    public void StopTimerClick(View aView)
+    public void StartStopTimerClick(View aView)
     {
-        td.StopTimer();
-        this.finish();
+        if(td.isTimerActive())
+        {
+            td.StopTimer();
+            this.finish();
+        }
+        else
+        {
+            td.startTimer(getApplicationContext());
+            SetStartStopButtonText();
+        }
+    }
+
+    private void SetStartStopButtonText()
+    {
+        if(td.isTimerActive())
+        {
+            StartStopButton.setText("Stop");
+        }
+        else{
+            StartStopButton.setText("Start");
+        }
     }
 
      //TODO: IF WANTED

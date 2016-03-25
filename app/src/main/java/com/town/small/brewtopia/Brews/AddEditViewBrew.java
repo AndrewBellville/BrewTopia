@@ -184,11 +184,6 @@ public class AddEditViewBrew extends ActionBarActivity {
             //If we have an active timer we dont want to create a new one
             if(!(TimerData.getInstance().isTimerActive()))
             {
-                //Create Schedule for Brew
-                ScheduledBrewSchema sBrew = new ScheduledBrewSchema(brewName.getText().toString(), UserName);
-                sBrew.SetScheduledDates(Integer.parseInt(primary.getText().toString()), Integer.parseInt(secondary.getText().toString()), Integer.parseInt(bottle.getText().toString()));
-                dbManager.CreateAScheduledBrew(sBrew);
-
                 //Set Brew into TimerData
                 TimerData.getInstance().setTimerData(dbManager.getBrew(brewName.getText().toString(), UserName));
             }

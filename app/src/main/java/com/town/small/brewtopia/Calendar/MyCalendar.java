@@ -332,7 +332,7 @@ public class MyCalendar extends LinearLayout
             {
                 for (ScheduledBrewSchema eventDate : listEventDays)
                 {
-                    //TODO: Need to handle multiple events on the same day (Color change) and handle day press and ability to remove a schedule
+                    //TODO: Need to handle multiple events on the same day (Color change)
                     if (DateHasEvent(date,eventDate))
                     {
                         // mark this day for event

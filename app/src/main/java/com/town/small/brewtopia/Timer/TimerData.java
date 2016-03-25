@@ -57,15 +57,30 @@ public class TimerData {
         brew = aBrewSchema;
 
         totalTime = brew.getBoilTime()*60000;
+
+        //Clear list
+        if (cloneAdditionsList.size() > 0)
+            cloneAdditionsList.clear();
+
         //set ordered list largest to smallest time
         cloneAdditionsList.addAll(brew.getBoilAdditionlist());
         setAdditionsList(cloneAdditionsList);
+    }
+
+    public void setStartTimeDisplay()
+    {
+        if( (!(eventHandler == null)) && (!isTimerActive()))
+            eventHandler.onTimerTick(totalTime, null);
     }
 
     private void setAdditionsList(List<BoilAdditionsSchema> list)
     {
         int largest = 0;
         int largestLocation = 0;
+
+        //clear list
+        if(additionsList.size() >  0)
+            additionsList.clear();
 
         while(!list.isEmpty())
         {
@@ -91,9 +106,12 @@ public class TimerData {
 
     public void startTimer(Context context)
     {
-        //If the time is not set to null then it is currently  active and we don't want to restart it
+        //If the time is  active and we don't want to restart it
         if(timerActive == true)
             return;
+
+        //Once timer starts create a Schedule
+        createSchedule(context);
 
         //Set Alarm Manager
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
@@ -115,7 +133,7 @@ public class TimerData {
             public void onTick(long millisUntilFinished) {
                 millisRemaining = millisUntilFinished;//save if we want a pause feature
 
-                if(nextAddition.getAdditionTime()*60000 >= millisUntilFinished && !allAdditionsComplete)
+                if( (!(nextAddition== null)) && nextAddition.getAdditionTime()*60000 >= millisUntilFinished && !allAdditionsComplete)
                 {
                     nextAdditionIterator++;
                     if(nextAdditionIterator < getAdditionsList().size())
@@ -141,6 +159,14 @@ public class TimerData {
                     eventHandler.onTimerFinish();
             }
         }.start();
+    }
+
+    private void createSchedule(Context context)
+    {
+        //Create Schedule for Brew
+        ScheduledBrewSchema sBrew = new ScheduledBrewSchema(brew.getBrewName(), CurrentUser.getInstance().getUser().getUserName());
+        sBrew.SetScheduledDates(brew.getPrimary(), brew.getSecondary(), brew.getBottle());
+        DataBaseManager.getInstance(context).CreateAScheduledBrew(sBrew);
     }
 
     public void FireAlarm()

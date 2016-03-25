@@ -11,6 +11,8 @@ import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
 
 import com.town.small.brewtopia.Calculations.AlcoholByVolume;
+import com.town.small.brewtopia.Calculations.BrixCalculations;
+import com.town.small.brewtopia.Calculations.SpecificGravity;
 import com.town.small.brewtopia.R;
 
 import java.lang.reflect.Array;
@@ -27,7 +29,7 @@ public class UserCalculations extends ActionBarActivity {
     //intent message
     public final static String EXTRA_MESSAGE = "com.town.small.brewtopia.Brews";
 
-    private List<CalculationsSchema> Calculations = new ArrayList<CalculationsSchema>();
+    private List<CalculationsSchema> Calculations;
 
     private String userName;
     private ListView CalculationsListView;
@@ -54,7 +56,7 @@ public class UserCalculations extends ActionBarActivity {
         });
         dbManager = DataBaseManager.getInstance(getApplicationContext());
 
-        GenerateCalculations(); //TODO: remove once DB is set up
+        Calculations = dbManager.getAllCalculations();
         LoadCalculations();
     }
 
@@ -62,21 +64,7 @@ public class UserCalculations extends ActionBarActivity {
     protected void onResume(){
         super.onResume();
         Log.e(LOG, "Entering: onResume");
-        GenerateCalculations();//TODO: remove once DB is set up
         LoadCalculations();
-    }
-
-    private void GenerateCalculations()
-    {
-        Log.e(LOG, "Entering: GenerateCalculations");
-        if(Calculations.size() == 0)
-        {
-            CalculationsSchema temp = new CalculationsSchema();
-            temp.setCalculationAbv("ABV");
-            temp.setCalculationName("Alcohol by volume");
-
-            Calculations.add(temp);
-        }
     }
 
     private void LoadCalculations() {
@@ -112,6 +100,14 @@ public class UserCalculations extends ActionBarActivity {
         Intent intent;
         if(selectedRow.get("text1").equals("ABV")) {
             intent = new Intent(this, AlcoholByVolume.class);
+            startActivity(intent);
+        }
+        else if(selectedRow.get("text1").equals("BRIX")){
+            intent = new Intent(this, BrixCalculations.class);
+            startActivity(intent);
+        }
+        else if(selectedRow.get("text1").equals("SG")){
+            intent = new Intent(this, SpecificGravity.class);
             startActivity(intent);
         }
     }

@@ -46,4 +46,7 @@
         <item>Light</item>
     </string-array>
 
+    <string name="title_activity_brix_calculations">BrixCalculations</string>
+    <string name="title_activity_specific_gravity">SpecificGravity</string>
+
 </resources>

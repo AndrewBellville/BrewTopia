@@ -22,7 +22,7 @@ import java.util.Locale;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 11;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 15;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -34,6 +34,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String TABLE_BREWS_STYLES = "BrewsStyles";
     private static final String TABLE_BOIL_ADDITIONS = "BoilAdditions";
     private static final String TABLE_BREWS_SCHEDULED = "BrewsScheduled";
+    private static final String TABLE_BREWS_CALCULATIONS = "Calculations";
 
     // Common column names across both tables
     private static final String ROW_ID = "rowid";
@@ -60,10 +61,14 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String ADDITION_TIME = "AdditionTime";
 
     // BREWS_SCHEDULED column names
-    private static final String SECONDARYALERTDATE = "SecondaryAlertDate";
-    private static final String BOTTLEALERTDATE = "BottleAlertDate";
-    private static final String ENDBREWDATE = "EndBrewDate";
+    private static final String SECONDARY_ALERT_DATE = "SecondaryAlertDate";
+    private static final String BOTTLE_ALERT_DATE = "BottleAlertDate";
+    private static final String END_BREW_DATE = "EndBrewDate";
     private static final String ACTIVE = "Active";
+
+    // TABLE_BREWS_CALCULATIONS column names
+    private static final String CALCULATION_ABV = "CalculationAbv";
+    private static final String CALCULATION_NAME = "CalculationName";
 
     // Table Create Statements
     //CREATE_TABLE_USERS
@@ -80,15 +85,18 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
             + TABLE_BREWS_STYLES + "(" + STYLE_NAME + " TEXT," + USER_NAME + " TEXT, PRIMARY KEY ("+ STYLE_NAME +", "+ USER_NAME +" ) )";
 
-
     //CREATE_TABLE_BOIL_ADDITIONS
     private static final String CREATE_TABLE_BOIL_ADDITIONS = "CREATE TABLE "
             + TABLE_BOIL_ADDITIONS + "(" + BREW_NAME + " TEXT," + USER_NAME + " TEXT," + ADDITION_NAME + " TEXT," + ADDITION_TIME + " INTEGER, PRIMARY KEY ("+ BREW_NAME +", "+ ADDITION_NAME +", "+ USER_NAME +" ) )";
 
     //CREATE_TABLE_BREWS_SCHEDULED
     private static final String CREATE_TABLE_BREWS_SCHEDULED = "CREATE TABLE "
-            + TABLE_BREWS_SCHEDULED + "(" + BREW_NAME + " TEXT," + USER_NAME + " TEXT," + CREATED_ON + " DATETIME," + SECONDARYALERTDATE + " DATETIME," + BOTTLEALERTDATE + " DATETIME,"
-            + ENDBREWDATE + " DATETIME," +  ACTIVE + " INTEGER )";
+            + TABLE_BREWS_SCHEDULED + "(" + BREW_NAME + " TEXT," + USER_NAME + " TEXT," + CREATED_ON + " DATETIME," + SECONDARY_ALERT_DATE + " DATETIME," + BOTTLE_ALERT_DATE + " DATETIME,"
+            + END_BREW_DATE + " DATETIME," +  ACTIVE + " INTEGER )";
+
+    //CREATE_TABLE_BREWS_CALCULATIONS
+    private static final String CREATE_TABLE_BREWS_CALCULATIONS = "CREATE TABLE "
+            + TABLE_BREWS_CALCULATIONS + "(" + CALCULATION_ABV + " TEXT," + CALCULATION_NAME + " TEXT, PRIMARY KEY ("+ CALCULATION_ABV +", "+ CALCULATION_NAME +" ) )";
 
 
     //Singleton
@@ -114,10 +122,12 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS_STYLES);
         aSQLiteDatabase.execSQL(CREATE_TABLE_BOIL_ADDITIONS);
         aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS_SCHEDULED);
+        aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS_CALCULATIONS);
 
         //Pre Load Data
         PreLoadAdminUser(aSQLiteDatabase);
         PreLoadBrewStyles(aSQLiteDatabase);
+        PreLoadCalculations(aSQLiteDatabase);
     }
 
     @Override
@@ -129,6 +139,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_STYLES);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BOIL_ADDITIONS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_SCHEDULED);
+        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_CALCULATIONS);
 
         // create new tables
         onCreate(aSQLiteDatabase);
@@ -169,6 +180,26 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
             db.insert(TABLE_BREWS_STYLES,null,values);
         }
+    }
+    private void PreLoadCalculations(SQLiteDatabase aSQLiteDatabase)
+    {
+        SQLiteDatabase db = aSQLiteDatabase;
+
+        ContentValues values = new ContentValues();
+        values.put(CALCULATION_ABV, "ABV");
+        values.put(CALCULATION_NAME, "Alcohol by volume");
+        db.insert(TABLE_BREWS_CALCULATIONS,null,values);
+
+        values = new ContentValues();
+        values.put(CALCULATION_ABV, "BRIX");
+        values.put(CALCULATION_NAME, "Brix Calculations");
+        db.insert(TABLE_BREWS_CALCULATIONS,null,values);
+
+        values = new ContentValues();
+        values.put(CALCULATION_ABV, "SG");
+        values.put(CALCULATION_NAME, "Specific Gravity");
+        db.insert(TABLE_BREWS_CALCULATIONS,null,values);
+
     }
 
     //******************************User Table function*********************************
@@ -611,9 +642,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(BREW_NAME, aSBrew.getBrewName());
         values.put(USER_NAME, aSBrew.getUserName());
         values.put(CREATED_ON, getDateTime());//start date
-        values.put(SECONDARYALERTDATE, aSBrew.getAlertSecondaryDate());
-        values.put(BOTTLEALERTDATE, aSBrew.getAlertBottleDate());
-        values.put(ENDBREWDATE, aSBrew.getEndBrewDate());
+        values.put(SECONDARY_ALERT_DATE, aSBrew.getAlertSecondaryDate());
+        values.put(BOTTLE_ALERT_DATE, aSBrew.getAlertBottleDate());
+        values.put(END_BREW_DATE, aSBrew.getEndBrewDate());
         values.put(ACTIVE, aSBrew.getActive());
 
         //Add ScheduledBrew
@@ -647,12 +678,10 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 sBrew.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
                 sBrew.setBrewName(c.getString(c.getColumnIndex(BREW_NAME)));
                 sBrew.setStartDate(c.getString(c.getColumnIndex(CREATED_ON)));
-                sBrew.setAlertSecondaryDate(c.getString(c.getColumnIndex(SECONDARYALERTDATE)));
-                sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLEALERTDATE)));
-                sBrew.setEndBrewDate((c.getString(c.getColumnIndex(ENDBREWDATE))));
+                sBrew.setAlertSecondaryDate(c.getString(c.getColumnIndex(SECONDARY_ALERT_DATE)));
+                sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
+                sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
                 sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
-                Log.e(LOG, Integer.toString(sBrew.getEndBrewDate().compareTo(getDateTime())));
-                Log.e(LOG, Integer.toString(getDateTime().compareTo(sBrew.getEndBrewDate())));
 
                 // adding to Scheduled list if still active else set not active
                 if(sBrew.getEndBrewDate().compareTo(getDateTime()) >= 0)
@@ -691,6 +720,36 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         db.delete(TABLE_BREWS_SCHEDULED, BREW_NAME + " = ? AND "+ USER_NAME +  " = ? AND "+ CREATED_ON +  " = ? ",
                 new String[] { aBrewName, aUserName, aStartDate});
+    }
+
+    //************************************Calculations Table functions***************
+            /*
+* getting all Calculations
+*/
+    public List<CalculationsSchema> getAllCalculations() {
+        List<CalculationsSchema> calcList = new ArrayList<CalculationsSchema>();
+        String selectQuery = "SELECT * FROM " + TABLE_BREWS_CALCULATIONS;
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllCalculations Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                CalculationsSchema cSchema = new CalculationsSchema();
+                cSchema.setCalculationAbv(c.getString(c.getColumnIndex(CALCULATION_ABV)));
+                cSchema.setCalculationName(c.getString(c.getColumnIndex(CALCULATION_NAME)));
+
+                // adding to boilList
+                calcList.add(cSchema);
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return calcList;
     }
 
     //************************************Helper functions***************

@@ -7,11 +7,11 @@
         android:icon="@drawable/beer"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:windowSoftInputMode="adjustPan">
+        android:windowSoftInputMode="adjustPan" >
         <activity
             android:name=".Login"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,6 +53,14 @@
         <activity
             android:name=".Calculations.AlcoholByVolume"
             android:label="@string/title_activity_alcohol_by_volume" >
+        </activity>
+        <activity
+            android:name=".Calculations.BrixCalculations"
+            android:label="@string/title_activity_brix_calculations" >
+        </activity>
+        <activity
+            android:name=".Calculations.SpecificGravity"
+            android:label="@string/title_activity_specific_gravity" >
         </activity>
     </application>
 
