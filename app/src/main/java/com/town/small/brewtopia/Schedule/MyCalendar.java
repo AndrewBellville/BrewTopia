@@ -1,11 +1,10 @@
 
-package com.town.small.brewtopia.Calendar;
+package com.town.small.brewtopia.Schedule;
 
         import android.content.Context;
         import android.content.res.TypedArray;
         import android.graphics.Color;
         import android.graphics.Typeface;
-        import android.provider.CalendarContract;
         import android.util.AttributeSet;
         import android.util.Log;
         import android.view.LayoutInflater;
@@ -18,8 +17,6 @@ package com.town.small.brewtopia.Calendar;
         import android.widget.LinearLayout;
         import android.widget.TextView;
 
-        import com.town.small.brewtopia.DataClass.CurrentUser;
-        import com.town.small.brewtopia.DataClass.DataBaseManager;
         import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
         import com.town.small.brewtopia.R;
 
@@ -327,6 +324,7 @@ public class MyCalendar extends LinearLayout
                 }
             }
 
+            //TODO: BUG HERE FOR  ADDING EVENTS PAST CURRENT MONTH
             //Update based on list
             if(listEventDays != null)
             {

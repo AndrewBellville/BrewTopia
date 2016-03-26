@@ -1,27 +1,26 @@
 package com.town.small.brewtopia;
 
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
-import com.town.small.brewtopia.Calendar.MyCalendar;
+import com.town.small.brewtopia.Schedule.AddEditViewSchedule;
+import com.town.small.brewtopia.Schedule.MyCalendar;
 import com.town.small.brewtopia.DataClass.*;
+import com.town.small.brewtopia.Schedule.ScheduleActivityData;
 
 public class UserSchedule extends ActionBarActivity {
 
@@ -72,7 +71,8 @@ public class UserSchedule extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                //BrewSelect(position);
+                HashMap<String,String> selectedRow = list.get(position);
+                ScheduleSelect(selectedRow);
             }
         });
 
@@ -127,6 +127,17 @@ public class UserSchedule extends ActionBarActivity {
 
             ScheduledBrewListView.setAdapter(adapter);
         }
+    }
+
+    private void ScheduleSelect(HashMap<String,String> selectedSchedule)
+    {
+        Intent intent = new Intent(this, AddEditViewSchedule.class);
+
+        //Set what Schedule was selected before we load Schedule Activity
+        ScheduleActivityData.getInstance().setScheduledBrewSchema(dbManager.getActiveScheduledBrewByNameDate(selectedSchedule.get("text1"), userName, selectedSchedule.get("text2")));
+
+        //start next activity
+        startActivity(intent);
     }
 
     private boolean DateHasEvent(Date d, ScheduledBrewSchema sBrew)

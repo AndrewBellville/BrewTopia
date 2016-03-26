@@ -20,6 +20,7 @@ import com.town.small.brewtopia.R;
 import com.town.small.brewtopia.DataClass.*;
 import com.town.small.brewtopia.Timer.BrewTimer;
 import com.town.small.brewtopia.Timer.TimerData;
+import com.town.small.brewtopia.Timer.TimerPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -189,7 +190,7 @@ public class AddEditViewBrew extends ActionBarActivity {
             }
 
             //Create and intent which will open Timer Activity
-            Intent intent = new Intent(this, BrewTimer.class);
+            Intent intent = new Intent(this, TimerPager.class);
 
             //start next activity
             startActivity(intent);

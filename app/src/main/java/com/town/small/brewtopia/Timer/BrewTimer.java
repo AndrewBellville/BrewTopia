@@ -1,22 +1,19 @@
 package com.town.small.brewtopia.Timer;
 
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.CountDownTimer;
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.NumberPicker;
-import android.widget.TextView;
 
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.town.small.brewtopia.R;
 
-public class BrewTimer extends ActionBarActivity {
+public class BrewTimer extends Fragment {
 
     long hours;
     long min;
@@ -31,21 +28,37 @@ public class BrewTimer extends ActionBarActivity {
     private TimerData td;
     private boolean isBackground = false;
 
+    private Context context;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_brew_timer);
-        getActionBar().hide();
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        brewTimer = (TextView)findViewById(R.id.BrewTimeTextView);
-        addition = (TextView)findViewById(R.id.AdditionTextView);
-        brewName = (TextView)findViewById(R.id.TimerBrewNametextView);
+        View view = inflater.inflate(R.layout.activity_brew_timer, container, false);
 
-        StartStopButton = (Button)findViewById(R.id.StartStopButton);
+        brewTimer = (TextView) view.findViewById(R.id.BrewTimeTextView);
+        addition = (TextView) view.findViewById(R.id.AdditionTextView);
+        brewName = (TextView) view.findViewById(R.id.TimerBrewNametextView);
+
+        StartStopButton = (Button) view.findViewById(R.id.StartStopButton);
+        StartStopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                StartStopTimerClick(view);
+            }
+        });
+
         StartStopButton.setText("Start");
 
-        AckButton = (Button)findViewById(R.id.AcknowledgeButton);
+        AckButton = (Button) view.findViewById(R.id.AcknowledgeButton);
         AckButton.setVisibility(View.INVISIBLE);
+        AckButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onAckClick(view);
+            }
+        });
 
         addition.setText("");
 
@@ -65,6 +78,9 @@ public class BrewTimer extends ActionBarActivity {
         });
 
         td.setStartTimeDisplay();
+
+        context = getActivity();
+        return view;
     }
 
     @Override
@@ -82,10 +98,15 @@ public class BrewTimer extends ActionBarActivity {
 
     private void CheckForBackground()
     {
+        //TODO:  DOESN'T WORK TO RE-OPEN TIMER IF CLOSE
         if(isBackground)
         {
-            this.finish();
-            startActivity(getIntent());
+            try{
+                getActivity().finish();
+                Intent intent = new Intent(context, TimerPager.class);
+                startActivity(intent);
+            }
+            catch (Exception e){}
         }
     }
 
@@ -100,11 +121,11 @@ public class BrewTimer extends ActionBarActivity {
         if(td.isTimerActive())
         {
             td.StopTimer();
-            this.finish();
+            getActivity().finish();
         }
         else
         {
-            td.startTimer(getApplicationContext());
+            td.startTimer(getActivity());
             SetStartStopButtonText();
         }
     }

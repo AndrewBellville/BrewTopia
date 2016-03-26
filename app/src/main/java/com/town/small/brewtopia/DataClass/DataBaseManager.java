@@ -653,7 +653,35 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         return true;
     }
+    /*
+* Get Active Scheduled Brew by name and date
+*/
+    public ScheduledBrewSchema getActiveScheduledBrewByNameDate(String aBrewName, String aUserName, String aStartDate) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT  * FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
+                + ACTIVE + " = 1 "
+                + "AND " + BREW_NAME + " = '" + aBrewName +"' "
+                + "AND " + USER_NAME + " = '" + aUserName +"' "
+                + "AND " + CREATED_ON + " = '" + aStartDate +"'";
 
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        ScheduledBrewSchema sBrew = new ScheduledBrewSchema();
+        if (c != null) {
+            c.moveToFirst();
+            sBrew.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
+            sBrew.setBrewName(c.getString(c.getColumnIndex(BREW_NAME)));
+            sBrew.setStartDate(c.getString(c.getColumnIndex(CREATED_ON)));
+            sBrew.setAlertSecondaryDate(c.getString(c.getColumnIndex(SECONDARY_ALERT_DATE)));
+            sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
+            sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
+            sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
+        }
+        c.close();
+        return sBrew;
+    }
 
     /*
 * Get All Active Scheduled Brews

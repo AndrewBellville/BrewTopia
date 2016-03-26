@@ -121,7 +121,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="v0.0.0.1"
-        android:id="@+id/textView"
+        android:id="@+id/ScheduleBNameLabeltextView"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 

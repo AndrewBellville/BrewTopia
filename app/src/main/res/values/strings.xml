@@ -24,7 +24,7 @@
     <string name="title_activity_add_edit_view_brew">AddEditViewBrew</string>
     <string name="title_activity_boil_additions">BoilAdditions</string>
     <string name="title_activity_add_edit_view_boil_additions">AddEditViewBoilAdditions</string>
-    <string name="title_activity_brew_timer">BrewTimer</string>
+    <string name="title_activity_brew_timer_pager">TimerPager</string>
     <string name="title_activity_user_calculations">UserCalculations</string>
     <string name="title_activity_alcohol_by_volume">AlcoholByVolume</string>
 
@@ -48,5 +48,7 @@
 
     <string name="title_activity_brix_calculations">BrixCalculations</string>
     <string name="title_activity_specific_gravity">SpecificGravity</string>
+    <string name="title_activity_add_edit_view_schedule">AddEditViewSchedule</string>
+    <string name="title_activity_timer_boil_additions">TimerBoilAdditions</string>
 
 </resources>

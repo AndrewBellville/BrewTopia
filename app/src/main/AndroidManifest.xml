@@ -43,8 +43,8 @@
             android:label="@string/title_activity_add_edit_view_boil_additions" >
         </activity>
         <activity
-            android:name=".Timer.BrewTimer"
-            android:label="@string/title_activity_brew_timer" >
+            android:name=".Timer.TimerPager"
+            android:label="@string/title_activity_brew_timer_pager" >
         </activity>
         <activity
             android:name=".UserCalculations"
@@ -61,6 +61,14 @@
         <activity
             android:name=".Calculations.SpecificGravity"
             android:label="@string/title_activity_specific_gravity" >
+        </activity>
+        <activity
+            android:name=".Schedule.AddEditViewSchedule"
+            android:label="@string/title_activity_add_edit_view_schedule" >
+        </activity>
+        <activity
+            android:name=".Timer.TimerBoilAdditions"
+            android:label="@string/title_activity_timer_boil_additions" >
         </activity>
     </application>
 
