@@ -8,17 +8,16 @@
         android:id="@+id/list_item_string"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="8dp"
         android:textSize="18sp"
         android:textStyle="bold"
         android:text="Large Text"
-        android:layout_alignTop="@+id/delete_btn"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:focusableInTouchMode="false"
         android:clickable="false"
         android:focusable="false"
-        android:textColor="#ff000000" />
+        android:textColor="#ff000000"
+        android:layout_toEndOf="@+id/ColorlinearLayout"
+        android:layout_alignTop="@+id/delete_btn"
+        android:layout_toRightOf="@+id/ColorlinearLayout" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -26,14 +25,13 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Small Text"
         android:id="@+id/list_item_string1"
-        android:paddingLeft="8dp"
-        android:layout_alignBottom="@+id/delete_btn"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:focusableInTouchMode="false"
         android:clickable="false"
         android:focusable="false"
-        android:textColor="#ff000000" />
+        android:textColor="#ff000000"
+        android:layout_alignBottom="@+id/delete_btn"
+        android:layout_alignLeft="@+id/list_item_string"
+        android:layout_alignStart="@+id/list_item_string" />
 
     <Button
         android:id="@+id/delete_btn"
@@ -44,6 +42,14 @@
         android:layout_marginRight="5dp"
         android:text="Delete" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/ColorlinearLayout"/>
 
 
 </RelativeLayout>

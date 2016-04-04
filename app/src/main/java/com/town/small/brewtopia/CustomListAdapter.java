@@ -1,11 +1,13 @@
 package com.town.small.brewtopia;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
@@ -20,6 +22,7 @@ public class CustomListAdapter extends BaseAdapter implements ListAdapter  {
     private ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
     private Context context;
     private boolean isDeleteView = false;
+    private boolean hasColor = false;
 
     //event handling
     private EventHandler eventHandler = null;
@@ -54,12 +57,32 @@ public class CustomListAdapter extends BaseAdapter implements ListAdapter  {
             view = inflater.inflate(R.layout.custom_row_view, null);
         }
 
-        //Handle TextView and display string from your list
+        String text1 = list.get(position).get("text1");
+        String text2 = list.get(position).get("text2");
+
+        //If we have a color we need to strip it off text2 and sent color panel height and width
+        if(hasColor)
+        {
+            LinearLayout colorLayout= (LinearLayout)view.findViewById(R.id.ColorlinearLayout);
+            colorLayout.setMinimumHeight(150);
+            colorLayout.setMinimumWidth(70);
+            try{
+                String color = "#" + text2.split("#")[1];
+                text2 = text2.split("#")[0];
+                colorLayout.setBackgroundColor(Color.parseColor(color));
+            }
+            catch (Exception e)
+            {
+                colorLayout.setBackgroundColor(Color.TRANSPARENT);
+            }
+        }
+
+        //Handle TextView and display string from list
         TextView listItemText = (TextView)view.findViewById(R.id.list_item_string);
-        listItemText.setText(list.get(position).get("text1"));
+        listItemText.setText(text1);
 
         TextView listItemText1 = (TextView)view.findViewById(R.id.list_item_string1);
-        listItemText1.setText(list.get(position).get("text2"));
+        listItemText1.setText(text2);
 
         //Handle buttons and add onClickListeners
         Button deleteBtn = (Button)view.findViewById(R.id.delete_btn);
@@ -71,7 +94,17 @@ public class CustomListAdapter extends BaseAdapter implements ListAdapter  {
             public void onClick(View v) {
                 //do something
                 if(eventHandler != null)
-                    eventHandler.OnDeleteClickListener(list.get(position).get("text1"),list.get(position).get("text2"));
+                {
+                    String text1 = list.get(position).get("text1");
+                    String text2 = list.get(position).get("text2");
+
+                    if(hasColor)
+                    {
+                        try{ text2 = text2.split("#")[0];}
+                        catch (Exception e){}
+                    }
+                    eventHandler.OnDeleteClickListener(text1,text2);
+                }
 
                 list.remove(position); //or some other task
                 notifyDataSetChanged();
@@ -83,6 +116,10 @@ public class CustomListAdapter extends BaseAdapter implements ListAdapter  {
 
     public void setDeleteView(boolean isDeleteView) {
         this.isDeleteView = isDeleteView;
+    }
+
+    public void hasColor(boolean color) {
+        this.hasColor = color;
     }
 
     /**

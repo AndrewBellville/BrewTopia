@@ -76,7 +76,9 @@
         android:layout_alignLeft="@+id/PasswordTextBox"
         android:layout_alignStart="@+id/PasswordTextBox"
         android:layout_alignRight="@+id/PasswordTextBox"
-        android:layout_alignEnd="@+id/PasswordTextBox" />
+        android:layout_alignEnd="@+id/PasswordTextBox"
+        android:textColor="#ffffff"
+        android:background="@drawable/button1"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -106,7 +108,9 @@
         android:layout_alignRight="@+id/LoginButton"
         android:layout_alignEnd="@+id/LoginButton"
         android:layout_alignLeft="@+id/LoginButton"
-        android:layout_alignStart="@+id/LoginButton" />
+        android:layout_alignStart="@+id/LoginButton"
+        android:textColor="#ffffff"
+        android:background="@drawable/button1"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -120,7 +124,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="v0.0.0.1"
+        android:text="v0.0.0.2"
         android:id="@+id/ScheduleBNameLabeltextView"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />

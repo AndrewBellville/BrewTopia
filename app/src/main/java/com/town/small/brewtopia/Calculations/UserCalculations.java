@@ -1,4 +1,4 @@
-package com.town.small.brewtopia;
+package com.town.small.brewtopia.Calculations;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +13,7 @@ import android.widget.SimpleAdapter;
 import com.town.small.brewtopia.Calculations.AlcoholByVolume;
 import com.town.small.brewtopia.Calculations.BrixCalculations;
 import com.town.small.brewtopia.Calculations.SpecificGravity;
+import com.town.small.brewtopia.CustomListAdapter;
 import com.town.small.brewtopia.R;
 
 import java.lang.reflect.Array;

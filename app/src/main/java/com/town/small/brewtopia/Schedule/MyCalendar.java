@@ -17,6 +17,9 @@ package com.town.small.brewtopia.Schedule;
         import android.widget.LinearLayout;
         import android.widget.TextView;
 
+        import com.town.small.brewtopia.DataClass.APPUTILS;
+        import com.town.small.brewtopia.DataClass.BrewSchema;
+        import com.town.small.brewtopia.DataClass.DataBaseManager;
         import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
         import com.town.small.brewtopia.R;
 
@@ -39,8 +42,7 @@ public class MyCalendar extends LinearLayout
 
     // default date format
     private static final String DATE_FORMAT = "MMM yyyy";
-    private SimpleDateFormat formatter = new SimpleDateFormat(
-            "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+    private SimpleDateFormat formatter = APPUTILS.dateFormatCompare;
 
     // date format
     private String dateFormat;
@@ -324,7 +326,6 @@ public class MyCalendar extends LinearLayout
                 }
             }
 
-            //TODO: BUG HERE FOR  ADDING EVENTS PAST CURRENT MONTH
             //Update based on list
             if(listEventDays != null)
             {
@@ -346,11 +347,11 @@ public class MyCalendar extends LinearLayout
                             do{
                                 eventsLayout.addView(CreateDateEvent(view.getContext(),Color.TRANSPARENT));
                                 i--;
-                            }while(i != 0);
+                            }while(i > 0);
                             childCount = eventsLayout.getChildCount();
                         }
 
-                       eventsLayout.addView(CreateDateEvent(view.getContext(),Color.BLUE));
+                       eventsLayout.addView(CreateDateEvent(view.getContext(), EventColor(eventDate)));
                         view.refreshDrawableState();
                         //break;
                     }
@@ -390,9 +391,17 @@ public class MyCalendar extends LinearLayout
             }
             catch (ParseException e) {
                 e.printStackTrace();
+                return false;
             }
-            if((d.getDate()>= startDate.getDate() && d.getMonth()>= startDate.getMonth() && d.getYear()>= startDate.getYear()) &&
-                    (d.getDate()<= endDate.getDate() && d.getMonth()<= endDate.getMonth() && d.getYear()<= endDate.getYear()) )
+
+            String date = formatter.format(d);
+            String sDate = formatter.format(startDate);
+            String eDate = formatter.format(endDate);
+
+            int startDateCompare = date.compareTo(sDate);
+            int EndDateCompare =  date.compareTo(eDate);
+
+            if(( startDateCompare >= 0 ) && ( EndDateCompare <=  0 ) )
             {
                 return true;
             }
@@ -411,6 +420,14 @@ public class MyCalendar extends LinearLayout
             ll.setOrientation(LinearLayout.HORIZONTAL);
             ll.setMinimumHeight(10);
             return ll;
+        }
+
+        private int EventColor(ScheduledBrewSchema eventDate)
+        {
+            try {
+                return Color.parseColor(eventDate.getColor());
+            }
+            catch (Exception e){return Color.BLUE;}
         }
     }
 

@@ -166,6 +166,7 @@ public class TimerData {
         //Create Schedule for Brew
         ScheduledBrewSchema sBrew = new ScheduledBrewSchema(brew.getBrewName(), CurrentUser.getInstance().getUser().getUserName());
         sBrew.SetScheduledDates(brew.getPrimary(), brew.getSecondary(), brew.getBottle());
+        sBrew.setColor(brew.getStyleSchema().getBrewStyleColor());
         DataBaseManager.getInstance(context).CreateAScheduledBrew(sBrew);
     }
 

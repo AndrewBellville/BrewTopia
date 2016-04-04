@@ -21,9 +21,10 @@ public class BrewSchema {
     private int Secondary;
     private int Bottle;
     private String Description;
-    private String Style;
     private String CreatedOn;
     private List <BoilAdditionsSchema> boilAdditionlist;
+    private String Style;
+    private BrewStyleSchema StyleSchema;
 
     // constructors
     public BrewSchema() {
@@ -83,6 +84,9 @@ public class BrewSchema {
     public String getStyle() {
         return Style;
     }
+    public BrewStyleSchema getStyleSchema() {
+        return StyleSchema;
+    }
 
     //setters
     public void setId(int id) {
@@ -117,6 +121,9 @@ public class BrewSchema {
     }
     public void setStyle(String style) {
         Style = style;
+    }
+    public void setStyleSchema(BrewStyleSchema styleSchema) {
+        StyleSchema = styleSchema;
     }
 
 }

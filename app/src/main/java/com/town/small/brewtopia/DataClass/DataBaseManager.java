@@ -12,9 +12,12 @@ import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -22,7 +25,7 @@ import java.util.Locale;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 15;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 17;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -32,6 +35,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String TABLE_USERS = "Users";
     private static final String TABLE_BREWS = "Brews";
     private static final String TABLE_BREWS_STYLES = "BrewsStyles";
+    private static final String TABLE_BREWS_NOTES = "BrewNotes";
     private static final String TABLE_BOIL_ADDITIONS = "BoilAdditions";
     private static final String TABLE_BREWS_SCHEDULED = "BrewsScheduled";
     private static final String TABLE_BREWS_CALCULATIONS = "Calculations";
@@ -41,6 +45,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String CREATED_ON = "CreatedOn";
     private static final String USER_NAME = "UserName"; // primary keys
     private static final String BREW_NAME = "BrewName"; // primary keys
+    private static final String NOTE = "Note";
 
     // USERS column names
     private static final String PASSWORD = "Password";
@@ -55,6 +60,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     // TABLE_BREWS_STYLES column names
     private static final String STYLE_NAME = "StyleName";
+    private static final String STYLE_COLOR = "StyleColor";
 
     // BOIL_ADDITIONS column names
     private static final String ADDITION_NAME = "AdditionName";
@@ -74,7 +80,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_USERS
     private static final String CREATE_TABLE_USERS = "CREATE TABLE "
             + TABLE_USERS + "(" + USER_NAME + " TEXT PRIMARY KEY,"
-            + PASSWORD + " TEXT," + CREATED_ON + " DATETIME" + ")";
+            + PASSWORD + " TEXT," + CREATED_ON + " DATETIME )";
 
     //CREATE_TABLE_BREWS
     private static final String CREATE_TABLE_BREWS = "CREATE TABLE "
@@ -83,7 +89,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     //CREATE_TABLE_BREWS_STYLES
     private static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
-            + TABLE_BREWS_STYLES + "(" + STYLE_NAME + " TEXT," + USER_NAME + " TEXT, PRIMARY KEY ("+ STYLE_NAME +", "+ USER_NAME +" ) )";
+            + TABLE_BREWS_STYLES + "(" + STYLE_NAME + " TEXT," + USER_NAME + " TEXT," + STYLE_COLOR + " TEXT, PRIMARY KEY ("+ STYLE_NAME +", "+ USER_NAME +" ) )";
 
     //CREATE_TABLE_BOIL_ADDITIONS
     private static final String CREATE_TABLE_BOIL_ADDITIONS = "CREATE TABLE "
@@ -92,11 +98,15 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_BREWS_SCHEDULED
     private static final String CREATE_TABLE_BREWS_SCHEDULED = "CREATE TABLE "
             + TABLE_BREWS_SCHEDULED + "(" + BREW_NAME + " TEXT," + USER_NAME + " TEXT," + CREATED_ON + " DATETIME," + SECONDARY_ALERT_DATE + " DATETIME," + BOTTLE_ALERT_DATE + " DATETIME,"
-            + END_BREW_DATE + " DATETIME," +  ACTIVE + " INTEGER )";
+            + END_BREW_DATE + " DATETIME," +  ACTIVE + " INTEGER," +  NOTE + " TEXT," +  STYLE_COLOR + " TEXT )";
 
     //CREATE_TABLE_BREWS_CALCULATIONS
     private static final String CREATE_TABLE_BREWS_CALCULATIONS = "CREATE TABLE "
             + TABLE_BREWS_CALCULATIONS + "(" + CALCULATION_ABV + " TEXT," + CALCULATION_NAME + " TEXT, PRIMARY KEY ("+ CALCULATION_ABV +", "+ CALCULATION_NAME +" ) )";
+
+    //CREATE_TABLE_BREWS_NOTES
+    private static final String CREATE_TABLE_BREWS_NOTES = "CREATE TABLE "
+            + TABLE_BREWS_NOTES + "(" + BREW_NAME + " TEXT," + USER_NAME + " TEXT," + NOTE + " TEXT, PRIMARY KEY ("+ BREW_NAME +", "+ USER_NAME +" ) )";
 
 
     //Singleton
@@ -123,6 +133,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL(CREATE_TABLE_BOIL_ADDITIONS);
         aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS_SCHEDULED);
         aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS_CALCULATIONS);
+        aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS_NOTES);
 
         //Pre Load Data
         PreLoadAdminUser(aSQLiteDatabase);
@@ -140,6 +151,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BOIL_ADDITIONS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_SCHEDULED);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_CALCULATIONS);
+        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_NOTES);
 
         // create new tables
         onCreate(aSQLiteDatabase);
@@ -167,18 +179,25 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private void PreLoadBrewStyles(SQLiteDatabase aSQLiteDatabase)
     {
         SQLiteDatabase db = aSQLiteDatabase;
-        String[] brewStylesPreLoad = new String[] {"None", "Amber", "Blonde", "Brown",
-                                                   "Cream", "Dark", "Fruit", "Golden",
-                                                   "Honey", "India Pale Ale", "Wheat", "Red",
-                                                   "Pilsner","Pale", "Light"};
 
-        for(String brewStyle : brewStylesPreLoad)
-        {
+        Set mapSet = (Set) APPUTILS.StyleMap.entrySet();
+        //Create iterator on Set
+        Iterator mapIterator = mapSet.iterator();
+
+        while (mapIterator.hasNext()) {
+            Map.Entry mapEntry = (Map.Entry) mapIterator.next();
+            // getKey Method of HashMap access a key of map
+            String keyValue = (String) mapEntry.getKey();
+            //getValue method returns corresponding key's value
+            String value = (String) mapEntry.getValue();
+
             ContentValues values = new ContentValues();
-            values.put(STYLE_NAME, brewStyle);
+            values.put(STYLE_NAME, keyValue);
             values.put(USER_NAME, "ADMIN");
+            values.put(STYLE_COLOR, value);
 
             db.insert(TABLE_BREWS_STYLES,null,values);
+
         }
     }
     private void PreLoadCalculations(SQLiteDatabase aSQLiteDatabase)
@@ -338,21 +357,27 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         Cursor c = db.rawQuery(selectQuery, null);
 
+        BrewSchema brew = new BrewSchema(aBrewName);
         if (c != null)
+        {
             c.moveToFirst();
 
-        BrewSchema brew = new BrewSchema(aBrewName);
-        brew.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
-        brew.setBoilTime(c.getInt(c.getColumnIndex(BOIL_TIME)));
-        brew.setPrimary(c.getInt(c.getColumnIndex(PRIMARY)));
-        brew.setSecondary((c.getInt(c.getColumnIndex(SECONDARY))));
-        brew.setBottle((c.getInt(c.getColumnIndex(BOTTLE))));
-        brew.setDescription((c.getString(c.getColumnIndex(DESCRIPTION))));
-        brew.setStyle((c.getString(c.getColumnIndex(STYLE))));
-        brew.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
+            brew.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
+            brew.setBoilTime(c.getInt(c.getColumnIndex(BOIL_TIME)));
+            brew.setPrimary(c.getInt(c.getColumnIndex(PRIMARY)));
+            brew.setSecondary((c.getInt(c.getColumnIndex(SECONDARY))));
+            brew.setBottle((c.getInt(c.getColumnIndex(BOTTLE))));
+            brew.setDescription((c.getString(c.getColumnIndex(DESCRIPTION))));
+            brew.setStyle((c.getString(c.getColumnIndex(STYLE))));
+            brew.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
 
-        //set boil additions
-        brew.setBoilAdditionlist(get_all_boil_additions_by_brew_name(aBrewName, aUserName));
+            //set boil additions
+            brew.setBoilAdditionlist(get_all_boil_additions_by_brew_name(aBrewName, aUserName));
+
+            //set style
+            brew.setStyleSchema(getBrewsStylesByName(c.getString(c.getColumnIndex(STYLE))));
+        }
+
 
         c.close();
         return brew;
@@ -454,6 +479,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(STYLE_NAME, aBrewStyle.getBrewStyleName());
         values.put(USER_NAME, aBrewStyle.getUserName());
+        values.put(STYLE_COLOR, aBrewStyle.getBrewStyleColor());
 
         //Add brew style
         if(!(db.insert(TABLE_BREWS_STYLES,null,values) > 0) )
@@ -482,6 +508,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 //brewSchema.setId((c.getInt(c.getColumnIndex(ROW_ID))));
                 brewStyleSchema.setBrewStyleName(c.getString(c.getColumnIndex(STYLE_NAME)));
                 brewStyleSchema.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
+                brewStyleSchema.setBrewStyleColor(c.getString(c.getColumnIndex(STYLE_COLOR)));
 
                 // adding to brewStyleList
                 brewStyleList.add(brewStyleSchema);
@@ -491,6 +518,33 @@ public class DataBaseManager extends SQLiteOpenHelper {
         c.close();
         return brewStyleList;
     }
+
+    /*
+* getting a Brews styles
+*/
+    public BrewStyleSchema getBrewsStylesByName(String aStyleName) {
+        String selectQuery = "SELECT  * FROM " + TABLE_BREWS_STYLES + " WHERE "
+                + STYLE_NAME + " = '" + aStyleName+"'";
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllBrewsStyles Count["+c.getCount()+"]");
+        BrewStyleSchema brewStyleSchema = new BrewStyleSchema();
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+                //brewSchema.setId((c.getInt(c.getColumnIndex(ROW_ID))));
+                brewStyleSchema.setBrewStyleName(c.getString(c.getColumnIndex(STYLE_NAME)));
+                brewStyleSchema.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
+                brewStyleSchema.setBrewStyleColor(c.getString(c.getColumnIndex(STYLE_COLOR)));
+        }
+
+        c.close();
+        return brewStyleSchema;
+    }
+
     /*
 * getting all Brews styles count
 */
@@ -646,6 +700,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(BOTTLE_ALERT_DATE, aSBrew.getAlertBottleDate());
         values.put(END_BREW_DATE, aSBrew.getEndBrewDate());
         values.put(ACTIVE, aSBrew.getActive());
+        values.put(NOTE, "");
+        values.put(STYLE_COLOR, aSBrew.getColor());
 
         //Add ScheduledBrew
         if(!(db.insert(TABLE_BREWS_SCHEDULED,null,values) > 0) )
@@ -678,6 +734,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
             sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
             sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
             sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
+            sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
+            sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
         }
         c.close();
         return sBrew;
@@ -710,6 +768,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
                 sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
                 sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
+                sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
+                sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
 
                 // adding to Scheduled list if still active else set not active
                 if(sBrew.getEndBrewDate().compareTo(getDateTime()) >= 0)
@@ -722,6 +782,36 @@ public class DataBaseManager extends SQLiteOpenHelper {
         c.close();
         return sBrewList;
     }
+
+    /*
+* Updating a Brew Scheduled
+*/
+    public Boolean updateScheduledBrew(ScheduledBrewSchema aSBrew) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "updateABrew Name["+aSBrew.getBrewName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(BREW_NAME, aSBrew.getBrewName());
+        values.put(USER_NAME, aSBrew.getUserName());
+        values.put(CREATED_ON, aSBrew.getStartDate());
+        values.put(SECONDARY_ALERT_DATE, aSBrew.getAlertSecondaryDate());
+        values.put(BOTTLE_ALERT_DATE, aSBrew.getAlertBottleDate());
+        values.put(END_BREW_DATE, aSBrew.getEndBrewDate());
+        values.put(ACTIVE, aSBrew.getActive());
+        values.put(NOTE, aSBrew.getNotes());
+        values.put(STYLE_COLOR, aSBrew.getColor());
+
+        // updating row
+        int retVal = db.update(TABLE_BREWS_SCHEDULED, values, BREW_NAME + " = ? AND " + USER_NAME + " = ? AND " + CREATED_ON + " = ?",
+                new String[] { aSBrew.getBrewName(), aSBrew.getUserName(), aSBrew.getStartDate()});
+
+        //Update brew
+        if(!(retVal > 0) )
+            return false;
+
+        return true;
+    }
+
     /*
     * Set A users Scheduled brew to not active
      */
@@ -797,9 +887,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
      * get datetime
      * */
     private String getDateTime() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Date date = new Date();
-        return dateFormat.format(date);
+        return APPUTILS.dateFormat.format(date);
     }
 }

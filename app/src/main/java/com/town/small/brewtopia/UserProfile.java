@@ -4,12 +4,12 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.TabHost;
 
 import com.town.small.brewtopia.Brews.UserBrews;
+import com.town.small.brewtopia.Calculations.UserCalculations;
 import com.town.small.brewtopia.DataClass.CurrentUser;
+import com.town.small.brewtopia.Schedule.UserSchedule;
 
 
 public class UserProfile extends TabActivity {

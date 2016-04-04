@@ -19,6 +19,7 @@ public class ScheduledBrewSchema {
     private String Notes;
     private int Active;
     private int displayLevel = 0;
+    private String color;
 
     // constructors
     public ScheduledBrewSchema() {
@@ -45,8 +46,7 @@ public class ScheduledBrewSchema {
      * get datetime
      * */
     private String getDateTime(int addDays) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        SimpleDateFormat dateFormat = APPUTILS.dateFormat;
 
         Calendar c = Calendar.getInstance();
         c.setTime(new Date()); // Now use today date.
@@ -83,7 +83,9 @@ public class ScheduledBrewSchema {
     public String getNotes() {
         return Notes;
     }
-
+    public String getColor() {
+        return color;
+    }
 
 
     //Setters
@@ -113,5 +115,8 @@ public class ScheduledBrewSchema {
     }
     public void setNotes(String notes) {
         Notes = notes;
+    }
+    public void setColor(String color) {
+        this.color = color;
     }
 }

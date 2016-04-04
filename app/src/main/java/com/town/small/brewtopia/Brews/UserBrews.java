@@ -75,13 +75,14 @@ public class UserBrews extends ActionBarActivity {
             {
                 HashMap<String,String> temp = new HashMap<String,String>();
                 temp.put("text1",brew.getBrewName());
-                temp.put("text2", "Create: " + brew.getCreatedOn());
+                temp.put("text2", "Create: " + brew.getCreatedOn() +GetStyleColor(brew.getStyle()));
                 list.add(temp);
             }
 
             //instantiate custom adapter
             CustomListAdapter adapter = new CustomListAdapter(list, this.getApplicationContext());
             adapter.setDeleteView(isDelete);
+            adapter.hasColor(true);
             adapter.setEventHandler(new CustomListAdapter.EventHandler() {
                 @Override
                 public void OnDeleteClickListener(String aName, String aDate) {
@@ -114,6 +115,12 @@ public class UserBrews extends ActionBarActivity {
 
         //start next activity
         startActivity(intent);
+    }
+
+    private String GetStyleColor(String styleName)
+    {
+        BrewStyleSchema brewStyleSchema = dbManager.getBrewsStylesByName(styleName);
+        return brewStyleSchema.getBrewStyleColor();
     }
 
     public void onRadioButtonClicked(View view) {

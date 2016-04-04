@@ -12,6 +12,7 @@ public class BrewStyleSchema {
 
     String UserName;
     String BrewStyleName;
+    String BrewStyleColor;
 
     // constructors
     public BrewStyleSchema() {
@@ -24,12 +25,17 @@ public class BrewStyleSchema {
     public String getBrewStyleName() {
         return BrewStyleName;
     }
-
+    public String getBrewStyleColor() {
+        return BrewStyleColor;
+    }
     // getters
     public String getUserName() {
         return this.UserName;
     }
     public void setBrewStyleName(String brewStyleName) {
         BrewStyleName = brewStyleName;
+    }
+    public void setBrewStyleColor(String brewStyleColor) {
+        BrewStyleColor = brewStyleColor;
     }
 }

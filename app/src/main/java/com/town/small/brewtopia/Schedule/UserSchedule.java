@@ -1,4 +1,4 @@
-package com.town.small.brewtopia;
+package com.town.small.brewtopia.Schedule;
 
 
 import android.content.Intent;
@@ -12,11 +12,14 @@ import android.widget.ListView;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import com.town.small.brewtopia.CustomListAdapter;
+import com.town.small.brewtopia.R;
 import com.town.small.brewtopia.Schedule.AddEditViewSchedule;
 import com.town.small.brewtopia.Schedule.MyCalendar;
 import com.town.small.brewtopia.DataClass.*;
@@ -34,8 +37,7 @@ public class UserSchedule extends ActionBarActivity {
     private ListView ScheduledBrewListView;
     private String userName;
 
-    private SimpleDateFormat formatter = new SimpleDateFormat(
-            "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+    private SimpleDateFormat formatter = APPUTILS.dateFormatCompare;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +89,7 @@ public class UserSchedule extends ActionBarActivity {
 
     private void  updateCalendarView()
     {
+        clearListDate();
         sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
         MyCalendar mc = ((MyCalendar) findViewById(R.id.calendar_view));
         mc.updateCalendarList(sBrewList);
@@ -98,10 +101,12 @@ public class UserSchedule extends ActionBarActivity {
         List<ScheduledBrewSchema> scheduledDayList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
         list = new ArrayList<HashMap<String, String>>();
 
+
+
         if(scheduledDayList.size() == 0 && list.size() > 0) {
             list.clear();
         }
-        else if (scheduledDayList.size() > 0) {
+        else {
 
             for(ScheduledBrewSchema sbrew : scheduledDayList)
             {
@@ -109,14 +114,14 @@ public class UserSchedule extends ActionBarActivity {
                 {
                     HashMap<String, String> temp = new HashMap<String, String>();
                     temp.put("text1", sbrew.getBrewName());
-                    temp.put("text2", sbrew.getStartDate());
+                    temp.put("text2", sbrew.getStartDate() + sbrew.getColor());
                     list.add(temp);
                 }
             }
 
             //instantiate custom adapter
             CustomListAdapter adapter = new CustomListAdapter(list, this.getApplicationContext());
-            adapter.setDeleteView(true);
+            adapter.hasColor(true);
             adapter.setEventHandler(new CustomListAdapter.EventHandler() {
                 @Override
                 public void OnDeleteClickListener(String aName, String aDate) {
@@ -133,8 +138,15 @@ public class UserSchedule extends ActionBarActivity {
     {
         Intent intent = new Intent(this, AddEditViewSchedule.class);
 
+        String brewName = selectedSchedule.get("text1");
+        String startDate = selectedSchedule.get("text2");
+
+        //need to remove color from  string
+        try{ startDate = startDate.split("#")[0];}
+        catch (Exception e){}
+
         //Set what Schedule was selected before we load Schedule Activity
-        ScheduleActivityData.getInstance().setScheduledBrewSchema(dbManager.getActiveScheduledBrewByNameDate(selectedSchedule.get("text1"), userName, selectedSchedule.get("text2")));
+        ScheduleActivityData.getInstance().setScheduledBrewSchema(dbManager.getActiveScheduledBrewByNameDate(brewName, userName, startDate));
 
         //start next activity
         startActivity(intent);
@@ -150,12 +162,27 @@ public class UserSchedule extends ActionBarActivity {
         }
         catch (ParseException e) {
             e.printStackTrace();
+            return false;
         }
-        if((d.getDate()>= startDate.getDate() && d.getMonth()>= startDate.getMonth() && d.getYear()>= startDate.getYear()) &&
-                (d.getDate()<= endDate.getDate() && d.getMonth()<= endDate.getMonth() && d.getYear()<= endDate.getYear()) )
+
+        String date = formatter.format(d);
+        String sDate = formatter.format(startDate);
+        String eDate = formatter.format(endDate);
+
+        int startDateCompare = date.compareTo(sDate);
+        int EndDateCompare =  date.compareTo(eDate);
+
+        if(( startDateCompare >= 0 ) && ( EndDateCompare <=  0 ) )
         {
             return true;
         }
         return false;
+    }
+
+    private void clearListDate()
+    {
+        Date d = new Date();
+        d.setTime(0);
+        LoadScheduleView(d);
     }
 }
