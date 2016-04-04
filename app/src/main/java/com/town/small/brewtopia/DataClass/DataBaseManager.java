@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 17;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 18;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag

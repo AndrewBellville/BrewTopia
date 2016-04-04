@@ -1,16 +1,22 @@
 package com.town.small.brewtopia.Schedule;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.method.KeyListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -23,6 +29,7 @@ import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
 import com.town.small.brewtopia.R;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class AddEditViewSchedule extends ActionBarActivity {
@@ -39,12 +46,19 @@ public class AddEditViewSchedule extends ActionBarActivity {
     };
     private DisplayMode AddEditViewState = DisplayMode.VIEW; // STATES: Add, Edit, View
 
-    private TextView brewName;
-    private TextView StartDate;
-    private TextView SecondaryAlert;
-    private TextView BottleAlert;
-    private TextView EndDate;
-    private TextView Notes;
+    private int dialogDay;
+    private int dialogMonth;
+    private int dialogYear;
+    private EditText DateToEdit;
+    static final int DIALOG_ID = 0;
+
+
+    private EditText brewName;
+    private EditText StartDate;
+    private EditText SecondaryAlert;
+    private EditText BottleAlert;
+    private EditText EndDate;
+    private EditText Notes;
     private Button editScheduleButton;
     private Spinner colorSpinner;
 
@@ -76,12 +90,12 @@ public class AddEditViewSchedule extends ActionBarActivity {
         ScrollView.addView(view);
 
 
-        brewName = (TextView)findViewById(R.id.ScheduleBNameeditText);
-        StartDate = (TextView)findViewById(R.id.ScheduleStarteditText);
-        SecondaryAlert = (TextView)findViewById(R.id.Schedule2AlerteditText);
-        BottleAlert = (TextView)findViewById(R.id.SchduleBottleAlerteditText);
-        EndDate = (TextView)findViewById(R.id.ScheduleEndDateeditText);
-        Notes = (TextView)findViewById(R.id.ScheduleNoteseditText);
+        brewName = (EditText)findViewById(R.id.ScheduleBNameeditText);
+        StartDate = (EditText)findViewById(R.id.ScheduleStarteditText);
+        SecondaryAlert = (EditText)findViewById(R.id.Schedule2AlerteditText);
+        BottleAlert = (EditText)findViewById(R.id.SchduleBottleAlerteditText);
+        EndDate = (EditText)findViewById(R.id.ScheduleEndDateeditText);
+        Notes = (EditText)findViewById(R.id.ScheduleNoteseditText);
         colorSpinner = (Spinner) findViewById(R.id.Colorspinner);
 
         editScheduleButton = (Button)findViewById(R.id.EditScheduleButton);
@@ -167,6 +181,48 @@ public class AddEditViewSchedule extends ActionBarActivity {
         colorSpinner.setAdapter(colorAdapter);
     }
 
+    public void showDatePickerDialog(View view)
+    {
+        //Set the date picker to show current day
+        Calendar cal = Calendar.getInstance();
+        dialogYear = cal.get(Calendar.YEAR);
+        dialogMonth = cal.get(Calendar.MONTH);
+        dialogDay = cal.get(Calendar.DAY_OF_MONTH);
+
+        //set what view we want to update after we show datePicker
+        DateToEdit = (EditText)view;
+
+        // show the date picker
+        showDialog(DIALOG_ID);
+
+    }
+
+    private void updateEditTextDate()
+    {
+        String month = String.format("%02d", dialogMonth);
+        String day = String.format("%02d", dialogDay);
+        DateToEdit.setText( Integer.toString(dialogYear)+"-"+month+"-"+day+" 12:00:00" );
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id)
+    {
+        if(id == DIALOG_ID)
+            return new DatePickerDialog(this,dPickerListener, dialogYear,dialogMonth,dialogDay);
+        return null;
+    }
+
+    private DatePickerDialog.OnDateSetListener dPickerListener =
+            new DatePickerDialog.OnDateSetListener(){
+        @Override
+        public  void onDateSet(DatePicker view,int year,int month, int day){
+            dialogYear = year;
+            dialogMonth = month + 1;
+            dialogDay = day;
+            updateEditTextDate();
+        }
+    };
+
     private void validateSubmit()
     {
         Log.e(LOG, "Entering: validateSubmit");
@@ -175,10 +231,28 @@ public class AddEditViewSchedule extends ActionBarActivity {
         ScheduledBrewSchema sbrew = new ScheduledBrewSchema();
         sbrew.setBrewName(brewName.getText().toString());
         sbrew.setUserName(UserName);
-        sbrew.setStartDate(StartDate.getText().toString());
-        sbrew.setAlertSecondaryDate(SecondaryAlert.getText().toString());
-        sbrew.setAlertBottleDate(BottleAlert.getText().toString());
-        sbrew.setEndBrewDate(EndDate.getText().toString());
+        sbrew.setStartDate(aScheduleSchema.getStartDate());
+
+
+        //SecondaryAlert date need to be greater then all other dates before it
+        if( (SecondaryAlert.getText().toString().compareTo(StartDate.getText().toString()) > 0) &&
+                (BottleAlert.getText().toString().compareTo(StartDate.getText().toString()) > 0) &&
+                (BottleAlert.getText().toString().compareTo(SecondaryAlert.getText().toString()) > 0) &&
+                (EndDate.getText().toString().compareTo(StartDate.getText().toString()) > 0) &&
+                (EndDate.getText().toString().compareTo(SecondaryAlert.getText().toString()) > 0) &&
+                (EndDate.getText().toString().compareTo(BottleAlert.getText().toString()) > 0))
+        {
+            sbrew.setAlertSecondaryDate(SecondaryAlert.getText().toString());
+            sbrew.setAlertBottleDate(BottleAlert.getText().toString());
+            sbrew.setEndBrewDate(EndDate.getText().toString());
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Invalid Date", Toast.LENGTH_LONG).show();
+            sbrew.setAlertSecondaryDate(aScheduleSchema.getAlertSecondaryDate());
+            sbrew.setAlertBottleDate(aScheduleSchema.getAlertBottleDate());
+            sbrew.setEndBrewDate(aScheduleSchema.getEndBrewDate());
+        }
 
         if(colorSpinner.getSelectedItem().toString() == "Blue")
             sbrew.setColor("#0000FF");
@@ -212,11 +286,35 @@ public class AddEditViewSchedule extends ActionBarActivity {
         if(!aEditable) {
             //addEditButton.setVisibility(View.INVISIBLE);
             brewName.setKeyListener(null);
+            brewName.setClickable(false);
+            brewName.setEnabled(false);
+            brewName.setFocusable(false);
+
             StartDate.setKeyListener(null);
+            StartDate.setClickable(false);
+            StartDate.setEnabled(false);
+            StartDate.setFocusable(false);
+
             SecondaryAlert.setKeyListener(null);
+            SecondaryAlert.setClickable(false);
+            SecondaryAlert.setEnabled(false);
+            SecondaryAlert.setFocusable(false);
+
             BottleAlert.setKeyListener(null);
+            BottleAlert.setClickable(false);
+            BottleAlert.setEnabled(false);
+            BottleAlert.setFocusable(false);
+
             EndDate.setKeyListener(null);
+            EndDate.setClickable(false);
+            EndDate.setEnabled(false);
+            EndDate.setFocusable(false);
+
             Notes.setKeyListener(null);
+            Notes.setClickable(false);
+            Notes.setEnabled(false);
+            //Notes.setFocusable(false);
+
             colorSpinner.setClickable(false);
         }
         else
@@ -226,10 +324,27 @@ public class AddEditViewSchedule extends ActionBarActivity {
             //   brewName.setKeyListener(brewNameListener);
 
             //StartDate.setKeyListener(StartDateListener);
+            //StartDate.setClickable(true);
+            //StartDate.setEnabled(true);
+
             //SecondaryAlert.setKeyListener(SecondaryAlertListener);
+            SecondaryAlert.setClickable(true);
+            SecondaryAlert.setEnabled(true);
+
             //BottleAlert.setKeyListener(BottleAlertListener);
-            //EndDate.setKeyListener(EndDateListener);
+            BottleAlert.setClickable(true);
+            BottleAlert.setEnabled(true);
+
+            EndDate.setClickable(true);
+            EndDate.setEnabled(true);
+            //EndDate.setFocusable(true);
+
             Notes.setKeyListener(NotesListener);
+            Notes.setClickable(true);
+            Notes.setEnabled(true);
+            Notes.setFocusable(true);
+
+
             colorSpinner.setClickable(true);
         }
     }

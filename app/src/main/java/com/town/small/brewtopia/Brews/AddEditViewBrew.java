@@ -322,23 +322,73 @@ public class AddEditViewBrew extends ActionBarActivity {
         if(!aEditable) {
             //addEditButton.setVisibility(View.INVISIBLE);
             brewName.setKeyListener(null);
+            brewName.setClickable(false);
+            brewName.setEnabled(false);
+            //brewName.setFocusable(false);
+
             primary.setKeyListener(null);
+            primary.setClickable(false);
+            primary.setEnabled(false);
+           //primary.setFocusable(false);
+
             secondary.setKeyListener(null);
+            secondary.setClickable(false);
+            secondary.setEnabled(false);
+            //secondary.setFocusable(false);
+
             bottle.setKeyListener(null);
+            bottle.setClickable(false);
+            bottle.setEnabled(false);
+            //bottle.setFocusable(false);
+
             description.setKeyListener(null);
+            description.setClickable(false);
+            description.setEnabled(false);
+            //description.setFocusable(false);
+
             boilTime.setKeyListener(null);
+            boilTime.setClickable(false);
+            boilTime.setEnabled(false);
+            //boilTime.setFocusable(false);
+
             styleSpinner.setClickable(false);
         }
         else
         {
             //addEditButton.setVisibility(View.VISIBLE);
             if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD)
+            {
                 brewName.setKeyListener(brewNameListener);
+                brewName.setClickable(true);
+                brewName.setEnabled(true);
+                brewName.setFocusable(true);
+            }
+
             primary.setKeyListener(primaryListener);
+            primary.setClickable(true);
+            primary.setEnabled(true);
+            primary.setFocusable(true);
+
             secondary.setKeyListener(secondaryListener);
+            secondary.setClickable(true);
+            secondary.setEnabled(true);
+            secondary.setFocusable(true);
+
             bottle.setKeyListener(bottleListener);
+            bottle.setClickable(true);
+            bottle.setEnabled(true);
+            bottle.setFocusable(true);
+
             description.setKeyListener(descriptionListener);
+            description.setClickable(true);
+            description.setEnabled(true);
+            description.setFocusable(true);
+
             boilTime.setKeyListener(boilTimeListener);
+            boilTime.setClickable(true);
+            boilTime.setEnabled(true);
+            boilTime.setFocusable(true);
+
             styleSpinner.setClickable(true);
         }
     }

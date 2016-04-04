@@ -47,7 +47,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/ScheduleBNameeditText"
-        android:layout_alignEnd="@+id/ScheduleBNameeditText" />
+        android:layout_alignEnd="@+id/ScheduleBNameeditText"
+        android:onClick="showDatePickerDialog"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -68,7 +69,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/ScheduleStarteditText"
-        android:layout_alignEnd="@+id/ScheduleStarteditText" />
+        android:layout_alignEnd="@+id/ScheduleStarteditText"
+        android:onClick="showDatePickerDialog"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -89,7 +91,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/Schedule2AlerteditText"
-        android:layout_alignEnd="@+id/Schedule2AlerteditText" />
+        android:layout_alignEnd="@+id/Schedule2AlerteditText"
+        android:onClick="showDatePickerDialog"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -110,7 +113,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/SchduleBottleAlerteditText"
-        android:layout_alignEnd="@+id/SchduleBottleAlerteditText" />
+        android:layout_alignEnd="@+id/SchduleBottleAlerteditText"
+        android:onClick="showDatePickerDialog"/>
 
     <TextView
         android:layout_width="wrap_content"
