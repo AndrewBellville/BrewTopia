@@ -3,13 +3,13 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:drawable="@color/greyed_out">
+        android:drawable="@drawable/wood_background">
     </item>
 
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/beer"/>
+            android:src="@drawable/beer_dark"/>
     </item>
 
 </layer-list>

@@ -67,6 +67,7 @@ public class Login extends ActionBarActivity {
             currentUser.setUser(dbManager.getUser(userName.getText().toString()));
             //start next activity
             startActivity(intent);
+            message.setText("");
         }
         else
         {

@@ -714,7 +714,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
 */
     public ScheduledBrewSchema getActiveScheduledBrewByNameDate(String aBrewName, String aUserName, String aStartDate) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT  * FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
                 + ACTIVE + " = 1 "
                 + "AND " + BREW_NAME + " = '" + aBrewName +"' "
                 + "AND " + USER_NAME + " = '" + aUserName +"' "
@@ -727,6 +727,38 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ScheduledBrewSchema sBrew = new ScheduledBrewSchema();
         if (c != null) {
             c.moveToFirst();
+            sBrew.setScheduleId(c.getInt(c.getColumnIndex(ROW_ID)));
+            sBrew.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
+            sBrew.setBrewName(c.getString(c.getColumnIndex(BREW_NAME)));
+            sBrew.setStartDate(c.getString(c.getColumnIndex(CREATED_ON)));
+            sBrew.setAlertSecondaryDate(c.getString(c.getColumnIndex(SECONDARY_ALERT_DATE)));
+            sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
+            sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
+            sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
+            sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
+            sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
+        }
+        c.close();
+        return sBrew;
+    }
+
+    /*
+* Get Active Scheduled Brew by Id
+*/
+    public ScheduledBrewSchema getActiveScheduledBrewId(int ScheduleId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
+                + ACTIVE + " = 1 "
+                + "AND " + ROW_ID + " = '" + Integer.toString(ScheduleId) +"'";
+
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        ScheduledBrewSchema sBrew = new ScheduledBrewSchema();
+        if (c != null) {
+            c.moveToFirst();
+            sBrew.setScheduleId(c.getInt(c.getColumnIndex(ROW_ID)));
             sBrew.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
             sBrew.setBrewName(c.getString(c.getColumnIndex(BREW_NAME)));
             sBrew.setStartDate(c.getString(c.getColumnIndex(CREATED_ON)));
@@ -747,7 +779,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<ScheduledBrewSchema> getAllActiveScheduledBrews(String aUserName) {
         SQLiteDatabase db = this.getReadableDatabase();
         List<ScheduledBrewSchema> sBrewList = new ArrayList<ScheduledBrewSchema>();
-        String selectQuery = "SELECT  * FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
+        String selectQuery = "SELECT " + ROW_ID + ",* FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
                 + ACTIVE + " = 1 "
                 + "AND " + USER_NAME + " = '" + aUserName+"' "
                 + "ORDER BY " + CREATED_ON;
@@ -761,6 +793,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             c.moveToFirst();
             do {
                 ScheduledBrewSchema sBrew = new ScheduledBrewSchema();
+                sBrew.setScheduleId(c.getInt(c.getColumnIndex(ROW_ID)));
                 sBrew.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
                 sBrew.setBrewName(c.getString(c.getColumnIndex(BREW_NAME)));
                 sBrew.setStartDate(c.getString(c.getColumnIndex(CREATED_ON)));
@@ -775,7 +808,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 if(sBrew.getEndBrewDate().compareTo(getDateTime()) >= 0)
                     sBrewList.add(sBrew);
                 else
-                    setBrewScheduledNotActive(sBrew.getBrewName(), sBrew.getUserName(), sBrew.getStartDate());
+                    setBrewScheduledNotActive(sBrew.getScheduleId());
 
             } while (c.moveToNext());
         }
@@ -802,8 +835,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(STYLE_COLOR, aSBrew.getColor());
 
         // updating row
-        int retVal = db.update(TABLE_BREWS_SCHEDULED, values, BREW_NAME + " = ? AND " + USER_NAME + " = ? AND " + CREATED_ON + " = ?",
-                new String[] { aSBrew.getBrewName(), aSBrew.getUserName(), aSBrew.getStartDate()});
+        int retVal = db.update(TABLE_BREWS_SCHEDULED, values, ROW_ID + " = ?",
+                new String[] { Integer.toString(aSBrew.getScheduleId()) });
 
         //Update brew
         if(!(retVal > 0) )
@@ -815,22 +848,34 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
     * Set A users Scheduled brew to not active
      */
-    public void setBrewScheduledNotActive(String aBrewName, String aUserName, String aStartDate)
+    public void setBrewScheduledNotActive(int ScheduleId)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        Log.e(LOG, "setBrewScheduledNotActive Brew Name["+aBrewName+"] Started Date["+aStartDate+"]");
+        Log.e(LOG, "setBrewScheduledNotActive Schedule Id["+Integer.toString(ScheduleId) +"]");
 
         ContentValues values = new ContentValues();
         values.put(ACTIVE, 0);
 
         // updating row
-        db.update(TABLE_BREWS_SCHEDULED, values, BREW_NAME + " = ? AND "+ USER_NAME +  " = ? AND "+ CREATED_ON +  " = ? ",
-                new String[] { aBrewName, aUserName, aStartDate});
+        db.update(TABLE_BREWS_SCHEDULED, values, ROW_ID + " = ?",
+                new String[] { Integer.toString(ScheduleId) });
     }
 
     /*
 * delete A users Scheduled brew
  */
+    public void deleteBrewScheduledById(int ScheduleId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteBrewScheduled Schedule Id["+Integer.toString(ScheduleId) +"]");
+
+        db.delete(TABLE_BREWS_SCHEDULED, ROW_ID + " = ?",
+                new String[] { Integer.toString(ScheduleId) });
+    }
+
+    /*
+* delete A users Scheduled brew
+*/
     public void deleteBrewScheduled(String aBrewName, String aUserName, String aStartDate)
     {
         SQLiteDatabase db = this.getWritableDatabase();

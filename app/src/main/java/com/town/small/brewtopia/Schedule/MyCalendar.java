@@ -274,6 +274,7 @@ public class MyCalendar extends LinearLayout
         // days with events
         private HashSet<Date> eventDays;
         private List<ScheduledBrewSchema> listEventDays;
+        private List<Integer> getViewPos;
 
         // for view inflation
         private LayoutInflater inflater;
@@ -283,6 +284,7 @@ public class MyCalendar extends LinearLayout
             super(context, R.layout.calendar_day_view, days);
             this.eventDays = eventDays;
             inflater = LayoutInflater.from(context);
+            getViewPos = new ArrayList<Integer>();
         }
 
         public CalendarAdapter(Context context, ArrayList<Date> days, List<ScheduledBrewSchema> eventDays)
@@ -290,11 +292,19 @@ public class MyCalendar extends LinearLayout
             super(context, R.layout.calendar_day_view, days);
             this.listEventDays = eventDays;
             inflater = LayoutInflater.from(context);
+            getViewPos = new ArrayList<Integer>();
         }
 
         @Override
         public View getView(int position, View view, ViewGroup parent)
         {
+
+            //if we have seen this position (date) before we just want to return the view other wise add to list and create the new view
+            if(getViewPos.contains(position))
+                return view;
+            else
+                getViewPos.add(position);
+
             // day in question
             Date date = getItem(position);
             int day = date.getDate();
@@ -310,6 +320,7 @@ public class MyCalendar extends LinearLayout
 
 
             // if this day has an event, specify event image
+            /*
             view.setBackgroundResource(0);
             if (eventDays != null)
             {
@@ -324,14 +335,14 @@ public class MyCalendar extends LinearLayout
                         break;
                     }
                 }
-            }
+            }*/
 
             //Update based on list
             if(listEventDays != null)
             {
                 for (ScheduledBrewSchema eventDate : listEventDays)
                 {
-                    //TODO: Need to handle multiple events on the same day (Color change)
+                    //TODO: First day on cal having issue when display event
                     if (DateHasEvent(date,eventDate))
                     {
                         // mark this day for event

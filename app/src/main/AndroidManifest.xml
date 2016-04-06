@@ -40,11 +40,13 @@
         </activity>
         <activity
             android:name=".Brews.AddEditViewBrew"
-            android:label="@string/title_activity_add_edit_view_brew" >
+            android:label="@string/title_activity_add_edit_view_brew"
+            android:icon="@drawable/beer_dark" >
         </activity>
         <activity
             android:name=".Brews.AddEditViewBoilAdditions"
-            android:label="@string/title_activity_add_edit_view_boil_additions" >
+            android:label="@string/title_activity_add_edit_view_boil_additions"
+            android:icon="@drawable/beer_dark">
         </activity>
         <activity
             android:name=".Timer.TimerPager"
@@ -56,23 +58,23 @@
         </activity>
         <activity
             android:name=".Calculations.AlcoholByVolume"
-            android:label="@string/title_activity_alcohol_by_volume" >
+            android:label="@string/title_activity_alcohol_by_volume"
+            android:icon="@drawable/beer_dark">
         </activity>
         <activity
             android:name=".Calculations.BrixCalculations"
-            android:label="@string/title_activity_brix_calculations" >
+            android:label="@string/title_activity_brix_calculations"
+            android:icon="@drawable/beer_dark">
         </activity>
         <activity
             android:name=".Calculations.SpecificGravity"
-            android:label="@string/title_activity_specific_gravity" >
+            android:label="@string/title_activity_specific_gravity"
+            android:icon="@drawable/beer_dark">
         </activity>
         <activity
             android:name=".Schedule.AddEditViewSchedule"
-            android:label="@string/title_activity_add_edit_view_schedule" >
-        </activity>
-        <activity
-            android:name=".Timer.TimerBoilAdditions"
-            android:label="@string/title_activity_timer_boil_additions" >
+            android:label="@string/title_activity_add_edit_view_schedule"
+            android:icon="@drawable/beer_dark">
         </activity>
     </application>
 

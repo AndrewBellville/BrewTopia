@@ -8,17 +8,19 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:windowTitleSize="0dp"
     tools:context=".UserLogin"
-    android:id="@+id/UserLogin">
+    android:id="@+id/UserLogin"
+    android:background="@drawable/brew_background">
 
     <TextView
-        android:text="@string/app_name"
+        android:text="Brew Topia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="30sp"
         android:typeface="normal"
         android:id="@+id/LoginTitle"
         android:layout_below="@+id/LoginImage"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="#B3A7A7"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -30,7 +32,7 @@
         android:layout_alignStart="@+id/UserLoginLabel"
         android:layout_alignRight="@+id/LoginTitle"
         android:layout_alignEnd="@+id/LoginTitle"
-        android:background="#ffd2faff"/>
+        android:background="@drawable/edit_text1"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -43,26 +45,28 @@
         android:layout_alignStart="@+id/PasswordLabel"
         android:layout_alignRight="@+id/UserNameTextBox"
         android:layout_alignEnd="@+id/UserNameTextBox"
-        android:background="#ffd2faff"/>
+        android:background="@drawable/edit_text1"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/UserName"
+        android:text="UserName:"
         android:id="@+id/UserLoginLabel"
         android:layout_marginTop="25dp"
         android:layout_below="@+id/LoginTitle"
         android:layout_alignLeft="@+id/LoginTitle"
-        android:layout_alignStart="@+id/LoginTitle" />
+        android:layout_alignStart="@+id/LoginTitle"
+        android:textColor="#B3A7A7"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Password"
+        android:text="Password:"
         android:id="@+id/PasswordLabel"
         android:layout_below="@+id/UserNameTextBox"
         android:layout_alignLeft="@+id/UserNameTextBox"
-        android:layout_alignStart="@+id/UserNameTextBox" />
+        android:layout_alignStart="@+id/UserNameTextBox"
+        android:textColor="#B3A7A7"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -89,7 +93,7 @@
         android:minHeight="100dp"
         android:minWidth="100dp"
         android:clickable="false"
-        android:background="@drawable/beer"
+        android:background="@drawable/beer_light"
         android:baselineAlignBottom="false"
         android:cropToPadding="false"
         android:focusable="false"
@@ -124,9 +128,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="v0.0.2.1"
+        android:text="v0.0.2.2"
         android:id="@+id/ScheduleBNameLabeltextView"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="#B3A7A7"/>
 
 </RelativeLayout>

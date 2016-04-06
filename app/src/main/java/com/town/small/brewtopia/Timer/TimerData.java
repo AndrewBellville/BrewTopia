@@ -135,18 +135,16 @@ public class TimerData {
 
                 if( (!(nextAddition== null)) && nextAddition.getAdditionTime()*60000 >= millisUntilFinished && !allAdditionsComplete)
                 {
+                    if(!(eventHandler == null))
+                        eventHandler.onTimerTick(millisUntilFinished, nextAddition);
+
                     nextAdditionIterator++;
                     if(nextAdditionIterator < getAdditionsList().size())
                         nextAddition = getAdditionsList().get(nextAdditionIterator);
                     else
-                    {
-                        if(!(eventHandler == null))
-                            eventHandler.onTimerTick(millisUntilFinished, nextAddition);
-
                         allAdditionsComplete = true;
-                        return;
-                    }
 
+                    return;
                 }
 
                 if(!(eventHandler == null))

@@ -229,19 +229,22 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
         //Create Brew schedule
         ScheduledBrewSchema sbrew = new ScheduledBrewSchema();
+        sbrew.setScheduleId(aScheduleSchema.getScheduleId());
         sbrew.setBrewName(brewName.getText().toString());
         sbrew.setUserName(UserName);
         sbrew.setStartDate(aScheduleSchema.getStartDate());
 
 
         //SecondaryAlert date need to be greater then all other dates before it
-        if( (SecondaryAlert.getText().toString().compareTo(StartDate.getText().toString()) > 0) &&
+        if( (StartDate.getText().toString().compareTo(SecondaryAlert.getText().toString()) <= 0) &&
+                (SecondaryAlert.getText().toString().compareTo(StartDate.getText().toString()) > 0) &&
                 (BottleAlert.getText().toString().compareTo(StartDate.getText().toString()) > 0) &&
                 (BottleAlert.getText().toString().compareTo(SecondaryAlert.getText().toString()) > 0) &&
                 (EndDate.getText().toString().compareTo(StartDate.getText().toString()) > 0) &&
                 (EndDate.getText().toString().compareTo(SecondaryAlert.getText().toString()) > 0) &&
                 (EndDate.getText().toString().compareTo(BottleAlert.getText().toString()) > 0))
         {
+            sbrew.setStartDate(StartDate.getText().toString());
             sbrew.setAlertSecondaryDate(SecondaryAlert.getText().toString());
             sbrew.setAlertBottleDate(BottleAlert.getText().toString());
             sbrew.setEndBrewDate(EndDate.getText().toString());
@@ -249,6 +252,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         else
         {
             Toast.makeText(getApplicationContext(), "Invalid Date", Toast.LENGTH_LONG).show();
+            sbrew.setStartDate(aScheduleSchema.getStartDate());
             sbrew.setAlertSecondaryDate(aScheduleSchema.getAlertSecondaryDate());
             sbrew.setAlertBottleDate(aScheduleSchema.getAlertBottleDate());
             sbrew.setEndBrewDate(aScheduleSchema.getEndBrewDate());
@@ -275,7 +279,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
     public void onDeleteClick(View aView)
     {
-        dbManager.deleteBrewScheduled(aScheduleSchema.getBrewName(),UserName,aScheduleSchema.getStartDate());
+        dbManager.deleteBrewScheduledById(aScheduleSchema.getScheduleId());
         this.finish();
     }
 
@@ -324,8 +328,8 @@ public class AddEditViewSchedule extends ActionBarActivity {
             //   brewName.setKeyListener(brewNameListener);
 
             //StartDate.setKeyListener(StartDateListener);
-            //StartDate.setClickable(true);
-            //StartDate.setEnabled(true);
+            StartDate.setClickable(true);
+            StartDate.setEnabled(true);
 
             //SecondaryAlert.setKeyListener(SecondaryAlertListener);
             SecondaryAlert.setClickable(true);

@@ -10,6 +10,7 @@ import java.util.Locale;
  */
 public class ScheduledBrewSchema {
 
+    private int scheduleId;
     private String BrewName;
     private String UserName;
     private String StartDate;
@@ -86,7 +87,9 @@ public class ScheduledBrewSchema {
     public String getColor() {
         return color;
     }
-
+    public int getScheduleId() {
+        return scheduleId;
+    }
 
     //Setters
     public void setUserName(String userName) {
@@ -118,5 +121,8 @@ public class ScheduledBrewSchema {
     }
     public void setColor(String color) {
         this.color = color;
+    }
+    public void setScheduleId(int scheduleId) {
+        this.scheduleId = scheduleId;
     }
 }

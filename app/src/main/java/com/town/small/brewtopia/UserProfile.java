@@ -37,7 +37,7 @@ public class UserProfile extends TabActivity {
         Intent intent;
         //Add Brew tab
         intent = new Intent(this, UserBrews.class);
-        tabHost.addTab(tabHost.newTabSpec("brews").setIndicator("",getApplicationContext().getResources().getDrawable(R.drawable.beer)).setContent(intent));
+        tabHost.addTab(tabHost.newTabSpec("brews").setIndicator("",getApplicationContext().getResources().getDrawable(R.drawable.beer_dark)).setContent(intent));
 
         //Add Schedule tab
         intent = new Intent(this, UserSchedule.class);
