@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -23,14 +24,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.town.small.brewtopia.Brews.BrewActivityData;
+import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.BrewStyleSchema;
 import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
 import com.town.small.brewtopia.R;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class AddEditViewSchedule extends ActionBarActivity {
 
@@ -50,6 +56,8 @@ public class AddEditViewSchedule extends ActionBarActivity {
     private int dialogMonth;
     private int dialogYear;
     private EditText DateToEdit;
+    private EditText[] datesList;
+    private boolean isDateRollUp = true;
     static final int DIALOG_ID = 0;
 
 
@@ -61,13 +69,9 @@ public class AddEditViewSchedule extends ActionBarActivity {
     private EditText Notes;
     private Button editScheduleButton;
     private Spinner colorSpinner;
-
+    private CheckBox dateRollUpCheckBox;
 
     private KeyListener brewNameListener;
-    private KeyListener StartDateListener;
-    private KeyListener SecondaryAlertListener;
-    private KeyListener BottleAlertListener;
-    private KeyListener EndDateListener;
     private KeyListener NotesListener;
 
     private DataBaseManager dbManager;
@@ -89,22 +93,25 @@ public class AddEditViewSchedule extends ActionBarActivity {
         ScrollView = (ScrollView)findViewById(R.id.ScheduleScrollView);
         ScrollView.addView(view);
 
-
+        datesList = new EditText[4];
         brewName = (EditText)findViewById(R.id.ScheduleBNameeditText);
         StartDate = (EditText)findViewById(R.id.ScheduleStarteditText);
+        datesList[0] = StartDate;
         SecondaryAlert = (EditText)findViewById(R.id.Schedule2AlerteditText);
+        datesList[1] = SecondaryAlert;
         BottleAlert = (EditText)findViewById(R.id.SchduleBottleAlerteditText);
+        datesList[2] = BottleAlert;
         EndDate = (EditText)findViewById(R.id.ScheduleEndDateeditText);
+        datesList[3] = EndDate;
         Notes = (EditText)findViewById(R.id.ScheduleNoteseditText);
         colorSpinner = (Spinner) findViewById(R.id.Colorspinner);
+        dateRollUpCheckBox = (CheckBox)findViewById(R.id.DateRollUpCheckBox);
+
 
         editScheduleButton = (Button)findViewById(R.id.EditScheduleButton);
 
+
         brewNameListener = brewName.getKeyListener();
-        StartDateListener = StartDate.getKeyListener();
-        SecondaryAlertListener = SecondaryAlert.getKeyListener();
-        BottleAlertListener = BottleAlert.getKeyListener();
-        EndDateListener = EndDate.getKeyListener();
         NotesListener = Notes.getKeyListener();
 
 
@@ -201,7 +208,46 @@ public class AddEditViewSchedule extends ActionBarActivity {
     {
         String month = String.format("%02d", dialogMonth);
         String day = String.format("%02d", dialogDay);
+
+        String originalTime = DateToEdit.getText().toString();
         DateToEdit.setText( Integer.toString(dialogYear)+"-"+month+"-"+day+" 12:00:00" );
+
+        if(isDateRollUp)
+        {
+            long daysInBetween=0;
+            try
+            {
+                Date d1 = APPUTILS.dateFormatCompare.parse(originalTime);
+                Date d2 = APPUTILS.dateFormatCompare.parse(DateToEdit.getText().toString());
+
+                long timeDifference = d2.getTime() - d1.getTime();
+                daysInBetween = timeDifference / (24*60*60*1000);
+
+            }
+            catch (Exception e){}
+
+            rollDateUpdateForward(Arrays.asList(datesList).indexOf(DateToEdit)+1, (int)daysInBetween);
+        }
+
+    }
+
+    private void rollDateUpdateForward(int pos, int daysToAdd)
+    {
+        Log.e(LOG, "Entering: rollDateUpdateForward Pos["+pos+"] days["+daysToAdd+"] Total["+datesList.length+"]");
+
+        if(pos ==  datesList.length)
+            return;
+
+        // for each  date after the one edited we want to update by days add / deleted
+        for(int i = pos; i < datesList.length; i++)
+        {
+            try
+            {
+                Date parsedDate = APPUTILS.dateFormat.parse(datesList[i].getText().toString());
+                datesList[i].setText(aScheduleSchema.addDateTime(daysToAdd,parsedDate));
+            }
+            catch (Exception e){}
+        }
     }
 
     @Override
@@ -320,6 +366,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
             //Notes.setFocusable(false);
 
             colorSpinner.setClickable(false);
+            dateRollUpCheckBox.setClickable(false);
         }
         else
         {
@@ -350,9 +397,14 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
 
             colorSpinner.setClickable(true);
+            dateRollUpCheckBox.setClickable(true);
         }
     }
 
+    public void onChecked(View view) {
+        // Is checked?
+        isDateRollUp = ((CheckBox) view).isChecked();
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

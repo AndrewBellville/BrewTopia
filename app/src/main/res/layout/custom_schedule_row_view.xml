@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/ColorlinearLayout"/>
+
+    <TextView
+        android:id="@+id/list_item_string"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Large Text"
+        android:focusableInTouchMode="false"
+        android:clickable="false"
+        android:focusable="false"
+        android:textColor="#ff000000"
+        android:layout_toEndOf="@+id/ColorlinearLayout"
+        android:layout_above="@+id/list_item_string1"
+        android:layout_toRightOf="@+id/ColorlinearLayout" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:id="@+id/list_item_string1"
+        android:focusableInTouchMode="false"
+        android:clickable="false"
+        android:focusable="false"
+        android:textColor="#ff000000"
+        android:layout_below="@+id/CurrentStateTextView"
+        android:layout_toRightOf="@+id/ColorlinearLayout"
+        android:layout_toEndOf="@+id/ColorlinearLayout" />
+
+
+    <ImageView
+        android:gravity="right"
+        android:id="@+id/ActionImageView"
+        android:background="@drawable/red_exclamation"
+        android:layout_width="10dp"
+        android:layout_height="13dp"
+        android:layout_toLeftOf="@+id/CurrentStateTextView"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Large Text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:id="@+id/CurrentStateTextView"
+        android:textColor="#ff000000"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Mid Text"
+        android:id="@+id/NextEventTextView"
+        android:textColor="#ff000000"
+        android:layout_below="@+id/CurrentStateTextView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+
+</RelativeLayout>

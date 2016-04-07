@@ -337,13 +337,15 @@ public class MyCalendar extends LinearLayout
                 }
             }*/
 
+            ImageView ActionImage = (ImageView)view.findViewById(R.id.ActionImageView);
+
             //Update based on list
             if(listEventDays != null)
             {
                 for (ScheduledBrewSchema eventDate : listEventDays)
                 {
-                    //TODO: First day on cal having issue when display event
-                    if (DateHasEvent(date,eventDate))
+                    //Check id date has event if so draw it
+                    if (eventDate.DateHasEvent(date))
                     {
                         // mark this day for event
                        LinearLayout  eventsLayout  = (LinearLayout)view.findViewById(R.id.eventsLayout);
@@ -366,6 +368,11 @@ public class MyCalendar extends LinearLayout
                         view.refreshDrawableState();
                         //break;
                     }
+
+                    //Check id date has Action if so Show it
+                    if (eventDate.DateHasAction(date))
+                        ActionImage.setVisibility(VISIBLE);
+
                 }
             }
 
@@ -390,33 +397,6 @@ public class MyCalendar extends LinearLayout
             dateText.setText(String.valueOf(date.getDate()));
 
             return view;
-        }
-
-        private boolean DateHasEvent(Date d, ScheduledBrewSchema sBrew)
-        {
-            Date startDate = new Date();
-            Date endDate = new Date();
-            try {
-                startDate = formatter.parse(sBrew.getStartDate());
-                endDate = formatter.parse(sBrew.getEndBrewDate());
-            }
-            catch (ParseException e) {
-                e.printStackTrace();
-                return false;
-            }
-
-            String date = formatter.format(d);
-            String sDate = formatter.format(startDate);
-            String eDate = formatter.format(endDate);
-
-            int startDateCompare = date.compareTo(sDate);
-            int EndDateCompare =  date.compareTo(eDate);
-
-            if(( startDateCompare >= 0 ) && ( EndDateCompare <=  0 ) )
-            {
-                return true;
-            }
-            return false;
         }
 
         private LinearLayout CreateDateEvent(Context context, int color)
