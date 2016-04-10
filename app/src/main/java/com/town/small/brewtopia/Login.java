@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.town.small.brewtopia.DataClass.*;
@@ -14,10 +15,12 @@ public class Login extends ActionBarActivity {
 
     // Log cat tag
     private static final String LOG = "Login";
+    private static final String VERSION = "v0.0.3.0";
 
-    private TextView userName;
-    private TextView password;
+    private EditText userName;
+    private EditText password;
     private TextView message;
+    private TextView version;
     private DataBaseManager dbManager;
     private CurrentUser currentUser;
 
@@ -28,12 +31,14 @@ public class Login extends ActionBarActivity {
         Log.e(LOG, "Entering: onCreate");
         dbManager = DataBaseManager.getInstance(getApplicationContext());
         currentUser = CurrentUser.getInstance();
-        getActionBar().hide();
+        //getActionBar().hide();
 
         //Link to XML onCreate of this class
-        userName = (TextView)findViewById(R.id.UserNameTextBox);
-        password = (TextView)findViewById(R.id.PasswordTextBox);
+        userName = (EditText)findViewById(R.id.UserNameTextBox);
+        password = (EditText)findViewById(R.id.PasswordTextBox);
         message = (TextView)findViewById(R.id.MessageText);
+        version = (TextView)findViewById(R.id.verionNumber);
+        version.setText(VERSION);
     }
 
     private boolean validateUserLogin()

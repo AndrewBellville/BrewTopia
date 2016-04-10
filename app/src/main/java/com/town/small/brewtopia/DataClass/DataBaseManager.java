@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 18;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 21;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -40,12 +40,15 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String TABLE_BREWS_SCHEDULED = "BrewsScheduled";
     private static final String TABLE_BREWS_CALCULATIONS = "Calculations";
 
-    // Common column names across both tables
+    // Common column names across Mulit tables
     private static final String ROW_ID = "rowid";
     private static final String CREATED_ON = "CreatedOn";
     private static final String USER_NAME = "UserName"; // primary keys
     private static final String BREW_NAME = "BrewName"; // primary keys
     private static final String NOTE = "Note";
+    private static final String ORIGINAL_GRAVITY = "OriginalGravity";
+    private static final String FINAL_GRAVITY = "FinalGravity";
+    private static final String ABV = "ABV";
 
     // USERS column names
     private static final String PASSWORD = "Password";
@@ -65,6 +68,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     // BOIL_ADDITIONS column names
     private static final String ADDITION_NAME = "AdditionName";
     private static final String ADDITION_TIME = "AdditionTime";
+    private static final String ADDITION_QTY = "AdditionQty";
+    private static final String ADDITION_UOFM = "AdditionUofM";
 
     // BREWS_SCHEDULED column names
     private static final String SECONDARY_ALERT_DATE = "SecondaryAlertDate";
@@ -85,7 +90,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_BREWS
     private static final String CREATE_TABLE_BREWS = "CREATE TABLE "
             + TABLE_BREWS + "(" + BREW_NAME + " TEXT," + USER_NAME + " TEXT," + BOIL_TIME + " INTEGER," + PRIMARY + " INTEGER," + SECONDARY + " INTEGER," + BOTTLE + " INTEGER,"
-            + DESCRIPTION + " TEXT," + STYLE + " TEXT," + CREATED_ON + " DATETIME, PRIMARY KEY ("+ BREW_NAME +", "+ USER_NAME +" ) )";
+            + DESCRIPTION + " TEXT," + STYLE + " TEXT," + CREATED_ON + " DATETIME," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL,"
+            + ABV + " REAL, PRIMARY KEY ("+ BREW_NAME +", "+ USER_NAME +" ) )";
 
     //CREATE_TABLE_BREWS_STYLES
     private static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
@@ -93,12 +99,14 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     //CREATE_TABLE_BOIL_ADDITIONS
     private static final String CREATE_TABLE_BOIL_ADDITIONS = "CREATE TABLE "
-            + TABLE_BOIL_ADDITIONS + "(" + BREW_NAME + " TEXT," + USER_NAME + " TEXT," + ADDITION_NAME + " TEXT," + ADDITION_TIME + " INTEGER, PRIMARY KEY ("+ BREW_NAME +", "+ ADDITION_NAME +", "+ USER_NAME +" ) )";
+            + TABLE_BOIL_ADDITIONS + "(" + BREW_NAME + " TEXT," + USER_NAME + " TEXT," + ADDITION_NAME + " TEXT," + ADDITION_TIME + " INTEGER,"
+            +  ADDITION_QTY + " INTEGER," +  ADDITION_UOFM + " TEXT, PRIMARY KEY ("+ BREW_NAME +", "+ ADDITION_NAME +", "+ USER_NAME +" ) )";
 
     //CREATE_TABLE_BREWS_SCHEDULED
     private static final String CREATE_TABLE_BREWS_SCHEDULED = "CREATE TABLE "
             + TABLE_BREWS_SCHEDULED + "(" + BREW_NAME + " TEXT," + USER_NAME + " TEXT," + CREATED_ON + " DATETIME," + SECONDARY_ALERT_DATE + " DATETIME," + BOTTLE_ALERT_DATE + " DATETIME,"
-            + END_BREW_DATE + " DATETIME," +  ACTIVE + " INTEGER," +  NOTE + " TEXT," +  STYLE_COLOR + " TEXT )";
+            + END_BREW_DATE + " DATETIME," +  ACTIVE + " INTEGER," +  NOTE + " TEXT," +  STYLE_COLOR + " TEXT," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL,"
+            + ABV + " REAL )";
 
     //CREATE_TABLE_BREWS_CALCULATIONS
     private static final String CREATE_TABLE_BREWS_CALCULATIONS = "CREATE TABLE "
@@ -328,6 +336,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(PRIMARY, aBrew.getPrimary());
         values.put(SECONDARY, aBrew.getSecondary());
         values.put(BOTTLE, aBrew.getBottle());
+        values.put(ORIGINAL_GRAVITY, aBrew.getTargetOG());
+        values.put(FINAL_GRAVITY, aBrew.getTargetFG());
+        values.put(ABV, aBrew.getTargetABV());
         values.put(DESCRIPTION, aBrew.getDescription());
         values.put(STYLE, aBrew.getStyle());
         values.put(CREATED_ON, getDateTime());
@@ -367,6 +378,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
             brew.setPrimary(c.getInt(c.getColumnIndex(PRIMARY)));
             brew.setSecondary((c.getInt(c.getColumnIndex(SECONDARY))));
             brew.setBottle((c.getInt(c.getColumnIndex(BOTTLE))));
+            brew.setTargetOG(c.getDouble(c.getColumnIndex(ORIGINAL_GRAVITY)));
+            brew.setTargetFG((c.getDouble(c.getColumnIndex(FINAL_GRAVITY))));
+            brew.setTargetABV((c.getDouble(c.getColumnIndex(ABV))));
             brew.setDescription((c.getString(c.getColumnIndex(DESCRIPTION))));
             brew.setStyle((c.getString(c.getColumnIndex(STYLE))));
             brew.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
@@ -408,6 +422,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 brewSchema.setPrimary(c.getInt(c.getColumnIndex(PRIMARY)));
                 brewSchema.setSecondary(c.getInt(c.getColumnIndex(SECONDARY)));
                 brewSchema.setBottle(c.getInt(c.getColumnIndex(BOTTLE)));
+                brewSchema.setTargetOG(c.getDouble(c.getColumnIndex(ORIGINAL_GRAVITY)));
+                brewSchema.setTargetFG((c.getDouble(c.getColumnIndex(FINAL_GRAVITY))));
+                brewSchema.setTargetABV((c.getDouble(c.getColumnIndex(ABV))));
                 brewSchema.setDescription(c.getString(c.getColumnIndex(DESCRIPTION)));
                 brewSchema.setStyle(c.getString(c.getColumnIndex(STYLE)));
                 brewSchema.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
@@ -435,6 +452,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(PRIMARY, aBrew.getPrimary());
         values.put(SECONDARY, aBrew.getSecondary());
         values.put(BOTTLE, aBrew.getBottle());
+        values.put(ORIGINAL_GRAVITY, aBrew.getTargetOG());
+        values.put(FINAL_GRAVITY, aBrew.getTargetFG());
+        values.put(ABV, aBrew.getTargetABV());
         values.put(DESCRIPTION, aBrew.getDescription());
         values.put(STYLE, aBrew.getStyle());
         //values.put(CREATED_ON, getDateTime());
@@ -574,6 +594,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(USER_NAME, aBoilAddition.getUserName());
         values.put(ADDITION_NAME, aBoilAddition.getAdditionName());
         values.put(ADDITION_TIME, aBoilAddition.getAdditionTime());
+        values.put(ADDITION_QTY, aBoilAddition.getAdditionQty());
+        values.put(ADDITION_UOFM, aBoilAddition.getUOfM());
 
         // insert row
         return db.insert(TABLE_BOIL_ADDITIONS,null,values) > 0;
@@ -624,6 +646,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 BoilAdditionsSchema baSchema = new BoilAdditionsSchema();
                 baSchema.setAdditionName(c.getString(c.getColumnIndex(ADDITION_NAME)));
                 baSchema.setAdditionTime(c.getInt(c.getColumnIndex(ADDITION_TIME)));
+                baSchema.setAdditionQty(c.getInt(c.getColumnIndex(ADDITION_QTY)));
+                baSchema.setUOfM(c.getString(c.getColumnIndex(ADDITION_UOFM)));
 
                 // adding to boilList
                 boilList.add(baSchema);
@@ -653,8 +677,10 @@ public class DataBaseManager extends SQLiteOpenHelper {
         if (c.getCount() > 0 ) {
             c.moveToFirst();
 
-                baSchema.setAdditionName(c.getString(c.getColumnIndex(ADDITION_NAME)));
-                baSchema.setAdditionTime(c.getInt(c.getColumnIndex(ADDITION_TIME)));
+            baSchema.setAdditionName(c.getString(c.getColumnIndex(ADDITION_NAME)));
+            baSchema.setAdditionTime(c.getInt(c.getColumnIndex(ADDITION_TIME)));
+            baSchema.setAdditionQty(c.getInt(c.getColumnIndex(ADDITION_QTY)));
+            baSchema.setUOfM(c.getString(c.getColumnIndex(ADDITION_UOFM)));
         }
 
         c.close();
@@ -702,6 +728,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(ACTIVE, aSBrew.getActive());
         values.put(NOTE, "");
         values.put(STYLE_COLOR, aSBrew.getColor());
+        values.put(ORIGINAL_GRAVITY, aSBrew.getOG());
+        values.put(FINAL_GRAVITY, aSBrew.getFG());
+        values.put(ABV, aSBrew.getABV());
 
         //Add ScheduledBrew
         if(!(db.insert(TABLE_BREWS_SCHEDULED,null,values) > 0) )
@@ -734,6 +763,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
             sBrew.setAlertSecondaryDate(c.getString(c.getColumnIndex(SECONDARY_ALERT_DATE)));
             sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
             sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
+            sBrew.setOG(c.getDouble(c.getColumnIndex(ORIGINAL_GRAVITY)));
+            sBrew.setFG((c.getDouble(c.getColumnIndex(FINAL_GRAVITY))));
+            sBrew.setABV((c.getDouble(c.getColumnIndex(ABV))));
             sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
             sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
             sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
@@ -765,9 +797,13 @@ public class DataBaseManager extends SQLiteOpenHelper {
             sBrew.setAlertSecondaryDate(c.getString(c.getColumnIndex(SECONDARY_ALERT_DATE)));
             sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
             sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
+            sBrew.setOG(c.getDouble(c.getColumnIndex(ORIGINAL_GRAVITY)));
+            sBrew.setFG((c.getDouble(c.getColumnIndex(FINAL_GRAVITY))));
+            sBrew.setABV((c.getDouble(c.getColumnIndex(ABV))));
             sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
             sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
             sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
+
         }
         c.close();
         return sBrew;
@@ -800,6 +836,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 sBrew.setAlertSecondaryDate(c.getString(c.getColumnIndex(SECONDARY_ALERT_DATE)));
                 sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
                 sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
+                sBrew.setOG(c.getDouble(c.getColumnIndex(ORIGINAL_GRAVITY)));
+                sBrew.setFG((c.getDouble(c.getColumnIndex(FINAL_GRAVITY))));
+                sBrew.setABV((c.getDouble(c.getColumnIndex(ABV))));
                 sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
                 sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
                 sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
@@ -833,6 +872,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(ACTIVE, aSBrew.getActive());
         values.put(NOTE, aSBrew.getNotes());
         values.put(STYLE_COLOR, aSBrew.getColor());
+        values.put(ORIGINAL_GRAVITY, aSBrew.getOG());
+        values.put(FINAL_GRAVITY, aSBrew.getFG());
+        values.put(ABV, aSBrew.getABV());
 
         // updating row
         int retVal = db.update(TABLE_BREWS_SCHEDULED, values, ROW_ID + " = ?",

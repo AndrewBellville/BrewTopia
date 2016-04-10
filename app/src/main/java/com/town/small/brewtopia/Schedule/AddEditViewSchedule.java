@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -67,17 +68,23 @@ public class AddEditViewSchedule extends ActionBarActivity {
     private EditText BottleAlert;
     private EditText EndDate;
     private EditText Notes;
+    private EditText OriginalGravity;
+    private EditText FinalGravity;
+
     private Button editScheduleButton;
     private Spinner colorSpinner;
     private CheckBox dateRollUpCheckBox;
 
     private KeyListener brewNameListener;
     private KeyListener NotesListener;
+    private KeyListener OriginalGravityListener;
+    private KeyListener FinalGravityListener;
 
     private DataBaseManager dbManager;
     private ScheduleActivityData scheduleActivityData;
     ScheduledBrewSchema aScheduleSchema;
     ArrayAdapter<String> colorAdapter;
+    private Toolbar toolbar;
 
 
     @Override
@@ -104,6 +111,10 @@ public class AddEditViewSchedule extends ActionBarActivity {
         EndDate = (EditText)findViewById(R.id.ScheduleEndDateeditText);
         datesList[3] = EndDate;
         Notes = (EditText)findViewById(R.id.ScheduleNoteseditText);
+        OriginalGravity = (EditText)findViewById(R.id.ScheduleOGeditText);
+        FinalGravity = (EditText)findViewById(R.id.ScheduleFGeditText);
+
+
         colorSpinner = (Spinner) findViewById(R.id.Colorspinner);
         dateRollUpCheckBox = (CheckBox)findViewById(R.id.DateRollUpCheckBox);
 
@@ -113,10 +124,14 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
         brewNameListener = brewName.getKeyListener();
         NotesListener = Notes.getKeyListener();
+        OriginalGravityListener = OriginalGravity.getKeyListener();
+        FinalGravityListener = FinalGravity.getKeyListener();
 
 
-        //getActionBar().hide();
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar=(Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Schedule");
         dbManager = DataBaseManager.getInstance(getApplicationContext());
 
@@ -171,15 +186,15 @@ public class AddEditViewSchedule extends ActionBarActivity {
         BottleAlert.setText(aScheduleSchema.getAlertBottleDate());
         EndDate.setText(aScheduleSchema.getEndBrewDate());
         Notes.setText(aScheduleSchema.getNotes());
+        OriginalGravity.setText(Double.toString(aScheduleSchema.getOG()));
+        FinalGravity.setText(Double.toString(aScheduleSchema.getFG()));
     }
 
     private void setColorSpinner()
     {
-        int MAX_COLORS = 2;
-        String[] colors = new String[MAX_COLORS];
-
-        colors[0]= "Default";
-        colors[1]= "Blue";
+        List<String> colors = new ArrayList<String>();
+        colors.add("Default");
+        colors.add("Blue");
 
         colorAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, colors); //selected item will look like a spinner set from XML
         // Specify the layout to use when the list of choices appears
@@ -280,15 +295,31 @@ public class AddEditViewSchedule extends ActionBarActivity {
         sbrew.setUserName(UserName);
         sbrew.setStartDate(aScheduleSchema.getStartDate());
 
+        double og=0.0;
+        double fg=0.0;
+
+        try
+        {
+            og = Double.parseDouble(OriginalGravity.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            fg = Double.parseDouble(FinalGravity.getText().toString());
+        }
+        catch (Exception e){}
+
+        sbrew.setOG(og);
+        sbrew.setFG(fg);
 
         //SecondaryAlert date need to be greater then all other dates before it
         if( (StartDate.getText().toString().compareTo(SecondaryAlert.getText().toString()) <= 0) &&
-                (SecondaryAlert.getText().toString().compareTo(StartDate.getText().toString()) > 0) &&
-                (BottleAlert.getText().toString().compareTo(StartDate.getText().toString()) > 0) &&
-                (BottleAlert.getText().toString().compareTo(SecondaryAlert.getText().toString()) > 0) &&
-                (EndDate.getText().toString().compareTo(StartDate.getText().toString()) > 0) &&
-                (EndDate.getText().toString().compareTo(SecondaryAlert.getText().toString()) > 0) &&
-                (EndDate.getText().toString().compareTo(BottleAlert.getText().toString()) > 0))
+                (SecondaryAlert.getText().toString().compareTo(StartDate.getText().toString()) >= 0) &&
+                (BottleAlert.getText().toString().compareTo(StartDate.getText().toString()) >= 0) &&
+                (BottleAlert.getText().toString().compareTo(SecondaryAlert.getText().toString()) >= 0) &&
+                (EndDate.getText().toString().compareTo(StartDate.getText().toString()) >= 0) &&
+                (EndDate.getText().toString().compareTo(SecondaryAlert.getText().toString()) >= 0) &&
+                (EndDate.getText().toString().compareTo(BottleAlert.getText().toString()) >= 0))
         {
             sbrew.setStartDate(StartDate.getText().toString());
             sbrew.setAlertSecondaryDate(SecondaryAlert.getText().toString());
@@ -360,6 +391,16 @@ public class AddEditViewSchedule extends ActionBarActivity {
             EndDate.setEnabled(false);
             EndDate.setFocusable(false);
 
+            OriginalGravity.setKeyListener(null);
+            OriginalGravity.setClickable(false);
+            OriginalGravity.setEnabled(false);
+            //OriginalGravity.setFocusable(false);
+
+            FinalGravity.setKeyListener(null);
+            FinalGravity.setClickable(false);
+            FinalGravity.setEnabled(false);
+            //FinalGravity.setFocusable(false);
+
             Notes.setKeyListener(null);
             Notes.setClickable(false);
             Notes.setEnabled(false);
@@ -390,11 +431,21 @@ public class AddEditViewSchedule extends ActionBarActivity {
             EndDate.setEnabled(true);
             //EndDate.setFocusable(true);
 
+
+            OriginalGravity.setKeyListener(OriginalGravityListener);
+            OriginalGravity.setClickable(true);
+            OriginalGravity.setEnabled(true);
+            OriginalGravity.setFocusable(true);
+
+            FinalGravity.setKeyListener(FinalGravityListener);
+            FinalGravity.setClickable(true);
+            FinalGravity.setEnabled(true);
+            FinalGravity.setFocusable(true);
+
             Notes.setKeyListener(NotesListener);
             Notes.setClickable(true);
             Notes.setEnabled(true);
             Notes.setFocusable(true);
-
 
             colorSpinner.setClickable(true);
             dateRollUpCheckBox.setClickable(true);

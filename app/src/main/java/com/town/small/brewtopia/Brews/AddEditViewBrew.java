@@ -2,15 +2,19 @@ package com.town.small.brewtopia.Brews;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,18 +29,23 @@ import com.town.small.brewtopia.Timer.TimerPager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddEditViewBrew extends ActionBarActivity {
+public class AddEditViewBrew extends Fragment {
 
     // Log cat tag
-    private static final String LOG = "CreateBrew";
+    private static final String LOG = "AddEditViewBrew";
 
-    private Button addStartButton;
-    private TextView brewName;
-    private TextView primary;
-    private TextView secondary;
-    private TextView bottle;
-    private TextView description;
-    private TextView boilTime;
+    private Button startButton;
+    private Button editBrewButton;
+    private EditText brewName;
+    private EditText primary;
+    private EditText secondary;
+    private EditText bottle;
+    private EditText description;
+    private EditText boilTime;
+    private EditText targetOG;
+    private EditText targetFG;
+    private EditText targetABV;
+
     private String  UserName;
     private ScrollView ScrollView;
     private Spinner styleSpinner;
@@ -48,35 +57,55 @@ public class AddEditViewBrew extends ActionBarActivity {
     private KeyListener bottleListener;
     private KeyListener descriptionListener;
     private KeyListener boilTimeListener;
+    private KeyListener targetOGListener;
+    private KeyListener targetFGListener;
+    private KeyListener targetABVListener;
 
     private DataBaseManager dbManager;
     private BrewActivityData brewActivityDataData;
+    private BrewSchema brewSchema;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.e(LOG, "Entering: onCreate");
-        setContentView(R.layout.brew_view);
+        View returnView = inflater.inflate(R.layout.brew_view,container,false);
 
         //Add add edit layout default
-        LayoutInflater inflater =  (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.activity_add_edit_view_brew, null);
+        View mainView = inflater.inflate(R.layout.activity_add_edit_view_brew, null);
 
-        ScrollView = (ScrollView)findViewById(R.id.BrewScrollView);
-        ScrollView.addView(view);
+        ScrollView = (ScrollView)returnView.findViewById(R.id.BrewScrollView);
+        ScrollView.addView(mainView);
 
-        //getActionBar().hide();
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        dbManager = DataBaseManager.getInstance(getApplicationContext());
+        dbManager = DataBaseManager.getInstance(getActivity());
 
-        brewName = (TextView)findViewById(R.id.editTextBrewName);
-        primary = (TextView)findViewById(R.id.editTextPrimary);
-        secondary = (TextView)findViewById(R.id.editTextSecondary);
-        bottle = (TextView)findViewById(R.id.editTextBottle);
-        description = (TextView)findViewById(R.id.editTextDescription);
-        boilTime = (TextView)findViewById(R.id.editTextBoilTime);
-        addStartButton = (Button)findViewById(R.id.AddStartBrewButton);
-        styleSpinner = (Spinner) findViewById(R.id.beerStylespinner);
+        brewName = (EditText)mainView.findViewById(R.id.editTextBrewName);
+        primary = (EditText)mainView.findViewById(R.id.editTextPrimary);
+        secondary = (EditText)mainView.findViewById(R.id.editTextSecondary);
+        bottle = (EditText)mainView.findViewById(R.id.editTextBottle);
+        description = (EditText)mainView.findViewById(R.id.editTextDescription);
+        boilTime = (EditText)mainView.findViewById(R.id.editTextBoilTime);
+        targetOG = (EditText)mainView.findViewById(R.id.editTextTargetOG);
+        targetFG = (EditText)mainView.findViewById(R.id.editTextTargetFG);
+        targetABV = (EditText)mainView.findViewById(R.id.editTextTargetABV);
+
+
+        startButton = (Button)returnView.findViewById(R.id.AddStartBrewButton);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onStartButtonClick(view);
+            }
+        });
+        editBrewButton = (Button)returnView.findViewById(R.id.EditBrewButton);
+        editBrewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onEditClick(view);
+            }
+        });
+
+        styleSpinner = (Spinner) returnView.findViewById(R.id.beerStylespinner);
 
         brewNameListener = brewName.getKeyListener();
         primaryListener = primary.getKeyListener();
@@ -84,6 +113,9 @@ public class AddEditViewBrew extends ActionBarActivity {
         bottleListener = bottle.getKeyListener();
         descriptionListener = description.getKeyListener();
         boilTimeListener = boilTime.getKeyListener();
+        targetOGListener = targetOG.getKeyListener();
+        targetFGListener = targetFG.getKeyListener();
+        targetABVListener = targetABV.getKeyListener();
 
         UserName = CurrentUser.getInstance().getUser().getUserName();
 
@@ -93,37 +125,47 @@ public class AddEditViewBrew extends ActionBarActivity {
 
         if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD) {
             ifAdd();
-            setTitle("Create");
         }
-         else//if not Add display view
-        {
+         else if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.EDIT) {
+            brewSchema = brewActivityDataData.getAddEditViewBrew();
+            ifEdit();
+        }
+        else if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.VIEW) {
+            brewSchema = brewActivityDataData.getAddEditViewBrew();
             ifView();
-            setTitle(BrewActivityData.getInstance().getAddEditViewBrew().getBrewName());
         }
+        return returnView;
     }
 
     public void ifAdd()
     {
         ClearFields();
-        addStartButton.setText("Submit");
+        startButton.setVisibility(View.INVISIBLE);
+        editBrewButton.setText("Submit");
         brewActivityDataData.setAddEditViewState(BrewActivityData.DisplayMode.ADD);
         ToggleFieldEditable(true);
     }
 
     public void ifEdit()
     {
+        startButton.setVisibility(View.INVISIBLE);
+
         //get brew and display
-        DisplayBrew(BrewActivityData.getInstance().getAddEditViewBrew());
-        addStartButton.setText("Submit");
+        DisplayBrew(brewSchema);
+        editBrewButton.setText("Submit");
         brewActivityDataData.setAddEditViewState(BrewActivityData.DisplayMode.EDIT);
+
+        ToggleFieldEditable(false);
         ToggleFieldEditable(true);
     }
 
     public void ifView()
     {
         //get brew and display
-        DisplayBrew(BrewActivityData.getInstance().getAddEditViewBrew());
-        addStartButton.setText("Start Brew");
+        DisplayBrew(brewSchema);
+        editBrewButton.setText("Edit Brew");
+        startButton.setText("Start Brew");
+        startButton.setVisibility(View.VISIBLE);
         //Set EditText to not editable and hide button
         brewActivityDataData.setAddEditViewState(BrewActivityData.DisplayMode.VIEW);
         ToggleFieldEditable(false);
@@ -140,7 +182,7 @@ public class AddEditViewBrew extends ActionBarActivity {
         {
             brewStyles[i]= bs.get(i).getBrewStyleName();
         }
-        styleAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, brewStyles); //selected item will look like a spinner set from XML
+        styleAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, brewStyles); //selected item will look like a spinner set from XML
         // Specify the layout to use when the list of choices appears
         styleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
@@ -157,6 +199,10 @@ public class AddEditViewBrew extends ActionBarActivity {
         bottle.setText(Integer.toString(aBrewSchema.getBottle()));
         description.setText(aBrewSchema.getDescription());
         boilTime.setText(Integer.toString(aBrewSchema.getBoilTime()));
+        targetOG.setText(Double.toString(aBrewSchema.getTargetOG()));
+        targetFG.setText(Double.toString(aBrewSchema.getTargetFG()));
+        targetABV.setText(Double.toString(aBrewSchema.getTargetABV()));
+
         // set to brew Style this might be deleted if its user created
         try
         {
@@ -178,7 +224,7 @@ public class AddEditViewBrew extends ActionBarActivity {
     }
 
 
-    public void onAddStartClick(View aView)
+    public void onStartButtonClick(View aView)
     {
         if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.VIEW)
         {
@@ -190,20 +236,19 @@ public class AddEditViewBrew extends ActionBarActivity {
             }
 
             //Create and intent which will open Timer Activity
-            Intent intent = new Intent(this, TimerPager.class);
+            Intent intent = new Intent(getActivity(), TimerPager.class);
 
             //start next activity
             startActivity(intent);
-        }
-        else
-        {
-            validateSubmit();
         }
     }
 
     public void onEditClick(View aView)
     {
-        ifEdit();
+        if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.VIEW )
+            ifEdit();
+        else
+            validateSubmit();
     }
 
     private void validateSubmit()
@@ -212,7 +257,7 @@ public class AddEditViewBrew extends ActionBarActivity {
 
         if(brewName.getText().toString().equals(""))
         {
-            Toast.makeText(getApplicationContext(), "Blank Data Field", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Blank Data Field", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -220,6 +265,11 @@ public class AddEditViewBrew extends ActionBarActivity {
         int sf=0;
         int bc=0;
         int bt=0;
+
+        double og=0.0;
+        double fg=0.0;
+        double abv=0.0;
+
         try
         {
             pf  = Integer.parseInt(primary.getText().toString());
@@ -241,6 +291,22 @@ public class AddEditViewBrew extends ActionBarActivity {
         }
         catch (Exception e){}
 
+        try
+        {
+            og = Double.parseDouble(targetOG.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            fg = Double.parseDouble(targetFG.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            abv = Double.parseDouble(targetABV.getText().toString());
+        }
+        catch (Exception e){}
+
 
         //Create Brew
         BrewSchema brew = new BrewSchema();
@@ -249,6 +315,9 @@ public class AddEditViewBrew extends ActionBarActivity {
         brew.setPrimary(pf);
         brew.setSecondary(sf);
         brew.setBottle(bc);
+        brew.setTargetOG(og);
+        brew.setTargetFG(fg);
+        brew.setTargetABV(abv);
         brew.setDescription(description.getText().toString());
         brew.setBoilTime(bt);
         brew.setStyle(styleSpinner.getSelectedItem().toString());
@@ -262,7 +331,7 @@ public class AddEditViewBrew extends ActionBarActivity {
         {
             if(dbManager.CreateABrew(brew) == 0)// 0 brews failed to create
             {
-                Toast.makeText(getApplicationContext(), "Duplicate Brew Name", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Duplicate Brew Name", Toast.LENGTH_LONG).show();
                 return;
             }
         }
@@ -274,7 +343,10 @@ public class AddEditViewBrew extends ActionBarActivity {
         //remove all additions after submission
         BrewActivityData.getInstance().getBaArray().clear();
 
-        this.finish();
+        brewSchema = brew;
+        brewActivityDataData.setAddEditViewBrew(brewSchema);
+
+        ifView();
     }
 
     public static List<BoilAdditionsSchema> cloneList(List<BoilAdditionsSchema> list) {
@@ -287,7 +359,7 @@ public class AddEditViewBrew extends ActionBarActivity {
     public void onAddBoilAdditions(View aView)
     {
         //Create and intent which will open activity AddEditViewBoilAdditions
-        Intent intent = new Intent(this, AddEditViewBoilAdditions.class);
+        Intent intent = new Intent(getActivity(), AddEditViewBoilAdditions.class);
         //start next activity
         startActivity(intent);
     }
@@ -302,6 +374,9 @@ public class AddEditViewBrew extends ActionBarActivity {
         bottle.setText("");
         description.setText("");
         boilTime.setText("");
+        targetOG.setText("");
+        targetFG.setText("");
+        targetABV.setText("");
         // set to None there should always be a None
         try
         {
@@ -351,6 +426,21 @@ public class AddEditViewBrew extends ActionBarActivity {
             boilTime.setEnabled(false);
             //boilTime.setFocusable(false);
 
+            targetOG.setKeyListener(null);
+            targetOG.setClickable(false);
+            targetOG.setEnabled(false);
+            //targetOG.setFocusable(false);
+
+            targetFG.setKeyListener(null);
+            targetFG.setClickable(false);
+            targetFG.setEnabled(false);
+            //targetFG.setFocusable(false);
+
+            targetABV.setKeyListener(null);
+            targetABV.setClickable(false);
+            targetABV.setEnabled(false);
+            //targetABV.setFocusable(false);
+
             styleSpinner.setClickable(false);
         }
         else
@@ -389,13 +479,22 @@ public class AddEditViewBrew extends ActionBarActivity {
             boilTime.setEnabled(true);
             boilTime.setFocusable(true);
 
+            targetOG.setKeyListener(targetOGListener);
+            targetOG.setClickable(true);
+            targetOG.setEnabled(true);
+            //targetOG.setFocusable(true);
+
+            targetFG.setKeyListener(targetFGListener);
+            targetFG.setClickable(true);
+            targetFG.setEnabled(true);
+            //targetFG.setFocusable(true);
+
+            targetABV.setKeyListener(targetABVListener);
+            targetABV.setClickable(true);
+            targetABV.setEnabled(true);
+            //targetABV.setFocusable(true);
+
             styleSpinner.setClickable(true);
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        onBackPressed();
-        return true;
     }
 }

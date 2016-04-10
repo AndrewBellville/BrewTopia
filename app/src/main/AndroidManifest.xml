@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.town.small.brewtopia" >
+    package="com.town.small.brewtopia">
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/beer"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:windowSoftInputMode="adjustPan" >
+        android:windowSoftInputMode="adjustPan">
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme">
@@ -20,62 +20,29 @@
         </activity>
         <activity
             android:name=".Login"
-            android:label="@string/app_name">
-        </activity>
+            android:label="@string/app_name"></activity>
         <activity
             android:name=".UserProfile"
-            android:label="@string/title_activity_user_profile" >
-        </activity>
-        <activity
-            android:name=".Brews.UserBrews"
-            android:label="@string/title_activity_user_brews" >
-        </activity>
-        <activity
-            android:name=".Schedule.UserSchedule"
-            android:label="@string/title_activity_user_schedule" >
-        </activity>
-        <activity
-            android:name=".UserInventory"
-            android:label="@string/title_activity_user_inventory" >
-        </activity>
-        <activity
-            android:name=".Brews.AddEditViewBrew"
-            android:label="@string/title_activity_add_edit_view_brew"
-            android:icon="@drawable/beer_dark" >
-        </activity>
-        <activity
-            android:name=".Brews.AddEditViewBoilAdditions"
-            android:label="@string/title_activity_add_edit_view_boil_additions"
-            android:icon="@drawable/beer_dark">
-        </activity>
-        <activity
+            android:label="@string/title_activity_user_profile"></activity>
             android:name=".Timer.TimerPager"
-            android:label="@string/title_activity_brew_timer_pager" >
-        </activity>
-        <activity
-            android:name=".Calculations.UserCalculations"
-            android:label="@string/title_activity_user_calculations" >
-        </activity>
+            android:label="@string/title_activity_brew_timer_pager">
         <activity
             android:name=".Calculations.AlcoholByVolume"
-            android:label="@string/title_activity_alcohol_by_volume"
-            android:icon="@drawable/beer_dark">
-        </activity>
+            android:icon="@drawable/beer_dark"
+            android:label="@string/title_activity_alcohol_by_volume"></activity>
         <activity
             android:name=".Calculations.BrixCalculations"
-            android:label="@string/title_activity_brix_calculations"
-            android:icon="@drawable/beer_dark">
-        </activity>
+            android:icon="@drawable/beer_dark"
+            android:label="@string/title_activity_brix_calculations"></activity>
         <activity
             android:name=".Calculations.SpecificGravity"
-            android:label="@string/title_activity_specific_gravity"
-            android:icon="@drawable/beer_dark">
-        </activity>
+            android:icon="@drawable/beer_dark"
+            android:label="@string/title_activity_specific_gravity"></activity>
         <activity
             android:name=".Schedule.AddEditViewSchedule"
-            android:label="@string/title_activity_add_edit_view_schedule"
-            android:icon="@drawable/beer_dark">
-        </activity>
+            android:icon="@drawable/beer_dark"
+            android:label="@string/title_activity_add_edit_view_schedule"></activity>
+        <activity android:name=".Brews.UserBrew"></activity>
     </application>
 
 </manifest>

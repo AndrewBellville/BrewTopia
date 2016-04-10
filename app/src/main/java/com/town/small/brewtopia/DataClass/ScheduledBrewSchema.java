@@ -19,6 +19,9 @@ public class ScheduledBrewSchema {
     private String AlertBottleDate;
     private String EndBrewDate;
     private String Notes;
+    private Double OG=0.0;
+    private Double FG=0.0;
+    private Double ABV=0.0;
     private int Active;
     private int displayLevel = 0;
     private String color;
@@ -50,17 +53,17 @@ public class ScheduledBrewSchema {
     public String getCurrentState()
     {
         Date date = new Date();
-        String d = APPUTILS.dateFormat.format(date);
+        String d = APPUTILS.dateFormatCompare.format(date);
 
-        if(d.compareTo(getStartDate()) > 0 &&
-                d.compareTo(getAlertSecondaryDate()) < 0)
-            return "Primary";
-        else if(d.compareTo(getAlertSecondaryDate()) > 0 &&
-                d.compareTo(getAlertBottleDate()) < 0)
-            return "Secondary";
-        else if(d.compareTo(getAlertBottleDate()) > 0 &&
-                d.compareTo(getEndBrewDate()) < 0)
-            return "Bottles";
+        if(d.compareTo(APPUTILS.StringDateCompare(getStartDate())) >= 0 &&
+                d.compareTo(APPUTILS.StringDateCompare(getAlertSecondaryDate())) < 0)
+            return "Primary "+ d.compareTo(APPUTILS.StringDateCompare(getStartDate()))+ " Days";
+        else if(d.compareTo(APPUTILS.StringDateCompare(getAlertSecondaryDate())) >= 0 &&
+                d.compareTo(APPUTILS.StringDateCompare(getAlertBottleDate())) < 0)
+            return "Secondary "+ d.compareTo(APPUTILS.StringDateCompare(getAlertSecondaryDate()))+ " Days";
+        else if(d.compareTo(APPUTILS.StringDateCompare(getAlertBottleDate())) >= 0 &&
+                d.compareTo(APPUTILS.StringDateCompare(getEndBrewDate())) <= 0)
+            return "Bottles "+ d.compareTo(APPUTILS.StringDateCompare(getAlertBottleDate()))+ " Days";
         else
             return "Out Of Range";
     }
@@ -142,6 +145,11 @@ public class ScheduledBrewSchema {
         return false;
     }
 
+    private void CalculateABV()
+    {
+        setABV( ( (OG - FG)/.75 ) );
+    }
+
     //Getters
     public String getUserName() {
         return UserName;
@@ -178,6 +186,15 @@ public class ScheduledBrewSchema {
     }
     public boolean isShowAsAlert() {
         return showAsAlert;
+    }
+    public Double getOG() {
+        return OG;
+    }
+    public Double getFG() {
+        return FG;
+    }
+    public Double getABV() {
+        return ABV;
     }
 
 
@@ -218,4 +235,15 @@ public class ScheduledBrewSchema {
     public void setShowAsAlert(boolean showAsAlert) {
         this.showAsAlert = showAsAlert;
     }
+    public void setOG(Double OG) {
+        this.OG = OG;
+    }
+    public void setFG(Double FG) {
+        this.FG = FG;
+        CalculateABV();
+    }
+    public void setABV(Double ABV) {
+        this.ABV = ABV;
+    }
+
 }

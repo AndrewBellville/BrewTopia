@@ -10,9 +10,9 @@ public class BrewStyleSchema {
     // Log cat tag
     private static final String LOG = "BrewStyleSchema";
 
-    String UserName;
-    String BrewStyleName;
-    String BrewStyleColor;
+    private String UserName;
+    private String BrewStyleName;
+    private String BrewStyleColor;
 
     // constructors
     public BrewStyleSchema() {

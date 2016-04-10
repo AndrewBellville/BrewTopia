@@ -17,7 +17,7 @@ public class TimerPager extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_pager);
-        getActionBar().hide();
+        //getActionBar().hide();
 
         timerPager = (ViewPager)findViewById(R.id.pager);
         CustomPagerAdapter pagerAdapter  =  new CustomPagerAdapter(getSupportFragmentManager());

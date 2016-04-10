@@ -102,7 +102,6 @@ public class MyCalendar extends LinearLayout
         assignUiElements();
         assignClickHandlers();
 
-        updateCalendar();
     }
 
     private void loadDateFormat(AttributeSet attrs)
@@ -184,51 +183,6 @@ public class MyCalendar extends LinearLayout
         });
     }
 
-    /**
-     * Display dates correctly in grid
-     */
-    public void updateCalendar()
-    {
-        updateCalendar(null);
-    }
-
-    /**
-     * Display dates correctly in grid
-     */
-    public void updateCalendar(HashSet<Date> events)
-    {
-        Log.e(LOG, "Entering: updateCalendar");
-        ArrayList<Date> cells = new ArrayList<Date>();
-        Calendar calendar = (Calendar)currentDate.clone();
-
-        // determine the cell for current month's beginning
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        int monthBeginningCell = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-
-        // move calendar backwards to the beginning of the week
-        calendar.add(Calendar.DAY_OF_MONTH, -monthBeginningCell);
-
-        // fill cells
-        while (cells.size() < DAYS_COUNT)
-        {
-            cells.add(calendar.getTime());
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
-        }
-
-        // update grid
-        grid.setAdapter(new CalendarAdapter(getContext(), cells, events));
-
-        // update title
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-        txtDate.setText(sdf.format(currentDate.getTime()));
-
-        // set header color according to current season
-        int month = currentDate.get(Calendar.MONTH);
-        int season = monthSeason[month];
-        int color = rainbow[season];
-
-        header.setBackgroundColor(getResources().getColor(color));
-    }
 
     /**
      * Display dates correctly in grid
@@ -266,6 +220,7 @@ public class MyCalendar extends LinearLayout
         int color = rainbow[season];
 
         header.setBackgroundColor(getResources().getColor(color));
+
     }
 
 
@@ -278,14 +233,6 @@ public class MyCalendar extends LinearLayout
 
         // for view inflation
         private LayoutInflater inflater;
-
-        public CalendarAdapter(Context context, ArrayList<Date> days, HashSet<Date> eventDays)
-        {
-            super(context, R.layout.calendar_day_view, days);
-            this.eventDays = eventDays;
-            inflater = LayoutInflater.from(context);
-            getViewPos = new ArrayList<Integer>();
-        }
 
         public CalendarAdapter(Context context, ArrayList<Date> days, List<ScheduledBrewSchema> eventDays)
         {
@@ -300,7 +247,7 @@ public class MyCalendar extends LinearLayout
         {
 
             //if we have seen this position (date) before we just want to return the view other wise add to list and create the new view
-            if(getViewPos.contains(position))
+            if(getViewPos.contains(position) && view !=  null)
                 return view;
             else
                 getViewPos.add(position);
@@ -318,24 +265,6 @@ public class MyCalendar extends LinearLayout
             if (view == null)
                 view = inflater.inflate(R.layout.calendar_day_view, parent, false);
 
-
-            // if this day has an event, specify event image
-            /*
-            view.setBackgroundResource(0);
-            if (eventDays != null)
-            {
-                for (Date eventDate : eventDays)
-                {
-                    if (eventDate.getDate() == day &&
-                            eventDate.getMonth() == month &&
-                            eventDate.getYear() == year)
-                    {
-                        // mark this day for event
-                        //view.setBackgroundResource(R.drawable.reminder);
-                        break;
-                    }
-                }
-            }*/
 
             ImageView ActionImage = (ImageView)view.findViewById(R.id.ActionImageView);
 

@@ -1,42 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:weightSum="1">
+    android:layout_height="fill_parent">
 
-    <ScrollView
-        android:id="@+id/ScheduleScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="80dp"/>
+    <include  android:id="@+id/app_bar"
+        layout="@layout/app_bar"/>
 
-    <RelativeLayout android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+
+    <RelativeLayout android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:weightSum="1">
 
-        <Button
-            android:layout_width="wrap_content"
+        <ScrollView
+            android:id="@+id/ScheduleScrollView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Delete"
-            android:id="@+id/DeleteButton"
-            android:layout_gravity="center"
-            android:onClick="onDeleteClick"/>
+            android:paddingBottom="80dp"/>
 
-        <Button
-            android:layout_width="wrap_content"
+        <RelativeLayout android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Edit Schedule"
-            android:id="@+id/EditScheduleButton"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:onClick="onEditClick"/>
+            android:layout_alignParentBottom="true"
+            android:weightSum="1">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                android:id="@+id/DeleteButton"
+                android:layout_gravity="center"
+                android:onClick="onDeleteClick"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit Schedule"
+                android:id="@+id/EditScheduleButton"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:onClick="onEditClick"/>
+
+        </RelativeLayout>
+
+
 
     </RelativeLayout>
-
-
-
-</RelativeLayout>
+</LinearLayout>

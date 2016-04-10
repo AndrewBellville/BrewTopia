@@ -1,10 +1,13 @@
 package com.town.small.brewtopia.Calculations;
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -22,7 +25,7 @@ import com.town.small.brewtopia.DataClass.*;
 
 
 
-public class UserCalculations extends ActionBarActivity {
+public class UserCalculations extends Fragment {
 
     // Log cat tag
     private static final String LOG = "UserCalculations";
@@ -41,13 +44,14 @@ public class UserCalculations extends ActionBarActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_calculations);
+        View view = inflater.inflate(R.layout.activity_user_calculations,container,false);
+
         Log.e(LOG, "Entering: onCreate");
         currentUser = CurrentUser.getInstance();
         userName = currentUser.getUser().getUserName();
-        CalculationsListView = (ListView)findViewById(R.id.CalculationsListView);
+        CalculationsListView = (ListView)view.findViewById(R.id.CalculationsListView);
         CalculationsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -55,14 +59,16 @@ public class UserCalculations extends ActionBarActivity {
                 CalculationSelect(position);
             }
         });
-        dbManager = DataBaseManager.getInstance(getApplicationContext());
+        dbManager = DataBaseManager.getInstance(getActivity());
 
         Calculations = dbManager.getAllCalculations();
         LoadCalculations();
+
+        return view;
     }
 
     @Override
-    protected void onResume(){
+    public void onResume(){
         super.onResume();
         Log.e(LOG, "Entering: onResume");
         LoadCalculations();
@@ -88,7 +94,7 @@ public class UserCalculations extends ActionBarActivity {
             }
 
             //instantiate custom adapter
-            CustomListAdapter adapter = new CustomListAdapter(list, this.getApplicationContext());
+            CustomListAdapter adapter = new CustomListAdapter(list, getActivity());
             CalculationsListView.setAdapter(adapter);
         }
     }
@@ -100,15 +106,15 @@ public class UserCalculations extends ActionBarActivity {
 
         Intent intent;
         if(selectedRow.get("text1").equals("ABV")) {
-            intent = new Intent(this, AlcoholByVolume.class);
+            intent = new Intent(getActivity(), AlcoholByVolume.class);
             startActivity(intent);
         }
         else if(selectedRow.get("text1").equals("BRIX")){
-            intent = new Intent(this, BrixCalculations.class);
+            intent = new Intent(getActivity(), BrixCalculations.class);
             startActivity(intent);
         }
         else if(selectedRow.get("text1").equals("SG")){
-            intent = new Intent(this, SpecificGravity.class);
+            intent = new Intent(getActivity(), SpecificGravity.class);
             startActivity(intent);
         }
     }

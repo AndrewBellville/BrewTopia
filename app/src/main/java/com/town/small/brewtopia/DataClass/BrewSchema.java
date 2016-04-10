@@ -13,13 +13,16 @@ public class BrewSchema {
     // Log cat tag
     private static final String LOG = "BrewSchema";
 
-    private int id;
+    private int brewId;
     private String BrewName;
     private String UserName;
     private int boilTime;
     private int Primary;
     private int Secondary;
     private int Bottle;
+    private Double targetOG;
+    private Double targetFG;
+    private Double targetABV;
     private String Description;
     private String CreatedOn;
     private List <BoilAdditionsSchema> boilAdditionlist;
@@ -47,8 +50,8 @@ public class BrewSchema {
     }
 
     //getters
-    public int getId() {
-        return id;
+    public int getBrewId() {
+        return brewId;
     }
     public String getBrewName() {
         return BrewName;
@@ -87,10 +90,19 @@ public class BrewSchema {
     public BrewStyleSchema getStyleSchema() {
         return StyleSchema;
     }
+    public Double getTargetOG() {
+        return targetOG;
+    }
+    public Double getTargetFG() {
+        return targetFG;
+    }
+    public Double getTargetABV() {
+        return targetABV;
+    }
 
     //setters
-    public void setId(int id) {
-        this.id = id;
+    public void setBrewId(int id) {
+        this.brewId = id;
     }
     public void setBrewName(String brewName) {
         BrewName = brewName;
@@ -125,5 +137,13 @@ public class BrewSchema {
     public void setStyleSchema(BrewStyleSchema styleSchema) {
         StyleSchema = styleSchema;
     }
-
+    public void setTargetOG(Double targetOG) {
+        this.targetOG = targetOG;
+    }
+    public void setTargetFG(Double targetFG) {
+        this.targetFG = targetFG;
+    }
+    public void setTargetABV(Double targetABV) {
+        this.targetABV = targetABV;
+    }
 }

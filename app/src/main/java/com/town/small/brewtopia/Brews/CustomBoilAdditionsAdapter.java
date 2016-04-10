@@ -8,6 +8,7 @@ package com.town.small.brewtopia.Brews;
     import android.widget.Button;
     import android.widget.EditText;
     import android.widget.ListAdapter;
+    import android.widget.Spinner;
     import android.widget.TextView;
 
     import com.town.small.brewtopia.R;
@@ -61,6 +62,8 @@ public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapt
         listItemText.setText("Name: ");
         TextView listItemText1 = (TextView)view.findViewById(R.id.list_item_label1);
         listItemText1.setText("Time: ");
+        TextView listItemText2 = (TextView)view.findViewById(R.id.list_item_label2);
+        listItemText2.setText("Qty: ");
 
         //Handle TextView and display string from your list
         EditText listItemEditText = (EditText)view.findViewById(R.id.list_item_edit);
@@ -69,14 +72,31 @@ public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapt
         EditText listItemEditText1 = (EditText)view.findViewById(R.id.list_item_edit1);
         listItemEditText1.setText(list.get(position).get("text2"));
 
+        EditText listItemEditText2 = (EditText)view.findViewById(R.id.list_item_edit2);
+        listItemEditText2.setText(list.get(position).get("text2"));
+
         //Handle buttons and add onClickListeners
         Button deleteBtn = (Button)view.findViewById(R.id.delete_btn);
+
+
+        Spinner UofMSpinner = (Spinner)view.findViewById(R.id.UofMSpinner);
 
         if(!isDeleteView)
         {
             deleteBtn.setVisibility(View.INVISIBLE);
             listItemEditText.setFocusable(false);
+            listItemEditText.setClickable(false);
+            listItemEditText.setEnabled(false);
+
             listItemEditText1.setFocusable(false);
+            listItemEditText1.setClickable(false);
+            listItemEditText1.setEnabled(false);
+
+            listItemEditText2.setFocusable(false);
+            listItemEditText2.setClickable(false);
+            listItemEditText2.setEnabled(false);
+
+            UofMSpinner.setClickable(false);
         }
 
         deleteBtn.setOnClickListener(new View.OnClickListener(){

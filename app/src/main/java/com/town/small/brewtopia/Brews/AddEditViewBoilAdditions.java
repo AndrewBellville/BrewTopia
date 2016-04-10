@@ -1,10 +1,14 @@
 package com.town.small.brewtopia.Brews;
 
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -20,7 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class AddEditViewBoilAdditions extends ActionBarActivity {
+public class AddEditViewBoilAdditions extends Fragment {
 
     // Log cat tag
     private static final String LOG = "AddEditBoilAdditions";
@@ -28,7 +32,7 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
     private BrewActivityData brewData;
 
     private Button addButton;
-    private Button confirmButton;
+    LinearLayout layout;
 
     private BrewActivityData.DisplayMode state;
     private BrewSchema brew;
@@ -38,22 +42,38 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
     private DataBaseManager dbManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_edit_view_boil_additions);
+        View view = inflater.inflate(R.layout.activity_add_edit_view_boil_additions,container,false);
         Log.e(LOG, "Entering: onCreate");
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle("Boil Additions");
+        dbManager = DataBaseManager.getInstance(getActivity());
 
-        dbManager = DataBaseManager.getInstance(getApplicationContext());
+        addButton = (Button)view.findViewById(R.id.AddNewButton);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onAddClick(view);
+            }
+        });
 
-        addButton = (Button)findViewById(R.id.AddNewButton);
-        confirmButton = (Button)findViewById(R.id.ConfirmButton);
+        layout = (LinearLayout)view.findViewById(R.id.AddList);
 
         brewData = BrewActivityData.getInstance();
+        if(brewData.getBaArray().size()  > 0)
+            brewData.getBaArray().clear();
 
         loadAll();
+
+        return view;
+    }
+
+    @Override
+    public void setMenuVisibility(boolean isShown) {
+        if(isShown)
+            loadAll();
+        else
+            onHidden();
     }
 
     private void loadAll()
@@ -70,10 +90,9 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
 
          //hide buttons
         if(state == BrewActivityData.DisplayMode.VIEW)
-        {
             addButton.setVisibility(View.INVISIBLE);
-            confirmButton.setVisibility(View.INVISIBLE);
-        }
+        else
+            addButton.setVisibility(View.VISIBLE);
     }
 
     private void BuildBoilAdditionArray() {
@@ -82,24 +101,29 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
         if(baArray.size()> 0)
             baArray.clear();
 
-        if(!(brew == null))
+        //If we have saved data we want to load  that and not from DB
+        if(brewData.getBaArray().size() == 0)
         {
 
             for(BoilAdditionsSchema boilAdditionsSchema : brew.getBoilAdditionlist())
             {
-                BoilAddition ba = new BoilAddition(this);
+                BoilAddition ba = new BoilAddition(getActivity());
                 ba.setBaSchema(boilAdditionsSchema);
                 ba.setDisplay();
                 baArray.add(ba);
             }
         }
-        for(BoilAdditionsSchema boilAdditionsSchema : brewData.getBaArray())
+        else
         {
-            BoilAddition ba = new BoilAddition(this);
-            ba.setBaSchema(boilAdditionsSchema);
-            ba.setDisplay();
-            baArray.add(ba);
+            for(BoilAdditionsSchema boilAdditionsSchema : brewData.getBaArray())
+            {
+                BoilAddition ba = new BoilAddition(getActivity());
+                ba.setBaSchema(boilAdditionsSchema);
+                ba.setDisplay();
+                baArray.add(ba);
+            }
         }
+
     }
 
     private ArrayList<BoilAdditionsSchema> ConvertToSchemaArray() {
@@ -116,7 +140,7 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
 
     private void DisplayBoilAddition()
     {
-        LinearLayout layout = (LinearLayout)findViewById(R.id.AddList);
+
         layout.removeAllViews();
         layout.invalidate();
 
@@ -132,7 +156,7 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
                     dbManager.delete_boil_additions_by_brew_name_addition_name(brew.getBrewName(),aAdditionName,brew.getUserName());
                     //update brewActivity brew
                     BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(brew.getBrewName(),brew.getUserName()));
-                    //baArray.clear();
+                    BrewActivityData.getInstance().getBaArray().clear();
                     //re-load all
                     loadAll();
                 }
@@ -147,38 +171,18 @@ public class AddEditViewBoilAdditions extends ActionBarActivity {
         createBoilAddition();
     }
 
-    public void onConfirmClick(View aView) {
-        if(!areAllFilled())
+    public void onHidden() {
+        if(!(brewData == null) )
         {
-            Toast.makeText(getApplicationContext(),"All Must be Filled in",Toast.LENGTH_LONG).show();
-            return;
+            brewData.setBaArray(ConvertToSchemaArray());
         }
-
-        brewData.setBaArray(ConvertToSchemaArray());
-
-        this.finish();
-    }
-
-    private boolean areAllFilled()
-    {
-        for(BoilAddition boilAddition : baArray)
-        {
-            if(!boilAddition.isPopulated())
-                return false;
-        }
-        return true;
     }
 
     private void createBoilAddition()
     {
-        BoilAddition ba = new BoilAddition(this);
+        BoilAddition ba = new BoilAddition(getActivity());
         baArray.add(ba);
         DisplayBoilAddition();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        onBackPressed();
-        return true;
-    }
 }

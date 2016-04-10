@@ -2,12 +2,14 @@ package com.town.small.brewtopia.Calculations;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.town.small.brewtopia.R;
 
@@ -24,7 +26,7 @@ public class AlcoholByVolume extends ActionBarActivity {
     private EditText FG;
     private TextView ABV;
     private TextView CalcABV;
-
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +34,10 @@ public class AlcoholByVolume extends ActionBarActivity {
         setContentView(R.layout.activity_alcohol_by_volume);
         Log.e(LOG, "Entering: onCreate");
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar=(Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Alcohol By Volume");
 
         OG = (EditText)findViewById(R.id.OGeditText);
@@ -44,6 +49,13 @@ public class AlcoholByVolume extends ActionBarActivity {
 
     public void onCalculateClick(View aView)
     {
+
+        if(OG.getText().toString().matches("")  || FG.getText().toString().matches(""))
+        {
+            Toast.makeText(getApplicationContext(), "Invalid Values", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         double og = Double.parseDouble(OG.getText().toString());
         double fg = Double.parseDouble(FG.getText().toString());
         double abv = (og - fg)/.75;

@@ -16,6 +16,12 @@ public class APPUTILS {
     public static SimpleDateFormat dateFormatCompare = new SimpleDateFormat(
             "yyyy-MM-dd", Locale.getDefault());
 
+    public static String StringDateCompare(String date)
+    {
+        //strip off time on date string
+        return  date.substring(0,10);
+    }
+
     //********************Brew Style Hash Map Name/Color**********************
     public static final HashMap StyleMap = new HashMap(){
         {

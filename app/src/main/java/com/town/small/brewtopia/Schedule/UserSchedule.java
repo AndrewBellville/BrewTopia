@@ -2,10 +2,13 @@ package com.town.small.brewtopia.Schedule;
 
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -25,7 +28,7 @@ import com.town.small.brewtopia.Schedule.MyCalendar;
 import com.town.small.brewtopia.DataClass.*;
 import com.town.small.brewtopia.Schedule.ScheduleActivityData;
 
-public class UserSchedule extends ActionBarActivity {
+public class UserSchedule extends Fragment {
 
     // Log cat tag
     private static final String LOG = "UserSchedule";
@@ -37,18 +40,21 @@ public class UserSchedule extends ActionBarActivity {
     private ListView ScheduledBrewListView;
     private String userName;
 
+    MyCalendar mc;
+
+
     private SimpleDateFormat formatter = APPUTILS.dateFormatCompare;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_schedule);
+        View view = inflater.inflate(R.layout.activity_user_schedule,container,false);
 
-        dbManager = DataBaseManager.getInstance(getApplicationContext());
+        dbManager = DataBaseManager.getInstance(getActivity());
         userName = CurrentUser.getInstance().getUser().getUserName();
 
         sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
-        MyCalendar mc = ((MyCalendar) findViewById(R.id.calendar_view));
+        mc = ((MyCalendar) view.findViewById(R.id.calendar_view));
         mc.updateCalendarList(sBrewList);
 
         // assign event handler
@@ -68,7 +74,7 @@ public class UserSchedule extends ActionBarActivity {
             }
         });
 
-        ScheduledBrewListView = (ListView)findViewById(R.id.ScheduledListView);
+        ScheduledBrewListView = (ListView)view.findViewById(R.id.ScheduledListView);
         ScheduledBrewListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -76,6 +82,8 @@ public class UserSchedule extends ActionBarActivity {
                 ScheduleSelect(list.get(position));
             }
         });
+
+        return view;
 
     }
 
@@ -90,7 +98,6 @@ public class UserSchedule extends ActionBarActivity {
     {
         clearListDate();
         sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
-        MyCalendar mc = ((MyCalendar) findViewById(R.id.calendar_view));
         mc.updateCalendarList(sBrewList);
     }
 
@@ -118,7 +125,7 @@ public class UserSchedule extends ActionBarActivity {
             }
 
             //instantiate custom adapter
-            CustomSListAdapter adapter = new CustomSListAdapter(list, this.getApplicationContext());
+            CustomSListAdapter adapter = new CustomSListAdapter(list, getActivity());
             adapter.hasColor(true);
             adapter.setEventHandler(new CustomSListAdapter.EventHandler() {
                 @Override
@@ -134,7 +141,7 @@ public class UserSchedule extends ActionBarActivity {
 
     private void ScheduleSelect(ScheduledBrewSchema aSBrew)
     {
-        Intent intent = new Intent(this, AddEditViewSchedule.class);
+        Intent intent = new Intent(getActivity(), AddEditViewSchedule.class);
 
         //Set what Schedule was selected before we load Schedule Activity
         ScheduleActivityData.getInstance().setScheduledBrewSchema(aSBrew);

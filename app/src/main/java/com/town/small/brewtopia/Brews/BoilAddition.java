@@ -8,14 +8,19 @@ import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.town.small.brewtopia.DataClass.*;
 import com.town.small.brewtopia.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Andrew on 3/7/2015.
@@ -27,8 +32,12 @@ public class BoilAddition {
     private TextView additionNameLabel;
     private EditText additionName;
     private TextView timeLabel;
+    private EditText qty;
+    private TextView qtyLabel;
     private EditText time;
     private Button deleteButton;
+    private Spinner UofMSpinner;
+    ArrayAdapter<String> UofMAdapter;
 
     private View view;
 
@@ -46,11 +55,19 @@ public class BoilAddition {
 
         additionName = (EditText) view.findViewById(R.id.list_item_edit);
         time = (EditText) view.findViewById(R.id.list_item_edit1);
+        time.setText("0");
+        qty = (EditText) view.findViewById(R.id.list_item_edit2);
+        qty.setText("0");
 
         additionNameLabel = (TextView) view.findViewById(R.id.list_item_label);
         additionNameLabel.setText("Addition:");
         timeLabel = (TextView) view.findViewById(R.id.list_item_label1);
         timeLabel.setText("Min:");
+        qtyLabel = (TextView) view.findViewById(R.id.list_item_label2);
+        qtyLabel.setText("Qty:");
+
+        UofMSpinner = (Spinner)view.findViewById(R.id.UofMSpinner);
+        setColorSpinner(context);
 
         deleteButton = (Button) view.findViewById(R.id.delete_btn);
         deleteButton.setOnClickListener(new View.OnClickListener(){
@@ -64,22 +81,61 @@ public class BoilAddition {
 
     public void setSelf()
     {
+        int t=0;
+        int q=0;
+
+        try
+        {
+            t  = Integer.parseInt(time.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            q = Integer.parseInt(qty.getText().toString());
+        }
+        catch (Exception e){}
+
         baSchema.setAdditionName(additionName.getText().toString());
-        baSchema.setAdditionTime(Integer.parseInt(time.getText().toString()));
+        baSchema.setAdditionTime(t);
+        baSchema.setAdditionQty(q);
+        baSchema.setUOfM(UofMSpinner.getSelectedItem().toString());
     }
 
     public void setDisplay()
     {
         additionName.setText(baSchema.getAdditionName());
         time.setText(String.valueOf(baSchema.getAdditionTime()));
+        qty.setText(String.valueOf(baSchema.getAdditionQty()));
+        try
+        {
+            UofMSpinner.setSelection(UofMAdapter.getPosition(baSchema.getUOfM()));
+        }
+        catch (Exception e)
+        {
+            UofMSpinner.setSelection(0);
+        }
+    }
+
+    private void setColorSpinner(Context context)
+    {
+        List<String> UOfMs = new ArrayList<String>();
+        UOfMs.add("Cups");
+        UOfMs.add("oz");
+
+        UofMAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item, UOfMs);
+        // Specify the layout to use when the list of choices appears
+        UofMAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        UofMSpinner.setAdapter(UofMAdapter);
     }
 
     public boolean isPopulated()
     {
         String an = additionName.getText().toString();
         String t = time.getText().toString();
+        String q = qty.getText().toString();
 
-        if(an.matches("") || t.matches(""))
+        if(an.matches("") || t.matches("") || q.matches(""))
             return false;
 
         return true;
@@ -89,8 +145,19 @@ public class BoilAddition {
     {
         //always false
         additionName.setKeyListener(null);
+        additionName.setClickable(false);
+        additionName.setEnabled(false);
+
         time.setKeyListener(null);
+        time.setClickable(false);
+        time.setEnabled(false);
+
+        qty.setKeyListener(null);
+        qty.setClickable(false);
+        qty.setEnabled(false);
+
         deleteButton.setVisibility(View.INVISIBLE);
+        UofMSpinner.setClickable(false);
     }
 
     /**

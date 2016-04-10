@@ -2,12 +2,14 @@ package com.town.small.brewtopia.Calculations;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.town.small.brewtopia.R;
 
@@ -22,6 +24,7 @@ public class SpecificGravity extends ActionBarActivity {
     private Button CalculateButton;
     private EditText SG;
     private TextView brix;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +32,10 @@ public class SpecificGravity extends ActionBarActivity {
         setContentView(R.layout.activity_specific_gravity);
         Log.e(LOG, "Entering: onCreate");
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar=(Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Specific Gravity");
 
         SG = (EditText)findViewById(R.id.SGeditText);
@@ -40,6 +46,12 @@ public class SpecificGravity extends ActionBarActivity {
 
     public void onCalculateClick(View aView)
     {
+        if(SG.getText().toString().matches(""))
+        {
+            Toast.makeText(getApplicationContext(), "Invalid Values", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         double sg = Double.parseDouble(SG.getText().toString());
 
         double bx = (((182.4601*sg-775.6821)*sg+1262.7794)*sg-669.5622);
