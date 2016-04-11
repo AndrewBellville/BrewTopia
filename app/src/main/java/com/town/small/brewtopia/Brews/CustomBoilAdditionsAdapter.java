@@ -1,9 +1,11 @@
 package com.town.small.brewtopia.Brews;
 
     import android.content.Context;
+    import android.content.Intent;
     import android.view.LayoutInflater;
     import android.view.View;
     import android.view.ViewGroup;
+    import android.widget.ArrayAdapter;
     import android.widget.BaseAdapter;
     import android.widget.Button;
     import android.widget.EditText;
@@ -11,24 +13,26 @@ package com.town.small.brewtopia.Brews;
     import android.widget.Spinner;
     import android.widget.TextView;
 
+    import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
     import com.town.small.brewtopia.R;
 
     import java.util.ArrayList;
     import java.util.HashMap;
+    import java.util.List;
 
 /**
  * Created by Andrew on 2/20/2016.
  */
 public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapter {
 
-    private ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+    private List<BoilAdditionsSchema> list = new ArrayList<BoilAdditionsSchema>();
     private Context context;
-    private boolean isDeleteView = true;
 
     //event handling
     private EventHandler eventHandler = null;
+    private boolean isEditable = true;
 
-    public CustomBoilAdditionsAdapter(ArrayList<HashMap<String,String>> list, Context context) {
+    public CustomBoilAdditionsAdapter(List<BoilAdditionsSchema> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -65,57 +69,81 @@ public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapt
         TextView listItemText2 = (TextView)view.findViewById(R.id.list_item_label2);
         listItemText2.setText("Qty: ");
 
+        BoilAdditionsSchema boilAdditionsSchema = list.get(position);
+
+        String text1 = boilAdditionsSchema.getAdditionName();
+        String text2 = Integer.toString(boilAdditionsSchema.getAdditionTime());
+        String text3 = Integer.toString(boilAdditionsSchema.getAdditionQty());
+
         //Handle TextView and display string from your list
         EditText listItemEditText = (EditText)view.findViewById(R.id.list_item_edit);
-        listItemEditText.setText(list.get(position).get("text1"));
+        listItemEditText.setText(text1);
 
         EditText listItemEditText1 = (EditText)view.findViewById(R.id.list_item_edit1);
-        listItemEditText1.setText(list.get(position).get("text2"));
+        listItemEditText1.setText(text2);
 
         EditText listItemEditText2 = (EditText)view.findViewById(R.id.list_item_edit2);
-        listItemEditText2.setText(list.get(position).get("text2"));
+        listItemEditText2.setText(text3);
 
         //Handle buttons and add onClickListeners
-        Button deleteBtn = (Button)view.findViewById(R.id.delete_btn);
+        Button editButton = (Button)view.findViewById(R.id.edit_btn);
+        if(!isEditable) editButton.setVisibility(View.INVISIBLE);
 
 
         Spinner UofMSpinner = (Spinner)view.findViewById(R.id.UofMSpinner);
+        ArrayAdapter<String> UofMAdapter;
+        List<String> UOfMs = new ArrayList<String>();
+        UOfMs.add("Cups");
+        UOfMs.add("oz");
 
-        if(!isDeleteView)
+        UofMAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item, UOfMs);
+        // Specify the layout to use when the list of choices appears
+        UofMAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        UofMSpinner.setAdapter(UofMAdapter);
+
+        try
         {
-            deleteBtn.setVisibility(View.INVISIBLE);
-            listItemEditText.setFocusable(false);
-            listItemEditText.setClickable(false);
-            listItemEditText.setEnabled(false);
-
-            listItemEditText1.setFocusable(false);
-            listItemEditText1.setClickable(false);
-            listItemEditText1.setEnabled(false);
-
-            listItemEditText2.setFocusable(false);
-            listItemEditText2.setClickable(false);
-            listItemEditText2.setEnabled(false);
-
-            UofMSpinner.setClickable(false);
+            UofMSpinner.setSelection(UofMAdapter.getPosition(boilAdditionsSchema.getUOfM()));
+        }
+        catch (Exception e)
+        {
+            UofMSpinner.setSelection(0);
         }
 
-        deleteBtn.setOnClickListener(new View.OnClickListener(){
+        editButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                //do something
                 if(eventHandler != null)
-                    eventHandler.OnDeleteClickListener(list.get(position).get("text1"),list.get(position).get("text2"));
+                {
+                    BoilAdditionsSchema baSchema = list.get(position);
+                    eventHandler.OnEditClick(baSchema);
+                }
 
-                list.remove(position); //or some other task
                 notifyDataSetChanged();
             }
         });
 
+        listItemEditText.setFocusable(false);
+        listItemEditText.setClickable(false);
+        listItemEditText.setEnabled(false);
+
+        listItemEditText1.setFocusable(false);
+        listItemEditText1.setClickable(false);
+        listItemEditText1.setEnabled(false);
+
+        listItemEditText2.setFocusable(false);
+        listItemEditText2.setClickable(false);
+        listItemEditText2.setEnabled(false);
+
+        UofMSpinner.setClickable(false);
+
+
         return view;
     }
 
-    public void setDeleteView(boolean isDeleteView) {
-        this.isDeleteView = isDeleteView;
+    public void setEditable(boolean editable) {
+        isEditable = editable;
     }
 
     /**
@@ -132,6 +160,6 @@ public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapt
      */
     public interface EventHandler
     {
-        void OnDeleteClickListener(String aText1, String aText2);
+        void OnEditClick(BoilAdditionsSchema aBoilAdditionsSchema);
     }
 }

@@ -73,8 +73,8 @@ public class UserBrew extends ActionBarActivity {
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
-            tabNames = new  String[]{"Brews","Additions","Notes"};
-            icons = new  int[]{R.drawable.beer_dark,R.drawable.plus_icon,R.drawable.notes_icon};
+            tabNames = new  String[]{"Brews","Additions","Notes","Inventory"};
+            icons = new  int[]{R.drawable.beer_dark,R.drawable.plus_icon,R.drawable.notes_icon,R.drawable.document};
         }
 
         @Override
@@ -86,6 +86,8 @@ public class UserBrew extends ActionBarActivity {
                 fragment = new AddEditViewBoilAdditions();
             else if (position == 2)
                 fragment = new AddEditViewBrewNotes();
+            else if (position == 3)
+                fragment = new UserInventory();
 
             return fragment;
         }
@@ -105,7 +107,7 @@ public class UserBrew extends ActionBarActivity {
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
         public void setContext(Context context) {
             this.context = context;

@@ -1,6 +1,7 @@
 package com.town.small.brewtopia.Brews;
 
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
+import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.DataClass.DataBaseManager;
 
@@ -16,6 +17,7 @@ public class BrewActivityData {
     private static final String LOG = "ActivityData";
 
     private List<BoilAdditionsSchema> baArray = new ArrayList<BoilAdditionsSchema>();
+    private List<BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();
 
     //State for AddEditView Brew and Brew Name if Edit/View
     public enum DisplayMode {
@@ -39,8 +41,20 @@ public class BrewActivityData {
 
     public void setViewStateAndBrew(DisplayMode aState, BrewSchema aBrewSchema)
     {
-        AddEditViewState = aState;
-        AddEditViewBrew = aBrewSchema;
+        setAddEditViewState(aState);
+        if (aBrewSchema != null)
+            setAddEditViewBrew(aBrewSchema);
+    }
+
+    public static List<BoilAdditionsSchema> cloneAdditionList(List<BoilAdditionsSchema> list) {
+        List<BoilAdditionsSchema> clone = new ArrayList<BoilAdditionsSchema>(list.size());
+        for(BoilAdditionsSchema item: list) clone.add(item);
+        return clone;
+    }
+    public static List<BrewNoteSchema> cloneNoteList(List<BrewNoteSchema> list) {
+        List<BrewNoteSchema> clone = new ArrayList<BrewNoteSchema>(list.size());
+        for(BrewNoteSchema item: list) clone.add(item);
+        return clone;
     }
 
 //getters
@@ -53,6 +67,10 @@ public class BrewActivityData {
     public DisplayMode getAddEditViewState() {
         return AddEditViewState;
     }
+    public List<BrewNoteSchema> getBrewNoteSchemaList() {
+        return brewNoteSchemaList;
+    }
+
 
     //setters
     public void setBaArray(List<BoilAdditionsSchema> baArray) {
@@ -60,8 +78,13 @@ public class BrewActivityData {
     }
     public void setAddEditViewBrew(BrewSchema addEditViewBrew) {
         AddEditViewBrew = addEditViewBrew;
+        setBaArray(cloneAdditionList(addEditViewBrew.getBoilAdditionlist()));
+        setBrewNoteSchemaList(cloneNoteList(addEditViewBrew.getBrewNoteSchemaList()));
     }
     public void setAddEditViewState(DisplayMode addEditViewState) {
         AddEditViewState = addEditViewState;
+    }
+    public void setBrewNoteSchemaList(List<BrewNoteSchema> brewNoteSchemaList) {
+        this.brewNoteSchemaList = brewNoteSchemaList;
     }
 }

@@ -323,12 +323,14 @@ public class AddEditViewBrew extends Fragment {
         brew.setStyle(styleSpinner.getSelectedItem().toString());
 
         //Add Boil additions
-        brew.setBoilAdditionlist(cloneList(BrewActivityData.getInstance().getBaArray()));
-        //add brew name to boil list
-        brew.setListBrewName();
+        brew.setBoilAdditionlist(BrewActivityData.getInstance().getBaArray());
+        brew.setBrewNoteSchemaList(BrewActivityData.getInstance().getBrewNoteSchemaList());
 
         if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD)
         {
+            //add brew name for all lists
+            brew.setListBrewName();
+
             if(dbManager.CreateABrew(brew) == 0)// 0 brews failed to create
             {
                 Toast.makeText(getActivity(), "Duplicate Brew Name", Toast.LENGTH_LONG).show();
@@ -340,19 +342,10 @@ public class AddEditViewBrew extends Fragment {
             dbManager.updateABrew(brew);
         }
 
-        //remove all additions after submission
-        BrewActivityData.getInstance().getBaArray().clear();
-
         brewSchema = brew;
         brewActivityDataData.setAddEditViewBrew(brewSchema);
 
         ifView();
-    }
-
-    public static List<BoilAdditionsSchema> cloneList(List<BoilAdditionsSchema> list) {
-        List<BoilAdditionsSchema> clone = new ArrayList<BoilAdditionsSchema>(list.size());
-        for(BoilAdditionsSchema item: list) clone.add(item);
-        return clone;
     }
 
     //TODO: MAKE TAB VIEW FOR THIS

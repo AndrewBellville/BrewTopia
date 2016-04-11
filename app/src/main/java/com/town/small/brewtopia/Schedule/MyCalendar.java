@@ -5,6 +5,7 @@ package com.town.small.brewtopia.Schedule;
         import android.content.res.TypedArray;
         import android.graphics.Color;
         import android.graphics.Typeface;
+        import android.graphics.drawable.GradientDrawable;
         import android.util.AttributeSet;
         import android.util.Log;
         import android.view.LayoutInflater;
@@ -59,6 +60,7 @@ public class MyCalendar extends LinearLayout
     private ImageView btnNext;
     private TextView txtDate;
     private GridView grid;
+    private View daySelected;
 
     // seasons' rainbow
     int[] rainbow = new int[] {
@@ -167,6 +169,7 @@ public class MyCalendar extends LinearLayout
                     return false;
 
                 eventHandler.onDayLongPress((Date) view.getItemAtPosition(position));
+                toggleDaySelected(cell);
                 return true;
             }
         });
@@ -179,8 +182,24 @@ public class MyCalendar extends LinearLayout
                 if (eventHandler == null)
                     return;
                 eventHandler.onDayLongPress((Date) view.getItemAtPosition(position));
+                toggleDaySelected(cell);
             }
         });
+    }
+
+    private void toggleDaySelected(View view)
+    {
+        if(daySelected == null)
+            daySelected = view;
+        else
+            daySelected.setBackgroundColor(0x00000000);
+
+        daySelected = view;
+        GradientDrawable border = new GradientDrawable();
+        border.setColor(0x1A000000); //white background
+        border.setStroke(1,0xFF000000); //black border with full opacity
+
+        daySelected.setBackground(border);
     }
 
 

@@ -7,15 +7,14 @@ import android.view.LayoutInflater;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.AdapterView;
 
-import com.town.small.brewtopia.CustomListAdapter;
+import com.town.small.brewtopia.Brews.CustomBoilAdditionsAdapter;
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.town.small.brewtopia.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class TimerBoilAdditions extends Fragment {
@@ -23,51 +22,57 @@ public class TimerBoilAdditions extends Fragment {
     // Log cat tag
     private static final String LOG = "TimerBoilAdditions";
 
-    private TimerData td;
-    private ListView TimerAdditionListView;
-    ArrayList<HashMap<String, String>> list;
+    private TimerData timerData;
+    private Button addButton;
+    private ListView BrewAdditionsListView;
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = inflater.inflate(R.layout.activity_timer_boil_additions, container, false);
+        View view = inflater.inflate(R.layout.activity_timer_boil_additions,container,false);
+        Log.e(LOG, "Entering: onCreate");
 
-        td = TimerData.getInstance();
-        TimerAdditionListView = (ListView) view.findViewById(R.id.TimerAdditionsListView);
-        TimerAdditionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        addButton = (Button)view.findViewById(R.id.AddNewButton);
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                //TimerAdditionSelect(position);
+            public void onClick(View view) {
+                onAddClick(view);
             }
         });
 
-        LoadTimerBoilAdditions();
+        BrewAdditionsListView = (ListView)view.findViewById(R.id.brewAdditonsListView);
+
+        timerData = TimerData.getInstance();
+
+        loadAll();
+
         return view;
     }
 
-    private void LoadTimerBoilAdditions() {
-        Log.e(LOG, "Entering: LoadTimerBoilAdditions");
+    private void loadAll()
+    {
+        Log.e(LOG, "Entering: loadAll");
 
-        //List<BrewSchema> brewList = dbManager.getAllBrews();
-        list = new ArrayList<HashMap<String, String>>();
-        List<BoilAdditionsSchema> timerAdditionList = td.getAdditionsList();
+        List<BoilAdditionsSchema> boilAdditionsSchemaList = new ArrayList<BoilAdditionsSchema>();
 
-        if (timerAdditionList.size() > 0) {
+        boilAdditionsSchemaList.addAll(timerData.getInstance().getAdditionsList());
 
-            for(BoilAdditionsSchema addition : timerAdditionList)
-            {
-                HashMap<String,String> temp = new HashMap<String,String>();
-                temp.put("text1",addition.getAdditionName());
-                temp.put("text2", Integer.toString(addition.getAdditionTime()));
-                list.add(temp);
+        //instantiate custom adapter
+        CustomBoilAdditionsAdapter adapter = new CustomBoilAdditionsAdapter(boilAdditionsSchemaList, getActivity());
+        adapter.setEditable(false);
+        adapter.setEventHandler(new CustomBoilAdditionsAdapter.EventHandler() {
+            @Override
+            public void OnEditClick(BoilAdditionsSchema aBoilAdditionsSchema) {
             }
+        });
 
-            //instantiate custom adapter
-            CustomListAdapter adapter = new CustomListAdapter(list, getActivity());
-            TimerAdditionListView.setAdapter(adapter);
-        }
+        BrewAdditionsListView.setAdapter(adapter);
     }
+
+
+    public void onAddClick(View aView) {
+        Log.e(LOG, "Entering: onAddClick");
+    }
+
+
 }

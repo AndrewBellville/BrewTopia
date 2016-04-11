@@ -11,6 +11,10 @@
     <color name="Red">#FF0000</color>
 
 
+
+    <color name="borderColor">#B1BCBE</color>
+    <color name="transparent_gray">#99000000</color>
+
     <color name="ColorToneD1">#171414</color>
     <color name="ColorToneM1">#827979</color>
     <color name="ColorToneL1">#B3A7A7</color>

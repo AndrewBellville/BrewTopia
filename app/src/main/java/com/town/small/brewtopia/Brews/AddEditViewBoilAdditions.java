@@ -1,5 +1,7 @@
 package com.town.small.brewtopia.Brews;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,12 +11,18 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
+import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.R;
@@ -30,16 +38,18 @@ public class AddEditViewBoilAdditions extends Fragment {
     private static final String LOG = "AddEditBoilAdditions";
 
     private BrewActivityData brewData;
-
-    private Button addButton;
-    LinearLayout layout;
-
-    private BrewActivityData.DisplayMode state;
-    private BrewSchema brew;
-
-    private ArrayList<BoilAddition> baArray = new ArrayList<BoilAddition>();
+    private ListView BrewAdditionsListView;
+    private boolean isInit = false;
 
     private DataBaseManager dbManager;
+
+    //edit dialog
+    private  BoilAdditionsSchema editBoilAdditionsSchema;
+    private ArrayAdapter<String> UofMAdapter;
+    private EditText editAdditionName;
+    private EditText editAdditionTime;
+    private EditText editAdditionQty;
+    private Spinner editUOfMSpinner;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,7 +59,9 @@ public class AddEditViewBoilAdditions extends Fragment {
 
         dbManager = DataBaseManager.getInstance(getActivity());
 
-        addButton = (Button)view.findViewById(R.id.AddNewButton);
+        BrewAdditionsListView = (ListView)view.findViewById(R.id.brewAdditonsListView);
+
+        Button addButton = (Button)view.findViewById(R.id.AddNewButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,12 +69,11 @@ public class AddEditViewBoilAdditions extends Fragment {
             }
         });
 
-        layout = (LinearLayout)view.findViewById(R.id.AddList);
-
         brewData = BrewActivityData.getInstance();
-        if(brewData.getBaArray().size()  > 0)
-            brewData.getBaArray().clear();
 
+        addButton.setVisibility(View.VISIBLE);
+
+        setUofMAdapter();
         loadAll();
 
         return view;
@@ -70,100 +81,150 @@ public class AddEditViewBoilAdditions extends Fragment {
 
     @Override
     public void setMenuVisibility(boolean isShown) {
-        if(isShown)
+        if(isShown && !isInit)
+        {
+            Log.e(LOG, "Entering: Init Show");
             loadAll();
-        else
-            onHidden();
+            isInit = true;
+        }
     }
 
     private void loadAll()
     {
-        state = BrewActivityData.getInstance().getAddEditViewState();
-        brew = BrewActivityData.getInstance().getAddEditViewBrew();
+        Log.e(LOG, "Entering: loadAll");
 
-        BuildBoilAdditionArray();
+        List<BoilAdditionsSchema> boilAdditionsSchemaList = new ArrayList<BoilAdditionsSchema>();
 
-        if(baArray.size() > 0)
-            DisplayBoilAddition();
-        else
-            createBoilAddition();
+        boilAdditionsSchemaList.addAll(brewData.getInstance().getBaArray());
 
-         //hide buttons
-        if(state == BrewActivityData.DisplayMode.VIEW)
-            addButton.setVisibility(View.INVISIBLE);
-        else
-            addButton.setVisibility(View.VISIBLE);
-    }
-
-    private void BuildBoilAdditionArray() {
-        Log.e(LOG, "Entering: BuildBoilAdditionArray");
-
-        if(baArray.size()> 0)
-            baArray.clear();
-
-        //If we have saved data we want to load  that and not from DB
-        if(brewData.getBaArray().size() == 0)
-        {
-
-            for(BoilAdditionsSchema boilAdditionsSchema : brew.getBoilAdditionlist())
-            {
-                BoilAddition ba = new BoilAddition(getActivity());
-                ba.setBaSchema(boilAdditionsSchema);
-                ba.setDisplay();
-                baArray.add(ba);
+        //instantiate custom adapter
+        CustomBoilAdditionsAdapter adapter = new CustomBoilAdditionsAdapter(boilAdditionsSchemaList, getActivity());
+        adapter.setEventHandler(new CustomBoilAdditionsAdapter.EventHandler() {
+            @Override
+            public void OnEditClick(BoilAdditionsSchema aBoilAdditionsSchema) {
+                AdditionSelected(aBoilAdditionsSchema);
             }
-        }
-        else
-        {
-            for(BoilAdditionsSchema boilAdditionsSchema : brewData.getBaArray())
-            {
-                BoilAddition ba = new BoilAddition(getActivity());
-                ba.setBaSchema(boilAdditionsSchema);
-                ba.setDisplay();
-                baArray.add(ba);
+        });
+
+        BrewAdditionsListView.setAdapter(adapter);
+    }
+
+
+    private void AdditionSelected(BoilAdditionsSchema aBoilAdditionsSchema) {
+
+        editBoilAdditionsSchema = aBoilAdditionsSchema;
+
+        final Dialog dialog = new Dialog(getActivity(),R.style.DialogStyle);
+        dialog.setTitle("Boil Addition");
+        dialog.setContentView(R.layout.custom_boil_addition_dialog);
+        dialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        editAdditionName = (EditText) dialog.findViewById(R.id.additionNameEditText);
+        editAdditionName.setText(editBoilAdditionsSchema.getAdditionName());
+
+        editAdditionTime = (EditText) dialog.findViewById(R.id.additionTimeEditText);
+        editAdditionTime.setText(Integer.toString(editBoilAdditionsSchema.getAdditionTime()));
+
+        editAdditionQty = (EditText) dialog.findViewById(R.id.additionQtyEditText);
+        editAdditionQty.setText(Integer.toString(editBoilAdditionsSchema.getAdditionTime()));
+
+        editUOfMSpinner = (Spinner) dialog.findViewById(R.id.UofMSpinner);
+        editUOfMSpinner.setAdapter(UofMAdapter);
+
+
+        Button deleteButton = (Button) dialog.findViewById(R.id.deleteButton);
+        if(editBoilAdditionsSchema.getAdditionId() == -1) deleteButton.setVisibility(View.INVISIBLE);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                validateDelete(editBoilAdditionsSchema);
+                dialog.cancel();
             }
-        }
+        });
+        Button SaveButton = (Button) dialog.findViewById(R.id.saveButton);
+        SaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                validateSave(editBoilAdditionsSchema);
+                dialog.cancel();
+            }
+        });
+        Button cancelButon = (Button) dialog.findViewById(R.id.cancelButton);
+        cancelButon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.cancel();
+            }
+        });
 
+        dialog.show();
     }
 
-    private ArrayList<BoilAdditionsSchema> ConvertToSchemaArray() {
-        Log.e(LOG, "Entering: ConvertToSchemaArray");
-        ArrayList<BoilAdditionsSchema> tempArray = new ArrayList<BoilAdditionsSchema>();
-
-        for(BoilAddition boilAddition : baArray)
-        {
-            boilAddition.setSelf();
-            tempArray.add(boilAddition.getBaSchema());
-        }
-        return tempArray;
-    }
-
-    private void DisplayBoilAddition()
+    private void validateSave(BoilAdditionsSchema aBoilAdditionsSchema)
     {
+        int t=0;
+        int q=0;
 
-        layout.removeAllViews();
-        layout.invalidate();
-
-        for(BoilAddition boilAddition : baArray)
+        try
         {
-            if(state == BrewActivityData.DisplayMode.VIEW) boilAddition.setEditable(false);
-
-            // assign event handler
-            boilAddition.setEventHandler(new BoilAddition.EventHandler() {
-                @Override
-                public void OnDeleteClickListener(String aAdditionName) {
-                    //delete boil addition
-                    dbManager.delete_boil_additions_by_brew_name_addition_name(brew.getBrewName(),aAdditionName,brew.getUserName());
-                    //update brewActivity brew
-                    BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(brew.getBrewName(),brew.getUserName()));
-                    BrewActivityData.getInstance().getBaArray().clear();
-                    //re-load all
-                    loadAll();
-                }
-            });
-
-            layout.addView(boilAddition.getView());
+            t  = Integer.parseInt(editAdditionTime.getText().toString());
         }
+        catch (Exception e){}
+        try
+        {
+            q = Integer.parseInt(editAdditionQty.getText().toString());
+        }
+        catch (Exception e){}
+
+        aBoilAdditionsSchema.setAdditionName(editAdditionName.getText().toString());
+        aBoilAdditionsSchema.setAdditionTime(t);
+        aBoilAdditionsSchema.setAdditionQty(q);
+        aBoilAdditionsSchema.setUOfM(editUOfMSpinner.getSelectedItem().toString());
+
+        if(brewData.getInstance().getAddEditViewState() != BrewActivityData.DisplayMode.ADD)
+        {
+            if(aBoilAdditionsSchema.getAdditionId() == -1)
+            {
+                BrewSchema brewSchema  = brewData.getInstance().getAddEditViewBrew();
+                aBoilAdditionsSchema.setUserName(brewSchema.getUserName());
+                aBoilAdditionsSchema.setBrewName(brewSchema.getBrewName());
+                dbManager.add_boil_additions(aBoilAdditionsSchema);
+            }
+            else
+                dbManager.update_boil_addition(aBoilAdditionsSchema);
+
+            resetBrewData(aBoilAdditionsSchema.getBrewName(),aBoilAdditionsSchema.getUserName());
+        }
+        else
+        {
+            //this should  happen when adding new brew
+            loadAll();
+        }
+    }
+    private void validateDelete(BoilAdditionsSchema aBoilAdditionsSchema)
+    {
+        //we should not be able to delete anything that doesnt exist so just delete
+        dbManager.delete_all_boil_additions_by_id(aBoilAdditionsSchema.getAdditionId());
+        resetBrewData(aBoilAdditionsSchema.getBrewName(),aBoilAdditionsSchema.getUserName());
+    }
+
+    private void resetBrewData(String aBrewName, String aUserName)
+    {
+        brewData.getInstance().setAddEditViewBrew(dbManager.getBrew(aBrewName,aUserName));
+        loadAll();
+    }
+
+
+    private void setUofMAdapter()
+    {
+        List<String> UOfMs = new ArrayList<String>();
+        UOfMs.add("Cups");
+        UOfMs.add("oz");
+
+        UofMAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, UOfMs);
+        // Specify the layout to use when the list of choices appears
+        UofMAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     }
 
     public void onAddClick(View aView) {
@@ -171,18 +232,11 @@ public class AddEditViewBoilAdditions extends Fragment {
         createBoilAddition();
     }
 
-    public void onHidden() {
-        if(!(brewData == null) )
-        {
-            brewData.setBaArray(ConvertToSchemaArray());
-        }
-    }
-
     private void createBoilAddition()
     {
-        BoilAddition ba = new BoilAddition(getActivity());
-        baArray.add(ba);
-        DisplayBoilAddition();
+        BoilAdditionsSchema ba = new BoilAdditionsSchema();
+        brewData.getInstance().getBaArray().add(ba);
+        loadAll();
     }
 
 }

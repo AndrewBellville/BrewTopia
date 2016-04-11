@@ -8,6 +8,7 @@ public class BrewNoteSchema {
     // Log cat tag
     private static final String LOG = "BrewNoteSchema";
 
+    private int noteId =-1;
     private String BrewName;
     private String UserName;
     private String CreatedOn;
@@ -30,6 +31,11 @@ public class BrewNoteSchema {
     public String getBrewNote() {
         return BrewNote;
     }
+    public int getNoteId() {
+        return noteId;
+    }
+
+
 
     //Setters
     public void setBrewName(String brewName) {
@@ -43,5 +49,8 @@ public class BrewNoteSchema {
     }
     public void setBrewNote(String brewNote) {
         BrewNote = brewNote;
+    }
+    public void setNoteId(int noteId) {
+        this.noteId = noteId;
     }
 }

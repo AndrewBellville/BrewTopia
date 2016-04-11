@@ -13,9 +13,11 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 
 import com.town.small.brewtopia.CustomListAdapter;
+import com.town.small.brewtopia.Login;
 import com.town.small.brewtopia.R;
 
 import java.util.*;
+
 import com.town.small.brewtopia.DataClass.*;
 
 
@@ -41,7 +43,14 @@ public class UserBrewList extends Fragment {
         View view = inflater.inflate(R.layout.activity_user_brew_list,container,false);
         Log.e(LOG, "Entering: onCreate");
         currentUser = CurrentUser.getInstance();
-        userName = currentUser.getUser().getUserName();
+        try {
+            userName = currentUser.getUser().getUserName();
+        }
+        catch (Exception e){
+            // if  we fail to get user name open login activity
+            Intent intent = new Intent(getActivity(), Login.class);
+            startActivity(intent);
+        }
 
         BrewListView = (ListView)view.findViewById(R.id.BrewList);
         BrewListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -133,7 +142,7 @@ public class UserBrewList extends Fragment {
         Intent intent = new Intent(getActivity(), UserBrew.class);
 
         // Set the state of display if Add brew can be null
-        BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.ADD,null);
+        BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.ADD,new BrewSchema());
 
         //start next activity
         startActivity(intent);

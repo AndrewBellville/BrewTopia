@@ -2,6 +2,7 @@ package com.town.small.brewtopia.DataClass;
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,7 +26,8 @@ public class BrewSchema {
     private Double targetABV;
     private String Description;
     private String CreatedOn;
-    private List <BoilAdditionsSchema> boilAdditionlist;
+    private List <BoilAdditionsSchema> boilAdditionlist = new ArrayList<BoilAdditionsSchema>();
+    private List <BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();;
     private String Style;
     private BrewStyleSchema StyleSchema;
 
@@ -46,6 +48,13 @@ public class BrewSchema {
             BoilAdditionsSchema baSchema = i.next();
             baSchema.setBrewName(getBrewName());
             baSchema.setUserName(getUserName());
+        }
+
+        for(Iterator<BrewNoteSchema> i = brewNoteSchemaList.iterator(); i.hasNext();)
+        {
+            BrewNoteSchema nSchema = i.next();
+            nSchema.setBrewName(getBrewName());
+            nSchema.setUserName(getUserName());
         }
     }
 
@@ -99,6 +108,11 @@ public class BrewSchema {
     public Double getTargetABV() {
         return targetABV;
     }
+    public List<BrewNoteSchema> getBrewNoteSchemaList() {
+        return brewNoteSchemaList;
+    }
+
+
 
     //setters
     public void setBrewId(int id) {
@@ -145,5 +159,8 @@ public class BrewSchema {
     }
     public void setTargetABV(Double targetABV) {
         this.targetABV = targetABV;
+    }
+    public void setBrewNoteSchemaList(List<BrewNoteSchema> brewNoteSchemaList) {
+        this.brewNoteSchemaList = brewNoteSchemaList;
     }
 }

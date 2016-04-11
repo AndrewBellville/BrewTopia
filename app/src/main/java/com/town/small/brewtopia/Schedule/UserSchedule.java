@@ -107,36 +107,30 @@ public class UserSchedule extends Fragment {
         List<ScheduledBrewSchema> scheduledDayList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
         list = new ArrayList<ScheduledBrewSchema>();
 
-        if(scheduledDayList.size() == 0 && list.size() > 0) {
-            list.clear();
-        }
-        else {
-
-            for(ScheduledBrewSchema sbrew : scheduledDayList)
+        for(ScheduledBrewSchema sbrew : scheduledDayList)
+        {
+            if(sbrew.DateHasEvent(date))
             {
-                if(sbrew.DateHasEvent(date))
-                {
-                    if(sbrew.DateHasAction(date))
-                        sbrew.setShowAsAlert(true);
+                if(sbrew.DateHasAction(date))
+                    sbrew.setShowAsAlert(true);
 
-                    list.add(sbrew);
-                }
-
+                list.add(sbrew);
             }
 
-            //instantiate custom adapter
-            CustomSListAdapter adapter = new CustomSListAdapter(list, getActivity());
-            adapter.hasColor(true);
-            adapter.setEventHandler(new CustomSListAdapter.EventHandler() {
-                @Override
-                public void OnDeleteClickListener(int aScheduleId) {
-                    dbManager.deleteBrewScheduledById(aScheduleId);
-                    updateCalendarView();
-                }
-            });
-
-            ScheduledBrewListView.setAdapter(adapter);
         }
+
+        //instantiate custom adapter
+        CustomSListAdapter adapter = new CustomSListAdapter(list, getActivity());
+        adapter.hasColor(true);
+        adapter.setEventHandler(new CustomSListAdapter.EventHandler() {
+            @Override
+            public void OnDeleteClickListener(int aScheduleId) {
+                dbManager.deleteBrewScheduledById(aScheduleId);
+                updateCalendarView();
+            }
+        });
+
+        ScheduledBrewListView.setAdapter(adapter);
     }
 
     private void ScheduleSelect(ScheduledBrewSchema aSBrew)

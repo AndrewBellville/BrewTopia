@@ -1,4 +1,4 @@
-package com.town.small.brewtopia;
+package com.town.small.brewtopia.Timer;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

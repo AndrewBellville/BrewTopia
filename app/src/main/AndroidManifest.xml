@@ -20,29 +20,44 @@
         </activity>
         <activity
             android:name=".Login"
-            android:label="@string/app_name"></activity>
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
         <activity
             android:name=".UserProfile"
-            android:label="@string/title_activity_user_profile"></activity>
+            android:label="@string/title_activity_user_profile">
+        </activity>
+        <activity
             android:name=".Timer.TimerPager"
             android:label="@string/title_activity_brew_timer_pager">
+        </activity>
         <activity
             android:name=".Calculations.AlcoholByVolume"
             android:icon="@drawable/beer_dark"
-            android:label="@string/title_activity_alcohol_by_volume"></activity>
+            android:label="@string/title_activity_alcohol_by_volume">
+        </activity>
         <activity
             android:name=".Calculations.BrixCalculations"
             android:icon="@drawable/beer_dark"
-            android:label="@string/title_activity_brix_calculations"></activity>
+            android:label="@string/title_activity_brix_calculations">
+
+        </activity>
         <activity
             android:name=".Calculations.SpecificGravity"
             android:icon="@drawable/beer_dark"
-            android:label="@string/title_activity_specific_gravity"></activity>
+            android:label="@string/title_activity_specific_gravity">
+
+        </activity>
         <activity
             android:name=".Schedule.AddEditViewSchedule"
             android:icon="@drawable/beer_dark"
-            android:label="@string/title_activity_add_edit_view_schedule"></activity>
-        <activity android:name=".Brews.UserBrew"></activity>
+            android:label="@string/title_activity_add_edit_view_schedule"
+            android:windowSoftInputMode="adjustPan">
+
+        </activity>
+        <activity android:name=".Brews.UserBrew"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
     </application>
 
 </manifest>
