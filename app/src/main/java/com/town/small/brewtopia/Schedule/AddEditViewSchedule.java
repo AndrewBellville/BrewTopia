@@ -32,6 +32,7 @@ import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
 import com.town.small.brewtopia.R;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -85,6 +86,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
     ScheduledBrewSchema aScheduleSchema;
     ArrayAdapter<String> colorAdapter;
     private Toolbar toolbar;
+    private SchedulerHelper schedulerHelper;
 
 
     @Override
@@ -139,6 +141,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
         scheduleActivityData = ScheduleActivityData.getInstance();
         aScheduleSchema = scheduleActivityData.getScheduledBrewSchema();
+        schedulerHelper = new SchedulerHelper(this);
 
         ToggleFieldEditable(false);
         setColorSpinner();
@@ -289,11 +292,10 @@ public class AddEditViewSchedule extends ActionBarActivity {
         Log.e(LOG, "Entering: validateSubmit");
 
         //Create Brew schedule
-        ScheduledBrewSchema sbrew = new ScheduledBrewSchema();
+        ScheduledBrewSchema sbrew = aScheduleSchema;
         sbrew.setScheduleId(aScheduleSchema.getScheduleId());
         sbrew.setBrewName(brewName.getText().toString());
         sbrew.setUserName(UserName);
-        sbrew.setStartDate(aScheduleSchema.getStartDate());
 
         double og=0.0;
         double fg=0.0;
@@ -325,20 +327,16 @@ public class AddEditViewSchedule extends ActionBarActivity {
             sbrew.setAlertSecondaryDate(SecondaryAlert.getText().toString());
             sbrew.setAlertBottleDate(BottleAlert.getText().toString());
             sbrew.setEndBrewDate(EndDate.getText().toString());
+
+            updateUserCalendar(sbrew);
         }
         else
         {
             Toast.makeText(getApplicationContext(), "Invalid Date", Toast.LENGTH_LONG).show();
-            sbrew.setStartDate(aScheduleSchema.getStartDate());
-            sbrew.setAlertSecondaryDate(aScheduleSchema.getAlertSecondaryDate());
-            sbrew.setAlertBottleDate(aScheduleSchema.getAlertBottleDate());
-            sbrew.setEndBrewDate(aScheduleSchema.getEndBrewDate());
         }
 
         if(colorSpinner.getSelectedItem().toString() == "Blue")
             sbrew.setColor("#0000FF");
-        else
-            sbrew.setColor(aScheduleSchema.getColor());
 
 
         sbrew.setNotes(Notes.getText().toString());
@@ -356,8 +354,34 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
     public void onDeleteClick(View aView)
     {
+        //delete each event from user Calendar
+        schedulerHelper.deleteCalendarEvent(aScheduleSchema.getAlertSecondaryCalendarId());
+        schedulerHelper.deleteCalendarEvent(aScheduleSchema.getAlertBottleCalendarId());
+        schedulerHelper.deleteCalendarEvent(aScheduleSchema.getEndBrewCalendarId());
+
+        // then delete brew
         dbManager.deleteBrewScheduledById(aScheduleSchema.getScheduleId());
         this.finish();
+    }
+
+    private void updateUserCalendar(ScheduledBrewSchema sbrew)
+    {
+        Date date = new Date();
+        Date date1 = new Date();
+        Date date2 = new Date();
+        try {
+            date = APPUTILS.dateFormat.parse(sbrew.getAlertSecondaryDate());
+            date1 = APPUTILS.dateFormat.parse(sbrew.getAlertBottleDate());
+            date2 = APPUTILS.dateFormat.parse(sbrew.getEndBrewDate());
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        //delete each event from user Calendar
+        schedulerHelper.updateCalendarEvent(date,sbrew.getAlertSecondaryCalendarId());
+        schedulerHelper.updateCalendarEvent(date1,sbrew.getAlertBottleCalendarId());
+        schedulerHelper.updateCalendarEvent(date2,sbrew.getEndBrewCalendarId());
     }
 
     private void ToggleFieldEditable(boolean aEditable)

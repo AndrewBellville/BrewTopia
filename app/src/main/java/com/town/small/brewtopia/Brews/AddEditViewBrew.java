@@ -309,7 +309,12 @@ public class AddEditViewBrew extends Fragment {
 
 
         //Create Brew
-        BrewSchema brew = new BrewSchema();
+        BrewSchema brew;
+        if(brewSchema == null)
+            brew = new BrewSchema();
+        else
+            brew = brewSchema;
+
         brew.setBrewName(brewName.getText().toString());
         brew.setUserName(UserName);
         brew.setPrimary(pf);

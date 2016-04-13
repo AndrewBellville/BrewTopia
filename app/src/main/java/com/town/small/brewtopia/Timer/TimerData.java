@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.CountDownTimer;
 
 import com.town.small.brewtopia.DataClass.*;
+import com.town.small.brewtopia.Schedule.SchedulerHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +112,8 @@ public class TimerData {
             return;
 
         //Once timer starts create a Schedule
-        createSchedule(context);
+        SchedulerHelper schedulerHelper= new SchedulerHelper(context);
+        schedulerHelper.createSchedule(brew);
 
         //Set Alarm Manager
         notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
@@ -157,15 +159,6 @@ public class TimerData {
                     eventHandler.onTimerFinish();
             }
         }.start();
-    }
-
-    private void createSchedule(Context context)
-    {
-        //Create Schedule for Brew
-        ScheduledBrewSchema sBrew = new ScheduledBrewSchema(brew.getBrewName(), CurrentUser.getInstance().getUser().getUserName());
-        sBrew.SetScheduledDates(brew.getPrimary(), brew.getSecondary(), brew.getBottle());
-        sBrew.setColor(brew.getStyleSchema().getBrewStyleColor());
-        DataBaseManager.getInstance(context).CreateAScheduledBrew(sBrew);
     }
 
     public void FireAlarm()

@@ -1,10 +1,17 @@
 package com.town.small.brewtopia;
 
 
+import android.app.usage.UsageEvents;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 
+import android.provider.CalendarContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -16,12 +23,20 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 
+import com.town.small.brewtopia.AppSettings.AppSettings;
 import com.town.small.brewtopia.Brews.UserBrewList;
 import com.town.small.brewtopia.Calculations.UserCalculations;
 import com.town.small.brewtopia.Schedule.UserSchedule;
 import com.town.small.brewtopia.Tabs.SlidingTabLayout;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 
 public class UserProfile extends ActionBarActivity {
@@ -59,6 +74,40 @@ public class UserProfile extends ActionBarActivity {
 
         tabLayout.setViewPager(viewPager);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.user_profile, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_help:
+                showHelp();
+                return true;
+            case R.id.action_settings:
+                showSettings();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void showSettings()
+    {
+        //Create and intent which will open next activity AppSettings
+        Intent intent = new Intent(this, AppSettings.class);
+        startActivity(intent);
+    }
+
+    private void showHelp()
+    {
+        Toast.makeText(this, "No Help for you Sucka", Toast.LENGTH_LONG).show();
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {

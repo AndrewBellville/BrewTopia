@@ -1,6 +1,7 @@
 package com.town.small.brewtopia.Brews;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,8 +15,10 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
+import com.town.small.brewtopia.AppSettings.AppSettings;
 import com.town.small.brewtopia.Calculations.UserCalculations;
 import com.town.small.brewtopia.R;
 import com.town.small.brewtopia.Schedule.UserSchedule;
@@ -62,6 +65,36 @@ public class UserBrew extends ActionBarActivity {
 
         tabLayout.setViewPager(viewPager);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.user_brews, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_help:
+                //showHelp();
+                return true;
+            case R.id.action_settings:
+                showSettings();
+                return true;
+            default:
+                onBackPressed();
+                return true;
+        }
+    }
+
+    private void showSettings()
+    {
+        //Create and intent which will open next activity AppSettings
+        Intent intent = new Intent(this, AppSettings.class);
+        startActivity(intent);
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {
@@ -114,11 +147,6 @@ public class UserBrew extends ActionBarActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        onBackPressed();
-        return true;
-    }
 }
 
 

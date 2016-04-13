@@ -34,8 +34,8 @@ public class UserBrewList extends Fragment {
     private ListView BrewListView;
     private DataBaseManager dbManager;
     private CurrentUser currentUser;
-    ArrayList<HashMap<String, String>> list;
     private boolean isDelete = false;
+    List<BrewSchema> brewList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,8 +57,8 @@ public class UserBrewList extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                HashMap<String,String> selectedRow = list.get(position);
-                BrewSelect(selectedRow.get("text1"));
+                BrewSchema selectedRow = brewList.get(position);
+                BrewSelect(selectedRow.getBrewName());
             }
         });
         dbManager = DataBaseManager.getInstance(getActivity());
@@ -94,30 +94,18 @@ public class UserBrewList extends Fragment {
     private void LoadBrews() {
         Log.e(LOG, "Entering: LoadBrews");
 
-        List<BrewSchema> brewList = dbManager.getAllBrews(userName);
-        list = new ArrayList<HashMap<String, String>>();
+        brewList = dbManager.getAllBrews(userName);
 
-        if(brewList.size() == 0 && list.size() > 0) {
-            list.clear();
-        }
-        else if (brewList.size() > 0) {
-
-            for(BrewSchema brew : brewList)
-            {
-                HashMap<String,String> temp = new HashMap<String,String>();
-                temp.put("text1",brew.getBrewName());
-                temp.put("text2", "Create: " + brew.getCreatedOn() +GetStyleColor(brew.getStyle()));
-                list.add(temp);
-            }
+        if (brewList.size() > 0) {
 
             //instantiate custom adapter
-            CustomListAdapter adapter = new CustomListAdapter(list, getActivity());
+            CustomBListAdapter adapter = new CustomBListAdapter(brewList, getActivity());
             adapter.setDeleteView(isDelete);
             adapter.hasColor(true);
-            adapter.setEventHandler(new CustomListAdapter.EventHandler() {
+            adapter.setEventHandler(new CustomBListAdapter.EventHandler() {
                 @Override
-                public void OnDeleteClickListener(String aName, String aDate) {
-                    dbManager.DeleteBrew(aName, userName);
+                public void OnDeleteClickListener(BrewSchema aBrewSchema) {
+                    dbManager.DeleteBrew(aBrewSchema.getBrewName(), userName);
                 }
             });
             BrewListView.setAdapter(adapter);

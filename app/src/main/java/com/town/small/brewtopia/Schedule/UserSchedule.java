@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.town.small.brewtopia.CustomListAdapter;
+import com.town.small.brewtopia.Login;
 import com.town.small.brewtopia.R;
 import com.town.small.brewtopia.Schedule.AddEditViewSchedule;
 import com.town.small.brewtopia.Schedule.MyCalendar;
@@ -51,7 +52,14 @@ public class UserSchedule extends Fragment {
         View view = inflater.inflate(R.layout.activity_user_schedule,container,false);
 
         dbManager = DataBaseManager.getInstance(getActivity());
-        userName = CurrentUser.getInstance().getUser().getUserName();
+        try {
+            userName = CurrentUser.getInstance().getUser().getUserName();
+        }
+        catch (Exception e){
+            // if  we fail to get user name open login activity
+            Intent intent = new Intent(getActivity(), Login.class);
+            startActivity(intent);
+        }
 
         sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
         mc = ((MyCalendar) view.findViewById(R.id.calendar_view));

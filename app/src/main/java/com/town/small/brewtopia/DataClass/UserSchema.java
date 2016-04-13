@@ -10,9 +10,10 @@ public class UserSchema {
     // Log cat tag
     private static final String LOG = "UserSchema";
 
+    int userId;
     String UserName;
-    String Password;
-    String CreatedOn;
+    private String Password;
+    private String CreatedOn;
 
     // constructors
     public UserSchema() {
@@ -29,13 +30,14 @@ public class UserSchema {
     public void setUserName(String aUserName) {
         this.UserName = aUserName;
     }
-
     public void setPassword(String aPassword) {
         this.Password = aPassword;
     }
-
     public void setCreatedOn(String aCreatedOn){
         this.CreatedOn = aCreatedOn;
+    }
+    public int getUserId() {
+        return userId;
     }
 
     // getters
@@ -46,4 +48,7 @@ public class UserSchema {
         return this.Password;
     }
     public String getCreatedOn() { return this.CreatedOn; }
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 }

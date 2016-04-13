@@ -16,8 +16,11 @@ public class ScheduledBrewSchema {
     private String UserName;
     private String StartDate;
     private String AlertSecondaryDate;
+    private long AlertSecondaryCalendarId=-1;
     private String AlertBottleDate;
+    private long AlertBottleCalendarId=-1;
     private String EndBrewDate;
+    private long EndBrewCalendarId=-1;
     private String Notes;
     private Double OG=0.0;
     private Double FG=0.0;
@@ -196,6 +199,15 @@ public class ScheduledBrewSchema {
     public Double getABV() {
         return ABV;
     }
+    public long getAlertSecondaryCalendarId() {
+        return AlertSecondaryCalendarId;
+    }
+    public long getAlertBottleCalendarId() {
+        return AlertBottleCalendarId;
+    }
+    public long getEndBrewCalendarId() {
+        return EndBrewCalendarId;
+    }
 
 
     //Setters
@@ -244,6 +256,15 @@ public class ScheduledBrewSchema {
     }
     public void setABV(Double ABV) {
         this.ABV = ABV;
+    }
+    public void setAlertSecondaryCalendarId(long alertSecondaryCalendarId) {
+        AlertSecondaryCalendarId = alertSecondaryCalendarId;
+    }
+    public void setAlertBottleCalendarId(long alertBottleCalendarId) {
+        AlertBottleCalendarId = alertBottleCalendarId;
+    }
+    public void setEndBrewCalendarId(long endBrewCalendarId) {
+        EndBrewCalendarId = endBrewCalendarId;
     }
 
 }

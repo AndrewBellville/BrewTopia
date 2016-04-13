@@ -26,6 +26,11 @@ public class BrewSchema {
     private Double targetABV;
     private String Description;
     private String CreatedOn;
+    private int favorite=0;
+    private int scheduled=0;
+    private int onTap=0;
+    private double IBU=0.0;
+    private String method;
     private List <BoilAdditionsSchema> boilAdditionlist = new ArrayList<BoilAdditionsSchema>();
     private List <BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();;
     private String Style;
@@ -111,7 +116,21 @@ public class BrewSchema {
     public List<BrewNoteSchema> getBrewNoteSchemaList() {
         return brewNoteSchemaList;
     }
-
+    public int getFavorite() {
+        return favorite;
+    }
+    public int getScheduled() {
+        return scheduled;
+    }
+    public int getOnTap() {
+        return onTap;
+    }
+    public double getIBU() {
+        return IBU;
+    }
+    public String getMethod() {
+        return method;
+    }
 
 
     //setters
@@ -163,4 +182,20 @@ public class BrewSchema {
     public void setBrewNoteSchemaList(List<BrewNoteSchema> brewNoteSchemaList) {
         this.brewNoteSchemaList = brewNoteSchemaList;
     }
+    public void setFavorite(int favorite) {
+        this.favorite = favorite;
+    }
+    public void setScheduled(int scheduled) {
+        this.scheduled = scheduled;
+    }
+    public void setOnTap(int onTap) {
+        this.onTap = onTap;
+    }
+    public void setIBU(double IBU) {
+        this.IBU = IBU;
+    }
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
 }
