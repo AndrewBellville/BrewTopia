@@ -19,10 +19,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.town.small.brewtopia.AppSettings.AppSettings;
-import com.town.small.brewtopia.Calculations.UserCalculations;
 import com.town.small.brewtopia.R;
-import com.town.small.brewtopia.Schedule.UserSchedule;
-import com.town.small.brewtopia.Tabs.SlidingTabLayout;
+import com.town.small.brewtopia.Utilites.SlidingTabLayout;
 import com.town.small.brewtopia.UserInventory;
 
 public class UserBrew extends ActionBarActivity {

@@ -13,7 +13,7 @@
     <include  android:id="@+id/app_bar"
         layout="@layout/app_bar"/>
 
-    <com.town.small.brewtopia.Tabs.SlidingTabLayout
+    <com.town.small.brewtopia.Utilites.SlidingTabLayout
         android:id="@+id/profileTabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

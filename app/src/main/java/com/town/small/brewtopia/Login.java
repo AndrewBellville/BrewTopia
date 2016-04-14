@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.town.small.brewtopia.AppSettings.AppSettingsHelper;
 import com.town.small.brewtopia.DataClass.*;
 
 
@@ -23,6 +24,7 @@ public class Login extends ActionBarActivity {
     private TextView version;
     private DataBaseManager dbManager;
     private CurrentUser currentUser;
+    AppSettingsHelper  appSettingsHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +33,9 @@ public class Login extends ActionBarActivity {
         Log.e(LOG, "Entering: onCreate");
         dbManager = DataBaseManager.getInstance(getApplicationContext());
         currentUser = CurrentUser.getInstance();
-        //getActionBar().hide();
 
-        //Link to XML onCreate of this class
+        appSettingsHelper = new AppSettingsHelper(this);
+
         userName = (EditText)findViewById(R.id.UserNameTextBox);
         password = (EditText)findViewById(R.id.PasswordTextBox);
         message = (TextView)findViewById(R.id.MessageText);
@@ -57,7 +59,14 @@ public class Login extends ActionBarActivity {
         //TODO better verification
         //create user schema from XML field data and create user in DB
         UserSchema user = new UserSchema(userName.getText().toString(),password.getText().toString());
-        return dbManager.CreateAUser(user);
+
+        if(dbManager.CreateAUser(user)) {
+            user = dbManager.getUser(userName.getText().toString());
+            appSettingsHelper.CreateAppSettings(user.getUserId());
+            return true;
+        }
+
+        return false;
     }
 
     public void onLoginClick(View aView)

@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 24;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 26;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -95,6 +95,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     // TABLE_APP_SETTINGS column names
     private static final String SETTING_NAME = "SettingName";
     private static final String SETTING_VALUE = "SettingValue";
+    private static final String SETTING_SCREEN = "SettingScreen";
 
     // Table Create Statements
     //CREATE_TABLE_USERS
@@ -133,7 +134,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     //CREATE_TABLE_APP_SETTINGS
     private static final String CREATE_TABLE_APP_SETTINGS = "CREATE TABLE "
-            + TABLE_APP_SETTINGS + "(" + USER_ID + " INTEGER," + SETTING_NAME + " TEXT," + SETTING_VALUE + " TEXT )";
+            + TABLE_APP_SETTINGS + "(" + USER_ID + " INTEGER," + SETTING_NAME + " TEXT," + SETTING_VALUE + " TEXT," + SETTING_SCREEN + " TEXT )";
 
 
     //Singleton
@@ -1180,6 +1181,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(USER_ID, aAppSettingsSchema.getUserId());
         values.put(SETTING_NAME, aAppSettingsSchema.getSettingName());
         values.put(SETTING_VALUE, aAppSettingsSchema.getSettingValue());
+        values.put(SETTING_SCREEN, aAppSettingsSchema.getSettingScreen());
 
 
         // insert row
@@ -1189,7 +1191,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     * add All App settings
     */
     public boolean addAllAppSettings(List <AppSettingsSchema> aAppSettingsSchema) {
-        Log.e(LOG, "Insert: addAllBrewNotes");
+        Log.e(LOG, "Insert: addAllAppSettings");
 
         if(aAppSettingsSchema.size() < 1)
             return true;
@@ -1203,6 +1205,35 @@ public class DataBaseManager extends SQLiteOpenHelper {
         }
 
         return true;
+    }
+
+    /*
+* getting App Settings by user Id and name
+*/
+    public AppSettingsSchema getAppSettingsBySettingName(AppSettingsSchema aAppSettingsSchema) {
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_APP_SETTINGS + " WHERE "
+                + USER_ID + " = " +Integer.toString(aAppSettingsSchema.getUserId())
+                + " AND " + SETTING_NAME + " = '" + aAppSettingsSchema.getSettingName()+"' ";
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        AppSettingsSchema appSettingsSchema = new AppSettingsSchema();
+        Log.e(LOG, "getAppSettingsBySettingName Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+
+            appSettingsSchema.setUserId(c.getInt(c.getColumnIndex(USER_ID)));
+            appSettingsSchema.setAppSetttingId(c.getInt(c.getColumnIndex(ROW_ID)));
+            appSettingsSchema.setSettingName(c.getString(c.getColumnIndex(SETTING_NAME)));
+            appSettingsSchema.setSettingValue(c.getString(c.getColumnIndex(SETTING_VALUE)));
+            appSettingsSchema.setSettingScreen(c.getString(c.getColumnIndex(SETTING_SCREEN)));
+        }
+
+        c.close();
+        return appSettingsSchema;
     }
 
 
@@ -1228,6 +1259,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 appSettingsSchema.setAppSetttingId(c.getInt(c.getColumnIndex(ROW_ID)));
                 appSettingsSchema.setSettingName(c.getString(c.getColumnIndex(SETTING_NAME)));
                 appSettingsSchema.setSettingValue(c.getString(c.getColumnIndex(SETTING_VALUE)));
+                appSettingsSchema.setSettingScreen(c.getString(c.getColumnIndex(SETTING_SCREEN)));
 
                 // adding to boilList
                 appSettingsSchemaList.add(appSettingsSchema);
@@ -1249,6 +1281,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(USER_ID, aAppSettingsSchema.getUserId());
         values.put(SETTING_NAME, aAppSettingsSchema.getSettingName());
         values.put(SETTING_VALUE, aAppSettingsSchema.getSettingValue());
+        values.put(SETTING_SCREEN, aAppSettingsSchema.getSettingScreen());
 
         // updating row
         int retVal = db.update(TABLE_APP_SETTINGS, values, ROW_ID + " = ?",

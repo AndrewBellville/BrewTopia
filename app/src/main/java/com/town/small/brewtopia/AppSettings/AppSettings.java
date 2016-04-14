@@ -10,6 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.town.small.brewtopia.DataClass.AppSettingsSchema;
+import com.town.small.brewtopia.DataClass.CurrentUser;
+import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.R;
 
 import java.util.ArrayList;
@@ -22,7 +24,9 @@ public class AppSettings extends ActionBarActivity {
 
     private Toolbar toolbar;
     private ListView settingsListView;
-    List<AppSettingsSchema> settingsList;
+    private List<AppSettingsSchema> settingsList;
+    private DataBaseManager dbManager;
+    private int userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,9 @@ public class AppSettings extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Settings");
+
+        dbManager = DataBaseManager.getInstance(this);
+        userId = CurrentUser.getInstance().getUser().getUserId();
 
         settingsListView = (ListView) findViewById(R.id.appSettingsListView);
         settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -52,22 +59,9 @@ public class AppSettings extends ActionBarActivity {
     private void LoadSettings() {
         Log.e(LOG, "Entering: LoadSettings");
 
-        settingsList = new ArrayList<AppSettingsSchema>();
-        AppSettingsSchema appSettingsSchema = new AppSettingsSchema();
-        appSettingsSchema.setSettingName("Brew");
-        appSettingsSchema.setSettingValue("0");
-        settingsList.add(appSettingsSchema);
-        appSettingsSchema = new AppSettingsSchema();
-        appSettingsSchema.setSettingName("Schedule");
-        appSettingsSchema.setSettingValue("0");
-        settingsList.add(appSettingsSchema);
-        appSettingsSchema = new AppSettingsSchema();
-        appSettingsSchema.setSettingName("Invetory");
-        appSettingsSchema.setSettingValue("0");
-        settingsList.add(appSettingsSchema);
+        settingsList = dbManager.getAllAppSettingsByUserId(userId);
 
         if (settingsList.size() > 0) {
-
             //instantiate custom adapter
             CustomASListAdapter adapter = new CustomASListAdapter(settingsList, this);
             adapter.setEditable(true);
@@ -83,7 +77,7 @@ public class AppSettings extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-                onBackPressed();
-                return true;
+        onBackPressed();
+        return true;
     }
 }

@@ -1,17 +1,11 @@
 package com.town.small.brewtopia;
 
 
-import android.app.usage.UsageEvents;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 
-import android.provider.CalendarContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -32,11 +26,7 @@ import com.town.small.brewtopia.AppSettings.AppSettings;
 import com.town.small.brewtopia.Brews.UserBrewList;
 import com.town.small.brewtopia.Calculations.UserCalculations;
 import com.town.small.brewtopia.Schedule.UserSchedule;
-import com.town.small.brewtopia.Tabs.SlidingTabLayout;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
+import com.town.small.brewtopia.Utilites.SlidingTabLayout;
 
 
 public class UserProfile extends ActionBarActivity {

@@ -1,4 +1,4 @@
-package com.town.small.brewtopia.Tabs;
+package com.town.small.brewtopia.Utilites;
 
 /**
  * Created by Andrew on 4/9/2016.

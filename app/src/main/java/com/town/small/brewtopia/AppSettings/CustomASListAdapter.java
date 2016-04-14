@@ -27,10 +27,12 @@ public class CustomASListAdapter extends BaseAdapter implements ListAdapter  {
     private List<AppSettingsSchema> list = new ArrayList<AppSettingsSchema>();
     private Context context;
     private boolean isEditable = false;
+    private AppSettingsHelper appSettingsHelper;
 
     public CustomASListAdapter(List<AppSettingsSchema> list, Context context) {
         this.list = list;
         this.context = context;
+        appSettingsHelper = new AppSettingsHelper(context);
     }
 
     @Override
@@ -69,14 +71,25 @@ public class CustomASListAdapter extends BaseAdapter implements ListAdapter  {
         Switch editSwitch = (Switch)view.findViewById(R.id.edit_switch);
 
         if(!isEditable) editSwitch.setVisibility(View.INVISIBLE);
+        else
+        {
+            if(appSettingsSchema.getSettingValue().equals(appSettingsHelper.ON))
+                editSwitch.setChecked(true);
+            else
+                editSwitch.setChecked(false);
 
-        editSwitch.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
+            editSwitch.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    Switch editSwitch = (Switch)v.findViewById(R.id.edit_switch);
+                    AppSettingsSchema appSettingsSchema = list.get(position);
+                    appSettingsHelper.UpdateAppSettings(appSettingsSchema,editSwitch.isChecked());
+                    notifyDataSetChanged();
+                }
+            });
+        }
 
-                notifyDataSetChanged();
-            }
-        });
+
 
         return view;
     }

@@ -11,6 +11,7 @@ public class AppSettingsSchema {
     private int appSetttingId;
     private int userId;
     private String settingName;
+    private String settingScreen;
     private String settingValue;
 
     public AppSettingsSchema() {
@@ -30,7 +31,9 @@ public class AppSettingsSchema {
     public int getAppSetttingId() {
         return appSetttingId;
     }
-
+    public String getSettingScreen() {
+        return settingScreen;
+    }
 
     //Setters
     public void setUserId(int userId) {
@@ -45,4 +48,8 @@ public class AppSettingsSchema {
     public void setAppSetttingId(int appSetttingId) {
         this.appSetttingId = appSetttingId;
     }
+    public void setSettingScreen(String settingScreen) {
+        this.settingScreen = settingScreen;
+    }
+
 }

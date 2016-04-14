@@ -7,7 +7,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.provider.CalendarContract;
 
+import com.town.small.brewtopia.AppSettings.AppSettingsHelper;
 import com.town.small.brewtopia.DataClass.APPUTILS;
+import com.town.small.brewtopia.DataClass.AppSettingsSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataClass.DataBaseManager;
@@ -29,9 +31,12 @@ public class SchedulerHelper {
     private ContentValues values;
     ContentResolver cr;
     long eventID;
+    AppSettingsHelper appSettingsHelper;
 
     public SchedulerHelper(Context context) {
+
         this.context = context;
+        appSettingsHelper = new AppSettingsHelper(context);
     }
 
     public void createSchedule(BrewSchema aBrew)
@@ -41,8 +46,7 @@ public class SchedulerHelper {
         sBrew.SetScheduledDates(aBrew.getPrimary(), aBrew.getSecondary(), aBrew.getBottle());
         sBrew.setColor(aBrew.getStyleSchema().getBrewStyleColor());
 
-        //TODO: APP SETTINGS
-        if(true) {
+        if(appSettingsHelper.GetBoolAppSettingsByName(AppSettingsHelper.SCHEDULER_CALENDAR_PUSH)) {
             Date date = new Date();
             Date date1 = new Date();
             Date date2 = new Date();
@@ -70,7 +74,9 @@ public class SchedulerHelper {
 
     public boolean createCalendarEvent(Date aDate, String aTitle)
     {
-        //TODO: APP SETTINGS
+
+        if(!appSettingsHelper.GetBoolAppSettingsByName(AppSettingsHelper.SCHEDULER_CALENDAR_PUSH))
+            return false;
 
         try {
             long startMillis = 0;
@@ -114,8 +120,8 @@ public class SchedulerHelper {
 
     public boolean updateCalendarEvent(Date aDate, long aEventID)
     {
-        //TODO: APP SETTINGS
-        if (eventID == -1)
+        if ( (!appSettingsHelper.GetBoolAppSettingsByName(AppSettingsHelper.SCHEDULER_CALENDAR_PUSH)) &&
+                eventID == -1)
             return false;
 
         long startMillis = 0;
@@ -145,8 +151,8 @@ public class SchedulerHelper {
 
     public boolean deleteCalendarEvent(long aEventID)
     {
-        //TODO: APP SETTINGS
-        if (eventID == -1)
+        if ( (!appSettingsHelper.GetBoolAppSettingsByName(AppSettingsHelper.SCHEDULER_CALENDAR_PUSH)) &&
+                eventID == -1)
             return false;
 
         try {

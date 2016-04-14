@@ -28,6 +28,7 @@ import com.town.small.brewtopia.Schedule.AddEditViewSchedule;
 import com.town.small.brewtopia.Schedule.MyCalendar;
 import com.town.small.brewtopia.DataClass.*;
 import com.town.small.brewtopia.Schedule.ScheduleActivityData;
+import com.town.small.brewtopia.Utilites.SlidingUpPaneLayout;
 
 public class UserSchedule extends Fragment {
 
@@ -54,42 +55,57 @@ public class UserSchedule extends Fragment {
         dbManager = DataBaseManager.getInstance(getActivity());
         try {
             userName = CurrentUser.getInstance().getUser().getUserName();
+
+            sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
+            mc = ((MyCalendar) view.findViewById(R.id.calendar_view));
+            mc.updateCalendarList(sBrewList);
+
+            // assign event handler
+            mc.setEventHandler(new MyCalendar.EventHandler() {
+                @Override
+                public void onDayLongPress(Date date) {
+                    //Log.e("UserSchedule", "Entering: setEventHandler");
+                    // show returned day
+                    //DateFormat df = SimpleDateFormat.getDateInstance();
+                    //Toast.makeText(getApplicationContext(), df.format(date), Toast.LENGTH_SHORT).show();
+                    LoadScheduleView(date);
+                }
+
+                @Override
+            public void OnClickListener(){
+                    updateCalendarView();
+                }
+            });
+
+            ScheduledBrewListView = (ListView)view.findViewById(R.id.ScheduledListView);
+            ScheduledBrewListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    ScheduleSelect(list.get(position));
+                }
+            });
+
+            final float density = getResources().getDisplayMetrics().density;
+
+            SlidingUpPaneLayout slidingUpPaneLayout = (SlidingUpPaneLayout) view.findViewById(R.id.sliding_layout);
+            slidingUpPaneLayout.setParallaxDistance((int) (200 * density));
+            slidingUpPaneLayout.setShadowResourceTop(R.drawable.shadow_top);
+
+            /**
+             * limit scroll zone to 32dp, if you want whole view can scroll
+             * just ignore this method, don't call it
+             */
+            //slidingUpPaneLayout.setEdgeSize((int) (density * 132));
+
+            slidingUpPaneLayout.openPane();
+
         }
         catch (Exception e){
             // if  we fail to get user name open login activity
             Intent intent = new Intent(getActivity(), Login.class);
             startActivity(intent);
         }
-
-        sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
-        mc = ((MyCalendar) view.findViewById(R.id.calendar_view));
-        mc.updateCalendarList(sBrewList);
-
-        // assign event handler
-        mc.setEventHandler(new MyCalendar.EventHandler() {
-            @Override
-            public void onDayLongPress(Date date) {
-                //Log.e("UserSchedule", "Entering: setEventHandler");
-                // show returned day
-                //DateFormat df = SimpleDateFormat.getDateInstance();
-                //Toast.makeText(getApplicationContext(), df.format(date), Toast.LENGTH_SHORT).show();
-                LoadScheduleView(date);
-            }
-
-            @Override
-        public void OnClickListener(){
-                updateCalendarView();
-            }
-        });
-
-        ScheduledBrewListView = (ListView)view.findViewById(R.id.ScheduledListView);
-        ScheduledBrewListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                ScheduleSelect(list.get(position));
-            }
-        });
 
         return view;
 
