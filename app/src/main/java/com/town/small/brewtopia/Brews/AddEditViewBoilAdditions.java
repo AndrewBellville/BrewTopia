@@ -1,5 +1,6 @@
 package com.town.small.brewtopia.Brews;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
@@ -39,7 +41,6 @@ public class AddEditViewBoilAdditions extends Fragment {
 
     private BrewActivityData brewData;
     private ListView BrewAdditionsListView;
-    private boolean isInit = false;
 
     private DataBaseManager dbManager;
 
@@ -81,12 +82,8 @@ public class AddEditViewBoilAdditions extends Fragment {
 
     @Override
     public void setMenuVisibility(boolean isShown) {
-        if(isShown && !isInit)
-        {
-            Log.e(LOG, "Entering: Init Show");
+        if(isShown)
             loadAll();
-            isInit = true;
-        }
     }
 
     private void loadAll()
@@ -114,57 +111,64 @@ public class AddEditViewBoilAdditions extends Fragment {
 
         editBoilAdditionsSchema = aBoilAdditionsSchema;
 
-        final Dialog dialog = new Dialog(getActivity(),R.style.DialogStyle);
-        dialog.setTitle("Boil Addition");
-        dialog.setContentView(R.layout.custom_boil_addition_dialog);
-        dialog.getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setTitle("Boil Addition");
 
-        editAdditionName = (EditText) dialog.findViewById(R.id.additionNameEditText);
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.custom_boil_addition_dialog, null);
+        alertDialogBuilder.setView(dialogView);
+
+
+        editAdditionName = (EditText) dialogView.findViewById(R.id.additionNameEditText);
         editAdditionName.setText(editBoilAdditionsSchema.getAdditionName());
 
-        editAdditionTime = (EditText) dialog.findViewById(R.id.additionTimeEditText);
+        editAdditionTime = (EditText) dialogView.findViewById(R.id.additionTimeEditText);
         editAdditionTime.setText(Integer.toString(editBoilAdditionsSchema.getAdditionTime()));
 
-        editAdditionQty = (EditText) dialog.findViewById(R.id.additionQtyEditText);
-        editAdditionQty.setText(Integer.toString(editBoilAdditionsSchema.getAdditionTime()));
+        editAdditionQty = (EditText) dialogView.findViewById(R.id.additionQtyEditText);
+        editAdditionQty.setText(Double.toString(editBoilAdditionsSchema.getAdditionTime()));
 
-        editUOfMSpinner = (Spinner) dialog.findViewById(R.id.UofMSpinner);
+        editUOfMSpinner = (Spinner) dialogView.findViewById(R.id.UofMSpinner);
         editUOfMSpinner.setAdapter(UofMAdapter);
 
 
-        Button deleteButton = (Button) dialog.findViewById(R.id.deleteButton);
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+
+        Button deleteButton = (Button) dialogView.findViewById(R.id.deleteButton);
         if(editBoilAdditionsSchema.getAdditionId() == -1) deleteButton.setVisibility(View.INVISIBLE);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 validateDelete(editBoilAdditionsSchema);
-                dialog.cancel();
+                alertDialog.cancel();
             }
         });
-        Button SaveButton = (Button) dialog.findViewById(R.id.saveButton);
+        Button SaveButton = (Button) dialogView.findViewById(R.id.saveButton);
         SaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 validateSave(editBoilAdditionsSchema);
-                dialog.cancel();
+                alertDialog.cancel();
             }
         });
-        Button cancelButon = (Button) dialog.findViewById(R.id.cancelButton);
+        Button cancelButon = (Button) dialogView.findViewById(R.id.cancelButton);
         cancelButon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.cancel();
+                alertDialog.cancel();
             }
         });
 
-        dialog.show();
+
+        alertDialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        alertDialog.show();
     }
 
     private void validateSave(BoilAdditionsSchema aBoilAdditionsSchema)
     {
         int t=0;
-        int q=0;
+        double q=0.0;
 
         try
         {
@@ -173,7 +177,7 @@ public class AddEditViewBoilAdditions extends Fragment {
         catch (Exception e){}
         try
         {
-            q = Integer.parseInt(editAdditionQty.getText().toString());
+            q = Double.parseDouble(editAdditionQty.getText().toString());
         }
         catch (Exception e){}
 
@@ -218,9 +222,7 @@ public class AddEditViewBoilAdditions extends Fragment {
 
     private void setUofMAdapter()
     {
-        List<String> UOfMs = new ArrayList<String>();
-        UOfMs.add("Cups");
-        UOfMs.add("oz");
+        List<String> UOfMs = APPUTILS.UofM;
 
         UofMAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, UOfMs);
         // Specify the layout to use when the list of choices appears

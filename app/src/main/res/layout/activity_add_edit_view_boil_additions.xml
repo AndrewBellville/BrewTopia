@@ -14,7 +14,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="+"
+        android:text="Add New Addition"
         android:id="@+id/AddNewButton"
         android:minHeight="50dp"
         android:layout_alignParentBottom="true"/>

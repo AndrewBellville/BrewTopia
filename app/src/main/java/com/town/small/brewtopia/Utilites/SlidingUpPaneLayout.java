@@ -29,10 +29,6 @@ import java.util.ArrayList;
 /**
  * Created by Andrew on 4/14/2016.
  */
-
-/**
- * Created by chenjishi on 14/11/5.
- */
 public class SlidingUpPaneLayout extends ViewGroup {
 
     private static final String TAG = "SlidingUpPaneLayout";
@@ -715,7 +711,7 @@ public class SlidingUpPaneLayout extends ViewGroup {
 
                 if (mDragHelper.isViewUnder(mSlideableView, (int) x, (int) y) &&
                         isDimmed(mSlideableView)) {
-                    interceptTap = true;
+                    interceptTap = true; //TODO: ALLOW TAP BUT ALSO WANT TO SLID UP IF USERS  SLIDES UP
                 }
                 break;
             }
@@ -987,7 +983,7 @@ public class SlidingUpPaneLayout extends ViewGroup {
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
         SavedState ss = (SavedState) state;
-        super.onRestoreInstanceState(state);
+        super.onRestoreInstanceState(ss.superState);
 
         if (ss.isOpen) {
             openPane();
@@ -999,9 +995,11 @@ public class SlidingUpPaneLayout extends ViewGroup {
 
     static class SavedState extends BaseSavedState {
         boolean isOpen;
+        Parcelable superState;
 
         SavedState(Parcelable superState) {
             super(superState);
+            this.superState = superState;
         }
 
         private SavedState(Parcel source) {

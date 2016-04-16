@@ -9,6 +9,7 @@ import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.DataClass.UserSchema;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -16,9 +17,10 @@ import java.util.List;
  */
 public class AppSettingsHelper {
 
-    Context context;
     DataBaseManager dbManager;
     UserSchema currentUser;
+
+    private HashMap<String,String> AppSettingsMap;
 
     //What Screen they are for
     public static final String SCHEDULER = "Scheduler";
@@ -30,11 +32,31 @@ public class AppSettingsHelper {
     public static final String OFF = "0";
     public static final String ON = "1";
 
-    public AppSettingsHelper(Context context)
-    {
-        dbManager = DataBaseManager.getInstance(context);
+    //Singleton
+    private static AppSettingsHelper mInstance = null;
+
+    public static AppSettingsHelper getInstance(Context aContext) {
+        if (mInstance == null) {
+            mInstance = new AppSettingsHelper(aContext.getApplicationContext());
+        }
+        return mInstance;
+    }
+    // constructor
+    private AppSettingsHelper(Context aContext) {
+        dbManager = DataBaseManager.getInstance(aContext);
     }
 
+    private void LoadMap()
+    {
+        currentUser = CurrentUser.getInstance().getUser();
+        List<AppSettingsSchema> settingsList = dbManager.getAllAppSettingsByUserId(currentUser.getUserId());
+        AppSettingsMap = new HashMap<>();
+        for (AppSettingsSchema appSettingsSchema : settingsList) {
+            AppSettingsMap.put(appSettingsSchema.getSettingName(),appSettingsSchema.getSettingValue());
+        }
+    }
+
+    //Create All app settings and load to DB should be called on user create only
     public void CreateAppSettings(int aUserId)
     {
         List<AppSettingsSchema> settingsList = new ArrayList<AppSettingsSchema>();
@@ -42,6 +64,7 @@ public class AppSettingsHelper {
 
         //Add all setting to DB
         dbManager.addAllAppSettings(settingsList);
+        LoadMap();
     }
 
     public void UpdateAppSettings(AppSettingsSchema aAppSettingsSchema, boolean isSet)
@@ -52,6 +75,7 @@ public class AppSettingsHelper {
             aAppSettingsSchema.setSettingValue(OFF);
 
         dbManager.updateAppSetting(aAppSettingsSchema);
+        LoadMap();
     }
 
     public AppSettingsSchema GetAppSettingsByName(String aSettingName)
@@ -66,17 +90,10 @@ public class AppSettingsHelper {
 
     public boolean GetBoolAppSettingsByName(String aSettingName)
     {
-        currentUser = CurrentUser.getInstance().getUser();
-        AppSettingsSchema appSettingsSchema = new AppSettingsSchema();
-        appSettingsSchema.setUserId(currentUser.getUserId());
-        appSettingsSchema.setSettingName(aSettingName);
-
-        appSettingsSchema = dbManager.getAppSettingsBySettingName(appSettingsSchema);
-
         try {
-            if(appSettingsSchema.getSettingValue().equals(OFF))
+            if(AppSettingsMap.get(aSettingName).equals(OFF))
                 return false;
-            else if(appSettingsSchema.getSettingValue().equals(ON))
+            else if(AppSettingsMap.get(aSettingName).equals(ON))
                 return true;
         }
         catch (Exception e){}

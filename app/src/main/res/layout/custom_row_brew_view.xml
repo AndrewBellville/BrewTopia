@@ -31,28 +31,25 @@
             android:background="@drawable/favorite_icon"
             android:layout_width="13dp"
             android:layout_height="13dp"
-            android:layout_toLeftOf="@+id/CurrentStateTextView"
             android:visibility="visible"
             android:layout_marginRight="3dp" />
 
         <ImageView
             android:gravity="right"
-            android:id="@+id/ontap"
+            android:id="@+id/scheduledImage"
             android:background="@drawable/scheduled_icon"
             android:layout_width="13dp"
             android:layout_height="13dp"
-            android:layout_toLeftOf="@+id/CurrentStateTextView"
             android:visibility="visible"
             android:layout_marginRight="3dp"
             android:layout_marginLeft="3dp"/>
 
         <ImageView
             android:gravity="right"
-            android:id="@+id/sheduledImage"
+            android:id="@+id/onTapImage"
             android:background="@drawable/on_tap_icon"
             android:layout_width="13dp"
             android:layout_height="13dp"
-            android:layout_toLeftOf="@+id/CurrentStateTextView"
             android:visibility="visible"
             android:layout_marginRight="3dp"
             android:layout_marginLeft="3dp"/>

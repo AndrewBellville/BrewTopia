@@ -1,7 +1,9 @@
 package com.town.small.brewtopia.DataClass;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -40,6 +42,15 @@ public class APPUTILS {
             put("Pilsner","#ffff00");
             put("Pale","#ffff00");
             put("Light","#ffff00");
+        }
+    };
+
+    //TODO: Add this to the DB so users can add more
+    //********************Unit Of Measure List**********************
+    public static final List<String> UofM = new ArrayList<String>(){
+        {
+            add("lb");
+            add("oz");
         }
     };
 

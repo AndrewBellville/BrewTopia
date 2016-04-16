@@ -1,5 +1,6 @@
 package com.town.small.brewtopia.Brews;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -47,7 +48,6 @@ public class AddEditViewBrewNotes extends Fragment {
     //edit dialog
     private BrewNoteSchema editBrewNoteSchema;
     private EditText noteText;
-    private boolean isInit = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,12 +73,8 @@ public class AddEditViewBrewNotes extends Fragment {
 
     @Override
     public void setMenuVisibility(boolean isShown) {
-        if(isShown && !isInit)
-        {
-            Log.e(LOG, "Entering: Init Show");
+        if(isShown)
             LoadBrewNoteView();
-            isInit = true;
-        }
     }
 
     private void LoadBrewNoteView() {
@@ -104,46 +100,51 @@ public class AddEditViewBrewNotes extends Fragment {
     {
         editBrewNoteSchema = aBrewNoteSchema;
 
-        final Dialog dialog = new Dialog(getActivity(),R.style.DialogStyle);
-        dialog.setTitle("Brew Note");
-        dialog.setContentView(R.layout.custom_note_dialog);
-        dialog.getWindow().setSoftInputMode(
-            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setTitle("Brew Note");
 
-        TextView dateTime = (TextView) dialog.findViewById(R.id.DateTextView);
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.custom_note_dialog, null);
+        alertDialogBuilder.setView(dialogView);
+
+        TextView dateTime = (TextView) dialogView.findViewById(R.id.DateTextView);
         dateTime.setText(editBrewNoteSchema.getCreatedOn());
 
-        noteText = (EditText) dialog.findViewById(R.id.NoteEditText);
+        noteText = (EditText) dialogView.findViewById(R.id.NoteEditText);
         noteText.setText(aBrewNoteSchema.getBrewNote());
 
 
+        final AlertDialog alertDialog = alertDialogBuilder.create();
 
-        Button deleteButton = (Button) dialog.findViewById(R.id.deleteButton);
+        Button deleteButton = (Button) dialogView.findViewById(R.id.deleteButton);
         if(aBrewNoteSchema.getNoteId() == -1) deleteButton.setVisibility(View.INVISIBLE);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 validateDelete(editBrewNoteSchema);
-                dialog.cancel();
+                alertDialog.cancel();
             }
         });
-        Button SaveButton = (Button) dialog.findViewById(R.id.saveButton);
+        Button SaveButton = (Button) dialogView.findViewById(R.id.saveButton);
         SaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 validateSave(editBrewNoteSchema);
-                dialog.cancel();
+                alertDialog.cancel();
             }
         });
-        Button cancelButon = (Button) dialog.findViewById(R.id.cancelButton);
+        Button cancelButon = (Button) dialogView.findViewById(R.id.cancelButton);
         cancelButon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.cancel();
+                alertDialog.cancel();
             }
         });
 
-        dialog.show();
+
+        alertDialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        alertDialog.show();
 
     }
 

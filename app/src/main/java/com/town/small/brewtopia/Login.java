@@ -34,7 +34,7 @@ public class Login extends ActionBarActivity {
         dbManager = DataBaseManager.getInstance(getApplicationContext());
         currentUser = CurrentUser.getInstance();
 
-        appSettingsHelper = new AppSettingsHelper(this);
+        appSettingsHelper = AppSettingsHelper.getInstance(this);
 
         userName = (EditText)findViewById(R.id.UserNameTextBox);
         password = (EditText)findViewById(R.id.PasswordTextBox);

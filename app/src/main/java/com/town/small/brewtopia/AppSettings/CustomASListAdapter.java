@@ -32,7 +32,7 @@ public class CustomASListAdapter extends BaseAdapter implements ListAdapter  {
     public CustomASListAdapter(List<AppSettingsSchema> list, Context context) {
         this.list = list;
         this.context = context;
-        appSettingsHelper = new AppSettingsHelper(context);
+        appSettingsHelper = AppSettingsHelper.getInstance(context);
     }
 
     @Override

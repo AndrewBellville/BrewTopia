@@ -13,6 +13,7 @@ package com.town.small.brewtopia.Brews;
     import android.widget.Spinner;
     import android.widget.TextView;
 
+    import com.town.small.brewtopia.DataClass.APPUTILS;
     import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
     import com.town.small.brewtopia.R;
 
@@ -73,7 +74,7 @@ public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapt
 
         String text1 = boilAdditionsSchema.getAdditionName();
         String text2 = Integer.toString(boilAdditionsSchema.getAdditionTime());
-        String text3 = Integer.toString(boilAdditionsSchema.getAdditionQty());
+        String text3 = Double.toString(boilAdditionsSchema.getAdditionQty());
 
         //Handle TextView and display string from your list
         EditText listItemEditText = (EditText)view.findViewById(R.id.list_item_edit);
@@ -92,9 +93,7 @@ public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapt
 
         Spinner UofMSpinner = (Spinner)view.findViewById(R.id.UofMSpinner);
         ArrayAdapter<String> UofMAdapter;
-        List<String> UOfMs = new ArrayList<String>();
-        UOfMs.add("Cups");
-        UOfMs.add("oz");
+        List<String> UOfMs = APPUTILS.UofM;
 
         UofMAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item, UOfMs);
         // Specify the layout to use when the list of choices appears

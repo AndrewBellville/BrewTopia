@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 26;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 27;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -116,7 +116,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_BOIL_ADDITIONS
     private static final String CREATE_TABLE_BOIL_ADDITIONS = "CREATE TABLE "
             + TABLE_BOIL_ADDITIONS + "(" + BREW_NAME + " TEXT," + USER_NAME + " TEXT," + ADDITION_NAME + " TEXT," + ADDITION_TIME + " INTEGER,"
-            +  ADDITION_QTY + " INTEGER," +  ADDITION_UOFM + " TEXT, PRIMARY KEY ("+ BREW_NAME +", "+ ADDITION_NAME +", "+ USER_NAME +" ) )";
+            +  ADDITION_QTY + " REAL," +  ADDITION_UOFM + " TEXT, PRIMARY KEY ("+ BREW_NAME +", "+ ADDITION_NAME +", "+ USER_NAME +" ) )";
 
     //CREATE_TABLE_BREWS_SCHEDULED
     private static final String CREATE_TABLE_BREWS_SCHEDULED = "CREATE TABLE "
@@ -442,7 +442,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<BrewSchema> getAllBrews(String aUserName) {
         List<BrewSchema> brewList = new ArrayList<BrewSchema>();
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_BREWS + " WHERE "
-                + USER_NAME + " = '" + aUserName+"'";
+                + USER_NAME + " = '" + aUserName+"' "
+                + "ORDER BY " + FAVORITE+" DESC,"+SCHEDULED+" DESC,"+ON_TAP+" DESC,"+BREW_NAME;
 
         Log.e(LOG, selectQuery);
 
@@ -527,6 +528,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         //Delete all brew notes
         deleteAllBrewNotes(aBrewName,aUserName);
+
+        //delete all schedules
+        deleteBrewScheduled(aBrewName,aUserName);
     }
 
     //******************************Brews Style Table function*********************************
@@ -836,9 +840,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
             do {
                 BoilAdditionsSchema baSchema = new BoilAdditionsSchema();
                 baSchema.setAdditionId(c.getInt(c.getColumnIndex(ROW_ID)));
+                baSchema.setBrewName(c.getString(c.getColumnIndex(BREW_NAME)));
+                baSchema.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
                 baSchema.setAdditionName(c.getString(c.getColumnIndex(ADDITION_NAME)));
                 baSchema.setAdditionTime(c.getInt(c.getColumnIndex(ADDITION_TIME)));
-                baSchema.setAdditionQty(c.getInt(c.getColumnIndex(ADDITION_QTY)));
+                baSchema.setAdditionQty(c.getDouble(c.getColumnIndex(ADDITION_QTY)));
                 baSchema.setUOfM(c.getString(c.getColumnIndex(ADDITION_UOFM)));
 
                 // adding to boilList
@@ -872,7 +878,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             baSchema.setAdditionId(c.getInt(c.getColumnIndex(ROW_ID)));
             baSchema.setAdditionName(c.getString(c.getColumnIndex(ADDITION_NAME)));
             baSchema.setAdditionTime(c.getInt(c.getColumnIndex(ADDITION_TIME)));
-            baSchema.setAdditionQty(c.getInt(c.getColumnIndex(ADDITION_QTY)));
+            baSchema.setAdditionQty(c.getDouble(c.getColumnIndex(ADDITION_QTY)));
             baSchema.setUOfM(c.getString(c.getColumnIndex(ADDITION_UOFM)));
         }
 
@@ -1056,6 +1062,10 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 {
                     setBrewScheduledNotActive(sBrew.getScheduleId());
                     ScheduleNoteWriterHelper(sBrew);
+                    // we also want to update brew to onTap
+                    BrewSchema brewSchema = getBrew(sBrew.getBrewName(),sBrew.getUserName());
+                    brewSchema.setBooleanOnTap(true);
+                    updateABrew(brewSchema);
                 }
 
             } while (c.moveToNext());
@@ -1130,13 +1140,13 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
 * delete A users Scheduled brew
 */
-    public void deleteBrewScheduled(String aBrewName, String aUserName, String aStartDate)
+    public void deleteBrewScheduled(String aBrewName, String aUserName)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        Log.e(LOG, "deleteBrewScheduled Brew Name["+aBrewName+"] Started Date["+aStartDate+"]");
+        Log.e(LOG, "deleteBrewScheduled Brew Name["+aBrewName+"] User Name["+aUserName+"]");
 
-        db.delete(TABLE_BREWS_SCHEDULED, BREW_NAME + " = ? AND "+ USER_NAME +  " = ? AND "+ CREATED_ON +  " = ? ",
-                new String[] { aBrewName, aUserName, aStartDate});
+        db.delete(TABLE_BREWS_SCHEDULED, BREW_NAME + " = ? AND "+ USER_NAME +  " = ?",
+                new String[] { aBrewName, aUserName});
     }
 
     //************************************Calculations Table functions***************

@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -45,6 +46,12 @@ public class AddEditViewBrew extends Fragment {
     private EditText targetOG;
     private EditText targetFG;
     private EditText targetABV;
+    private EditText method;
+    private EditText IBU;
+
+    private CheckBox favorite;
+    private CheckBox onTap;
+    private CheckBox scheduled;
 
     private String  UserName;
     private ScrollView ScrollView;
@@ -60,6 +67,8 @@ public class AddEditViewBrew extends Fragment {
     private KeyListener targetOGListener;
     private KeyListener targetFGListener;
     private KeyListener targetABVListener;
+    private KeyListener methodListener;
+    private KeyListener IBUListener;
 
     private DataBaseManager dbManager;
     private BrewActivityData brewActivityDataData;
@@ -88,7 +97,8 @@ public class AddEditViewBrew extends Fragment {
         targetOG = (EditText)mainView.findViewById(R.id.editTextTargetOG);
         targetFG = (EditText)mainView.findViewById(R.id.editTextTargetFG);
         targetABV = (EditText)mainView.findViewById(R.id.editTextTargetABV);
-
+        method = (EditText)mainView.findViewById(R.id.editTextMethod);
+        IBU = (EditText)mainView.findViewById(R.id.editTextIBU);
 
         startButton = (Button)returnView.findViewById(R.id.AddStartBrewButton);
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +115,10 @@ public class AddEditViewBrew extends Fragment {
             }
         });
 
+        favorite = (CheckBox)mainView.findViewById(R.id.favoriteCheckBox);
+        onTap = (CheckBox)mainView.findViewById(R.id.onTapCheckBox);
+        scheduled = (CheckBox)mainView.findViewById(R.id.scheduledCheckBox);
+
         styleSpinner = (Spinner) returnView.findViewById(R.id.beerStylespinner);
 
         brewNameListener = brewName.getKeyListener();
@@ -116,6 +130,8 @@ public class AddEditViewBrew extends Fragment {
         targetOGListener = targetOG.getKeyListener();
         targetFGListener = targetFG.getKeyListener();
         targetABVListener = targetABV.getKeyListener();
+        methodListener = method.getKeyListener();
+        IBUListener = IBU.getKeyListener();
 
         UserName = CurrentUser.getInstance().getUser().getUserName();
 
@@ -202,6 +218,11 @@ public class AddEditViewBrew extends Fragment {
         targetOG.setText(Double.toString(aBrewSchema.getTargetOG()));
         targetFG.setText(Double.toString(aBrewSchema.getTargetFG()));
         targetABV.setText(Double.toString(aBrewSchema.getTargetABV()));
+        method.setText(aBrewSchema.getMethod());
+        IBU.setText(Double.toString(aBrewSchema.getIBU()));
+        favorite.setChecked(aBrewSchema.getBooleanFavorite());
+        onTap.setChecked(aBrewSchema.getBooleanOnTap());
+        scheduled.setChecked(aBrewSchema.getBooleanScheduled());
 
         // set to brew Style this might be deleted if its user created
         try
@@ -269,6 +290,7 @@ public class AddEditViewBrew extends Fragment {
         double og=0.0;
         double fg=0.0;
         double abv=0.0;
+        double ibu=0.0;
 
         try
         {
@@ -306,6 +328,11 @@ public class AddEditViewBrew extends Fragment {
             abv = Double.parseDouble(targetABV.getText().toString());
         }
         catch (Exception e){}
+        try
+        {
+            ibu = Double.parseDouble(IBU.getText().toString());
+        }
+        catch (Exception e){}
 
 
         //Create Brew
@@ -326,6 +353,11 @@ public class AddEditViewBrew extends Fragment {
         brew.setDescription(description.getText().toString());
         brew.setBoilTime(bt);
         brew.setStyle(styleSpinner.getSelectedItem().toString());
+        brew.setMethod(method.getText().toString());
+        brew.setIBU(ibu);
+        brew.setBooleanFavorite(favorite.isChecked());
+        brew.setBooleanOnTap(onTap.isChecked());
+        brew.setBooleanScheduled(scheduled.isChecked());
 
         //Add Boil additions
         brew.setBoilAdditionlist(BrewActivityData.getInstance().getBaArray());
@@ -341,13 +373,16 @@ public class AddEditViewBrew extends Fragment {
                 Toast.makeText(getActivity(), "Duplicate Brew Name", Toast.LENGTH_LONG).show();
                 return;
             }
+
+            brewSchema = dbManager.getBrew(brew.getBrewName(),brew.getUserName());
         }
         else if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.EDIT)
         {
             dbManager.updateABrew(brew);
+
+            brewSchema = brew;
         }
 
-        brewSchema = brew;
         brewActivityDataData.setAddEditViewBrew(brewSchema);
 
         ifView();
@@ -375,6 +410,11 @@ public class AddEditViewBrew extends Fragment {
         targetOG.setText("");
         targetFG.setText("");
         targetABV.setText("");
+        method.setText("");
+        IBU.setText("");
+        favorite.setChecked(false);
+        onTap.setChecked(false);
+        scheduled.setChecked(false);
         // set to None there should always be a None
         try
         {
@@ -439,7 +479,21 @@ public class AddEditViewBrew extends Fragment {
             targetABV.setEnabled(false);
             //targetABV.setFocusable(false);
 
+            method.setKeyListener(null);
+            method.setClickable(false);
+            method.setEnabled(false);
+            //method.setFocusable(false);
+
+            IBU.setKeyListener(null);
+            IBU.setClickable(false);
+            IBU.setEnabled(false);
+            //IBU.setFocusable(false);
+
             styleSpinner.setClickable(false);
+
+            favorite.setClickable(false);
+            onTap.setClickable(false);
+            scheduled.setClickable(false);
         }
         else
         {
@@ -492,7 +546,21 @@ public class AddEditViewBrew extends Fragment {
             targetABV.setEnabled(true);
             //targetABV.setFocusable(true);
 
+            method.setKeyListener(methodListener);
+            method.setClickable(true);
+            method.setEnabled(true);
+            //method.setFocusable(true);
+
+            IBU.setKeyListener(IBUListener);
+            IBU.setClickable(true);
+            IBU.setEnabled(true);
+            //IBU.setFocusable(true);
+
             styleSpinner.setClickable(true);
+
+            favorite.setClickable(true);
+            onTap.setClickable(true);
+            scheduled.setClickable(true);
         }
     }
 }

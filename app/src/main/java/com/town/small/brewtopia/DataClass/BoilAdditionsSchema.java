@@ -17,7 +17,7 @@ public class BoilAdditionsSchema {
     private String userName;
     private String additionName = "";
     private int additionTime = 0;
-    private int additionQty = 0;
+    private double additionQty = 0.0;
     private String uOfM;
 
     public BoilAdditionsSchema() {
@@ -37,7 +37,7 @@ public class BoilAdditionsSchema {
     public String getUserName() {
         return userName;
     }
-    public int getAdditionQty() {
+    public double getAdditionQty() {
         return additionQty;
     }
     public String getUOfM() {
@@ -61,7 +61,7 @@ public class BoilAdditionsSchema {
     public void setUserName(String userName) {
         this.userName = userName;
     }
-    public void setAdditionQty(int additionQty) {
+    public void setAdditionQty(double additionQty) {
         this.additionQty = additionQty;
     }
     public void setUOfM(String uOfM) {

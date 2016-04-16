@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
@@ -82,11 +83,18 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
         TextView listItemText = (TextView)view.findViewById(R.id.list_item_string);
         listItemText.setText(brewSchema.getBrewName());
 
+        String discriptionString;
+        if(brewSchema.getBrewName().length() >= 25)
+            discriptionString = brewSchema.getBrewName().substring(0,25)+"...";
+        else
+            discriptionString = brewSchema.getBrewName();
+
+        listItemText.setText(discriptionString);
+
         TextView listItemText1 = (TextView)view.findViewById(R.id.list_item_string1);
         listItemText1.setText(brewSchema.getStyle() +" - "+brewSchema.getTargetABV()+"%");
 
         TextView listItemText2 = (TextView)view.findViewById(R.id.list_item_string2);
-        String discriptionString;
         if(brewSchema.getDescription().length() >= 25)
             discriptionString = brewSchema.getDescription().substring(0,25)+"...";
         else
@@ -94,9 +102,28 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
 
         listItemText2.setText(discriptionString);
 
+        // Icons
+        ImageView favoriteIcon = (ImageView) view.findViewById(R.id.favoriteImage);
+        ImageView scheduledIcon = (ImageView) view.findViewById(R.id.scheduledImage);
+        ImageView onTapIcon = (ImageView) view.findViewById(R.id.onTapImage);
+
+        if(brewSchema.getBooleanFavorite())
+            favoriteIcon.setVisibility(View.VISIBLE);
+        else
+            favoriteIcon.setVisibility(View.INVISIBLE);
+
+        if(brewSchema.getBooleanScheduled())
+            scheduledIcon.setVisibility(View.VISIBLE);
+        else
+            scheduledIcon.setVisibility(View.INVISIBLE);
+
+        if(brewSchema.getBooleanOnTap())
+            onTapIcon.setVisibility(View.VISIBLE);
+        else
+            onTapIcon.setVisibility(View.INVISIBLE);
+
         //Handle buttons and add onClickListeners
         Button deleteBtn = (Button)view.findViewById(R.id.delete_btn);
-
         if(!isDeleteView) deleteBtn.setVisibility(View.INVISIBLE);
 
         deleteBtn.setOnClickListener(new View.OnClickListener(){

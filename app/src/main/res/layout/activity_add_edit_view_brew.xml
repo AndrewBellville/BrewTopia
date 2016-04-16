@@ -38,6 +38,46 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Method"
+            android:id="@+id/textViewMethod"
+            android:layout_below="@+id/editTextBrewName"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/editTextMethod"
+            android:layout_below="@+id/textViewMethod"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Boil Time"
+            android:id="@+id/textViewBoilTime"
+            android:layout_below="@+id/editTextMethod"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/editTextBoilTime"
+            android:layout_below="@+id/textViewBoilTime"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignRight="@+id/editTextBrewName"
+            android:layout_alignEnd="@+id/editTextBrewName"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/Primary"
             android:id="@+id/textViewPrimary"
             android:layout_below="@+id/editTextBoilTime"
@@ -164,9 +204,74 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="IBU"
+            android:id="@+id/textViewIBU"
+            android:layout_below="@+id/editTextTargetABV"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:ems="10"
+            android:id="@+id/editTextIBU"
+            android:layout_below="@+id/textViewIBU"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignRight="@+id/editTextSecondary"
+            android:layout_alignEnd="@+id/editTextSecondary" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Favorite"
+            android:id="@+id/favoriteCheckBox"
+            android:layout_below="@+id/editTextIBU"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="On Tap"
+            android:id="@+id/onTapCheckBox"
+            android:layout_below="@+id/favoriteCheckBox"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scheduled"
+            android:id="@+id/scheduledCheckBox"
+            android:layout_below="@+id/onTapCheckBox"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Style"
+            android:id="@+id/StyleTextView"
+            android:layout_below="@+id/scheduledCheckBox"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/beerStylespinner"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/StyleTextView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/Description"
             android:id="@+id/textViewDescription"
-            android:layout_below="@+id/editTextTargetABV"
+            android:layout_below="@+id/beerStylespinner"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
@@ -185,44 +290,6 @@
             android:layout_alignEnd="@+id/editTextBottle"
             android:gravity="top" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Boil Time"
-            android:id="@+id/textViewBoilTime"
-            android:layout_below="@+id/editTextBrewName"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
-            android:id="@+id/editTextBoilTime"
-            android:layout_below="@+id/textViewBoilTime"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/editTextPrimary"
-            android:layout_alignEnd="@+id/editTextPrimary" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Style"
-            android:id="@+id/StyleTextView"
-            android:layout_below="@+id/editTextDescription"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/beerStylespinner"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/StyleTextView" >
-            </Spinner>
 
     </RelativeLayout>
 </LinearLayout>

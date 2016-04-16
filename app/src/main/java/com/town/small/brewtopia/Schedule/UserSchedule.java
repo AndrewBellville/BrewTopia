@@ -39,6 +39,7 @@ public class UserSchedule extends Fragment {
 
     List<ScheduledBrewSchema> sBrewList;
     ArrayList<ScheduledBrewSchema> list;
+    SlidingUpPaneLayout slidingUpPaneLayout;
     private ListView ScheduledBrewListView;
     private String userName;
 
@@ -60,15 +61,20 @@ public class UserSchedule extends Fragment {
             mc = ((MyCalendar) view.findViewById(R.id.calendar_view));
             mc.updateCalendarList(sBrewList);
 
+            final float density = getResources().getDisplayMetrics().density;
+
+            slidingUpPaneLayout = (SlidingUpPaneLayout) view.findViewById(R.id.sliding_layout);
+            slidingUpPaneLayout.setParallaxDistance((int) (200 * density));
+            slidingUpPaneLayout.setShadowResourceTop(R.drawable.shadow_top);
+
+            slidingUpPaneLayout.openPane();
+
             // assign event handler
             mc.setEventHandler(new MyCalendar.EventHandler() {
                 @Override
                 public void onDayLongPress(Date date) {
-                    //Log.e("UserSchedule", "Entering: setEventHandler");
-                    // show returned day
-                    //DateFormat df = SimpleDateFormat.getDateInstance();
-                    //Toast.makeText(getApplicationContext(), df.format(date), Toast.LENGTH_SHORT).show();
-                    LoadScheduleView(date);
+                    if(slidingUpPaneLayout.isOpen())
+                        LoadScheduleView(date);
                 }
 
                 @Override
@@ -86,19 +92,7 @@ public class UserSchedule extends Fragment {
                 }
             });
 
-            final float density = getResources().getDisplayMetrics().density;
 
-            SlidingUpPaneLayout slidingUpPaneLayout = (SlidingUpPaneLayout) view.findViewById(R.id.sliding_layout);
-            slidingUpPaneLayout.setParallaxDistance((int) (200 * density));
-            slidingUpPaneLayout.setShadowResourceTop(R.drawable.shadow_top);
-
-            /**
-             * limit scroll zone to 32dp, if you want whole view can scroll
-             * just ignore this method, don't call it
-             */
-            //slidingUpPaneLayout.setEdgeSize((int) (density * 132));
-
-            slidingUpPaneLayout.openPane();
 
         }
         catch (Exception e){
@@ -112,10 +106,20 @@ public class UserSchedule extends Fragment {
     }
 
     @Override
+    public void setMenuVisibility(boolean isShown) {
+        if(isShown)
+        {
+            updateCalendarView();
+            slidingUpPaneLayout.openPane();
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
 
         updateCalendarView();
+        slidingUpPaneLayout.openPane();
     }
 
     private void  updateCalendarView()

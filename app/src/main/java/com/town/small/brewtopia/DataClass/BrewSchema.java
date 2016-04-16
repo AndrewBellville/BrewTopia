@@ -26,9 +26,9 @@ public class BrewSchema {
     private Double targetABV;
     private String Description;
     private String CreatedOn;
-    private int favorite=0;
-    private int scheduled=0;
-    private int onTap=0;
+    private int favorite=0; //0 = no 1 = yes
+    private int scheduled=0; //0 = no 1 = yes
+    private int onTap=0; //0 = no 1 = yes
     private double IBU=0.0;
     private String method;
     private List <BoilAdditionsSchema> boilAdditionlist = new ArrayList<BoilAdditionsSchema>();
@@ -125,6 +125,24 @@ public class BrewSchema {
     public int getOnTap() {
         return onTap;
     }
+    public boolean getBooleanFavorite() {
+        if(this.favorite ==  1)
+            return true;
+        else
+            return false;
+    }
+    public boolean getBooleanScheduled() {
+        if(this.scheduled ==  1)
+            return true;
+        else
+            return false;
+    }
+    public boolean getBooleanOnTap() {
+        if(this.onTap ==  1)
+            return true;
+        else
+            return false;
+    }
     public double getIBU() {
         return IBU;
     }
@@ -190,6 +208,24 @@ public class BrewSchema {
     }
     public void setOnTap(int onTap) {
         this.onTap = onTap;
+    }
+    public void setBooleanFavorite(boolean favorite) {
+        if(favorite)
+            this.favorite = 1;
+        else
+            this.favorite = 0;
+    }
+    public void setBooleanScheduled(boolean scheduled) {
+        if(scheduled)
+            this.scheduled = 1;
+        else
+            this.scheduled = 0;
+    }
+    public void setBooleanOnTap(boolean onTap) {
+        if(onTap)
+            this.onTap = 1;
+        else
+            this.onTap = 0;
     }
     public void setIBU(double IBU) {
         this.IBU = IBU;

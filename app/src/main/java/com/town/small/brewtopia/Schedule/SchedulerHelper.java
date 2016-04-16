@@ -36,7 +36,7 @@ public class SchedulerHelper {
     public SchedulerHelper(Context context) {
 
         this.context = context;
-        appSettingsHelper = new AppSettingsHelper(context);
+        appSettingsHelper = AppSettingsHelper.getInstance(context);
     }
 
     public void createSchedule(BrewSchema aBrew)
@@ -95,7 +95,7 @@ public class SchedulerHelper {
             values.put(CalendarContract.Events.TITLE, aTitle);
             values.put(CalendarContract.Events.DESCRIPTION, "Brew Scheduler");
             values.put(CalendarContract.Events.CALENDAR_ID, calID);
-            values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().toString());
+            values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
             uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
 
             // get the event ID that is the last element in the Uri
