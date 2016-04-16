@@ -42,7 +42,7 @@ public class SchedulerHelper {
     public void createSchedule(BrewSchema aBrew)
     {
         //Create Schedule for Brew
-        ScheduledBrewSchema sBrew = new ScheduledBrewSchema(aBrew.getBrewName(), CurrentUser.getInstance().getUser().getUserName());
+        ScheduledBrewSchema sBrew = new ScheduledBrewSchema(aBrew.getBrewName(), CurrentUser.getInstance().getUser().getUserId());
         sBrew.SetScheduledDates(aBrew.getPrimary(), aBrew.getSecondary(), aBrew.getBottle());
         sBrew.setColor(aBrew.getStyleSchema().getBrewStyleColor());
 

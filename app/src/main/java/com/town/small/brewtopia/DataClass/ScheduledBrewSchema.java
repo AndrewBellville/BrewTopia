@@ -11,9 +11,9 @@ import java.util.Locale;
  */
 public class ScheduledBrewSchema {
 
-    private int scheduleId;
+    private long scheduleId=-1;
     private String BrewName;
-    private String UserName;
+    private long UserId=-1;
     private String StartDate;
     private String AlertSecondaryDate;
     private long AlertSecondaryCalendarId=-1;
@@ -36,9 +36,9 @@ public class ScheduledBrewSchema {
     public ScheduledBrewSchema() {
     }
 
-    public ScheduledBrewSchema(String aBrewName, String aUserName) {
+    public ScheduledBrewSchema(String aBrewName, long aUserId) {
         setBrewName(aBrewName);
-        setUserName(aUserName);
+        setUserId(aUserId);
     }
 
     public void SetScheduledDates(int aPrimaryDate,int aSecondaryDate, int aBottleDate)
@@ -154,8 +154,8 @@ public class ScheduledBrewSchema {
     }
 
     //Getters
-    public String getUserName() {
-        return UserName;
+    public long getUserId() {
+        return UserId;
     }
     public String getBrewName() {
         return BrewName;
@@ -184,7 +184,7 @@ public class ScheduledBrewSchema {
     public String getColor() {
         return color;
     }
-    public int getScheduleId() {
+    public long getScheduleId() {
         return scheduleId;
     }
     public boolean isShowAsAlert() {
@@ -211,8 +211,8 @@ public class ScheduledBrewSchema {
 
 
     //Setters
-    public void setUserName(String userName) {
-        UserName = userName;
+    public void setUserId(long userId) {
+        UserId = userId;
     }
     public void setBrewName(String brewName) {
         BrewName = brewName;
@@ -241,7 +241,7 @@ public class ScheduledBrewSchema {
     public void setColor(String color) {
         this.color = color;
     }
-    public void setScheduleId(int scheduleId) {
+    public void setScheduleId(long scheduleId) {
         this.scheduleId = scheduleId;
     }
     public void setShowAsAlert(boolean showAsAlert) {

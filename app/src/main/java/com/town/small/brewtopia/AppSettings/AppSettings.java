@@ -26,7 +26,7 @@ public class AppSettings extends ActionBarActivity {
     private ListView settingsListView;
     private List<AppSettingsSchema> settingsList;
     private DataBaseManager dbManager;
-    private int userId;
+    private long userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -14,9 +14,9 @@ public class BrewSchema {
     // Log cat tag
     private static final String LOG = "BrewSchema";
 
-    private int brewId;
+    private long brewId =-1;
     private String BrewName;
-    private String UserName;
+    private long UserId = -1;
     private int boilTime;
     private int Primary;
     private int Secondary;
@@ -52,30 +52,30 @@ public class BrewSchema {
         {
             BoilAdditionsSchema baSchema = i.next();
             baSchema.setBrewName(getBrewName());
-            baSchema.setUserName(getUserName());
+            baSchema.setUserId(getUserId());
         }
 
         for(Iterator<BrewNoteSchema> i = brewNoteSchemaList.iterator(); i.hasNext();)
         {
             BrewNoteSchema nSchema = i.next();
             nSchema.setBrewName(getBrewName());
-            nSchema.setUserName(getUserName());
+            nSchema.setUserId(getUserId());
         }
     }
 
     //getters
-    public int getBrewId() {
+    public long getBrewId() {
         return brewId;
     }
     public String getBrewName() {
         return BrewName;
     }
-    public String getUserName() {
-        if(UserName.equals(""))
+    public Long getUserId() {
+        if(UserId == -1)
         {
-           return CurrentUser.getInstance().getUser().UserName;
+           return CurrentUser.getInstance().getUser().getUserId();
         }
-        return UserName;
+        return UserId;
     }
     public int getBoilTime() {
         return boilTime;
@@ -152,14 +152,14 @@ public class BrewSchema {
 
 
     //setters
-    public void setBrewId(int id) {
+    public void setBrewId(long id) {
         this.brewId = id;
     }
     public void setBrewName(String brewName) {
         BrewName = brewName;
     }
-    public void setUserName(String userName) {
-        UserName = userName;
+    public void setUserId(long userId) {
+        this.UserId = userId;
     }
     public void setBoilTime(int boilTime) {
         this.boilTime = boilTime;

@@ -53,7 +53,7 @@ public class AddEditViewBrew extends Fragment {
     private CheckBox onTap;
     private CheckBox scheduled;
 
-    private String  UserName;
+    private long  UserId;
     private ScrollView ScrollView;
     private Spinner styleSpinner;
     ArrayAdapter<String> styleAdapter;
@@ -133,7 +133,7 @@ public class AddEditViewBrew extends Fragment {
         methodListener = method.getKeyListener();
         IBUListener = IBU.getKeyListener();
 
-        UserName = CurrentUser.getInstance().getUser().getUserName();
+        UserId = CurrentUser.getInstance().getUser().getUserId();
 
         brewActivityDataData = BrewActivityData.getInstance();
 
@@ -253,7 +253,7 @@ public class AddEditViewBrew extends Fragment {
             if(!(TimerData.getInstance().isTimerActive()))
             {
                 //Set Brew into TimerData
-                TimerData.getInstance().setTimerData(dbManager.getBrew(brewName.getText().toString(), UserName));
+                TimerData.getInstance().setTimerData(dbManager.getBrew(brewName.getText().toString(), UserId));
             }
 
             //Create and intent which will open Timer Activity
@@ -343,7 +343,7 @@ public class AddEditViewBrew extends Fragment {
             brew = brewSchema;
 
         brew.setBrewName(brewName.getText().toString());
-        brew.setUserName(UserName);
+        brew.setUserId(UserId);
         brew.setPrimary(pf);
         brew.setSecondary(sf);
         brew.setBottle(bc);
@@ -374,7 +374,7 @@ public class AddEditViewBrew extends Fragment {
                 return;
             }
 
-            brewSchema = dbManager.getBrew(brew.getBrewName(),brew.getUserName());
+            brewSchema = dbManager.getBrew(brew.getBrewName(),brew.getUserId());
         }
         else if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.EDIT)
         {

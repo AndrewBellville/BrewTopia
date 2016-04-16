@@ -57,7 +57,7 @@ public class UserSchedule extends Fragment {
         try {
             userName = CurrentUser.getInstance().getUser().getUserName();
 
-            sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
+            sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserId());
             mc = ((MyCalendar) view.findViewById(R.id.calendar_view));
             mc.updateCalendarList(sBrewList);
 
@@ -125,14 +125,14 @@ public class UserSchedule extends Fragment {
     private void  updateCalendarView()
     {
         clearListDate();
-        sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
+        sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserId());
         mc.updateCalendarList(sBrewList);
     }
 
     private void LoadScheduleView(Date date) {
         Log.e(LOG, "Entering: LoadBrews");
 
-        List<ScheduledBrewSchema> scheduledDayList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserName());
+        List<ScheduledBrewSchema> scheduledDayList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserId());
         list = new ArrayList<ScheduledBrewSchema>();
 
         for(ScheduledBrewSchema sbrew : scheduledDayList)

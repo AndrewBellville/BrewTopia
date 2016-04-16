@@ -8,9 +8,9 @@ public class BrewNoteSchema {
     // Log cat tag
     private static final String LOG = "BrewNoteSchema";
 
-    private int noteId =-1;
+    private long noteId =-1;
     private String BrewName;
-    private String UserName;
+    private long UserId;
     private String CreatedOn;
     private String BrewNote;
 
@@ -22,8 +22,8 @@ public class BrewNoteSchema {
     public String getBrewName() {
         return BrewName;
     }
-    public String getUserName() {
-        return UserName;
+    public long getUserId() {
+        return UserId;
     }
     public String getCreatedOn() {
         return CreatedOn;
@@ -31,7 +31,7 @@ public class BrewNoteSchema {
     public String getBrewNote() {
         return BrewNote;
     }
-    public int getNoteId() {
+    public long getNoteId() {
         return noteId;
     }
 
@@ -41,8 +41,8 @@ public class BrewNoteSchema {
     public void setBrewName(String brewName) {
         BrewName = brewName;
     }
-    public void setUserName(String userName) {
-        UserName = userName;
+    public void setUserId(long userId) {
+        UserId = userId;
     }
     public void setCreatedOn(String createdOn) {
         CreatedOn = createdOn;
@@ -50,7 +50,7 @@ public class BrewNoteSchema {
     public void setBrewNote(String brewNote) {
         BrewNote = brewNote;
     }
-    public void setNoteId(int noteId) {
+    public void setNoteId(long noteId) {
         this.noteId = noteId;
     }
 }

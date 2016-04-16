@@ -45,7 +45,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
     // Log cat tag
     private static final String LOG = "AddEditViewSchedule";
 
-    private String  UserName;
+    private long  userId;
     private ScrollView ScrollView;
 
     //State for AddEditView Brew and Brew Name if Edit/View
@@ -137,7 +137,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         setTitle("Schedule");
         dbManager = DataBaseManager.getInstance(getApplicationContext());
 
-        UserName = CurrentUser.getInstance().getUser().getUserName();
+        userId = CurrentUser.getInstance().getUser().getUserId();
 
         scheduleActivityData = ScheduleActivityData.getInstance();
         aScheduleSchema = scheduleActivityData.getScheduledBrewSchema();
@@ -295,7 +295,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         ScheduledBrewSchema sbrew = aScheduleSchema;
         sbrew.setScheduleId(aScheduleSchema.getScheduleId());
         sbrew.setBrewName(brewName.getText().toString());
-        sbrew.setUserName(UserName);
+        sbrew.setUserId(userId);
 
         double og=0.0;
         double fg=0.0;

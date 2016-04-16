@@ -8,8 +8,8 @@ public class AppSettingsSchema {
     // Log cat tag
     private static final String LOG = "AppSettingsSchema";
 
-    private int appSetttingId;
-    private int userId;
+    private long appSetttingId=-1;
+    private long userId=-1;
     private String settingName;
     private String settingScreen;
     private String settingValue;
@@ -25,10 +25,10 @@ public class AppSettingsSchema {
     public String getSettingValue() {
         return settingValue;
     }
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
-    public int getAppSetttingId() {
+    public long getAppSetttingId() {
         return appSetttingId;
     }
     public String getSettingScreen() {
@@ -36,7 +36,7 @@ public class AppSettingsSchema {
     }
 
     //Setters
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
     public void setSettingName(String settingName) {
@@ -45,7 +45,7 @@ public class AppSettingsSchema {
     public void setSettingValue(String settingValue) {
         this.settingValue = settingValue;
     }
-    public void setAppSetttingId(int appSetttingId) {
+    public void setAppSetttingId(long appSetttingId) {
         this.appSetttingId = appSetttingId;
     }
     public void setSettingScreen(String settingScreen) {

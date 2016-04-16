@@ -156,14 +156,14 @@ public class AddEditViewBrewNotes extends Fragment {
         {
             if(aBrewNoteSchema.getNoteId() == -1)
             {
-                aBrewNoteSchema.setUserName(brewSchema.getUserName());
+                aBrewNoteSchema.setUserId(brewSchema.getUserId());
                 aBrewNoteSchema.setBrewName(brewSchema.getBrewName());
                 dbManager.addBrewNote(aBrewNoteSchema);
             }
             else
                 dbManager.updateBrewNotes(aBrewNoteSchema);
 
-            resetBrewData(aBrewNoteSchema.getBrewName(),aBrewNoteSchema.getUserName());
+            resetBrewData(aBrewNoteSchema.getBrewName(),aBrewNoteSchema.getUserId());
         }
         else
         {
@@ -175,12 +175,12 @@ public class AddEditViewBrewNotes extends Fragment {
     {
         //we should not be able to delete anything that doesnt exist so just delete
         dbManager.deleteBrewNoteById(aBrewNoteSchema.getNoteId());
-        resetBrewData(aBrewNoteSchema.getBrewName(),aBrewNoteSchema.getUserName());
+        resetBrewData(aBrewNoteSchema.getBrewName(),aBrewNoteSchema.getUserId());
     }
 
-    private void resetBrewData(String aBrewName, String aUserName)
+    private void resetBrewData(String aBrewName, long aUserId)
     {
-        BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(aBrewName,aUserName));
+        BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(aBrewName,aUserId));
         LoadBrewNoteView();
     }
 

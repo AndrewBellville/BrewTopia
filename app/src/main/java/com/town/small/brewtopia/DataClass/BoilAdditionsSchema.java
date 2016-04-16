@@ -12,9 +12,9 @@ import com.town.small.brewtopia.R;
  */
 public class BoilAdditionsSchema {
 
-    private  int additionId=-1;
+    private long additionId=-1;
     private String brewName;
-    private String userName;
+    private long userId=-1;
     private String additionName = "";
     private int additionTime = 0;
     private double additionQty = 0.0;
@@ -34,8 +34,8 @@ public class BoilAdditionsSchema {
     public String getBrewName() {
         return brewName;
     }
-    public String getUserName() {
-        return userName;
+    public long getUserId() {
+        return userId;
     }
     public double getAdditionQty() {
         return additionQty;
@@ -43,7 +43,7 @@ public class BoilAdditionsSchema {
     public String getUOfM() {
         return uOfM;
     }
-    public int getAdditionId() {
+    public long getAdditionId() {
         return additionId;
     }
 
@@ -58,8 +58,8 @@ public class BoilAdditionsSchema {
     public void setBrewName(String brewName) {
         this.brewName = brewName;
     }
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
     public void setAdditionQty(double additionQty) {
         this.additionQty = additionQty;
@@ -67,7 +67,7 @@ public class BoilAdditionsSchema {
     public void setUOfM(String uOfM) {
         this.uOfM = uOfM;
     }
-    public void setAdditionId(int additionId) {
+    public void setAdditionId(long additionId) {
         this.additionId = additionId;
     }
 

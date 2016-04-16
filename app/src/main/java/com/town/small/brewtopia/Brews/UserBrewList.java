@@ -30,10 +30,9 @@ public class UserBrewList extends Fragment {
     //intent message
     //public final static String EXTRA_MESSAGE = "com.town.small.brewtopia.Brews";
 
-    private String userName;
+    private long userId;
     private ListView BrewListView;
     private DataBaseManager dbManager;
-    private CurrentUser currentUser;
     private boolean isDelete = false;
     List<BrewSchema> brewList;
 
@@ -42,9 +41,8 @@ public class UserBrewList extends Fragment {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.activity_user_brew_list,container,false);
         Log.e(LOG, "Entering: onCreate");
-        currentUser = CurrentUser.getInstance();
         try {
-            userName = currentUser.getUser().getUserName();
+            userId = CurrentUser.getInstance().getUser().getUserId();
         }
         catch (Exception e){
             // if  we fail to get user name open login activity
@@ -94,7 +92,7 @@ public class UserBrewList extends Fragment {
     private void LoadBrews() {
         Log.e(LOG, "Entering: LoadBrews");
 
-        brewList = dbManager.getAllBrews(userName);
+        brewList = dbManager.getAllBrews(userId);
 
         if (brewList.size() > 0) {
 
@@ -105,7 +103,7 @@ public class UserBrewList extends Fragment {
             adapter.setEventHandler(new CustomBListAdapter.EventHandler() {
                 @Override
                 public void OnDeleteClickListener(BrewSchema aBrewSchema) {
-                    dbManager.DeleteBrew(aBrewSchema.getBrewName(), userName);
+                    dbManager.DeleteBrew(aBrewSchema.getBrewName(), userId);
                 }
             });
             BrewListView.setAdapter(adapter);
@@ -117,7 +115,7 @@ public class UserBrewList extends Fragment {
             Intent intent = new Intent(getActivity(), UserBrew.class);
 
             // Set the state of display if View brew cannot be null
-            BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.VIEW,dbManager.getBrew(aBrewName,userName));
+            BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.VIEW,dbManager.getBrew(aBrewName,userId));
 
             //start next activity
             startActivity(intent);

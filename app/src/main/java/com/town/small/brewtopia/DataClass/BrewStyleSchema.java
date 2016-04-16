@@ -10,7 +10,7 @@ public class BrewStyleSchema {
     // Log cat tag
     private static final String LOG = "BrewStyleSchema";
 
-    private String UserName;
+    private long userId =-1;
     private String BrewStyleName;
     private String BrewStyleColor;
 
@@ -19,8 +19,8 @@ public class BrewStyleSchema {
     }
 
     // setters
-    public void setUserName(String aUserName) {
-        this.UserName = aUserName;
+    public void setUserId(long aUserId) {
+        this.userId = aUserId;
     }
     public String getBrewStyleName() {
         return BrewStyleName;
@@ -29,8 +29,8 @@ public class BrewStyleSchema {
         return BrewStyleColor;
     }
     // getters
-    public String getUserName() {
-        return this.UserName;
+    public long getUserId() {
+        return this.userId;
     }
     public void setBrewStyleName(String brewStyleName) {
         BrewStyleName = brewStyleName;

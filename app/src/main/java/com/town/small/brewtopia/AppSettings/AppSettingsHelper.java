@@ -27,6 +27,7 @@ public class AppSettingsHelper {
 
     //Setting Names
     public static final String SCHEDULER_CALENDAR_PUSH = "Push Calendar Scheduler";
+    public static final String SCHEDULER_AUTO_CREATE = "Auto Create Schedule";
 
     //Setting Values
     public static final String OFF = "0";
@@ -57,10 +58,11 @@ public class AppSettingsHelper {
     }
 
     //Create All app settings and load to DB should be called on user create only
-    public void CreateAppSettings(int aUserId)
+    public void CreateAppSettings(long aUserId)
     {
         List<AppSettingsSchema> settingsList = new ArrayList<AppSettingsSchema>();
         settingsList.add(buildSettingsSchema(aUserId,SCHEDULER_CALENDAR_PUSH,SCHEDULER, OFF));
+        settingsList.add(buildSettingsSchema(aUserId,SCHEDULER_AUTO_CREATE,SCHEDULER, ON));
 
         //Add all setting to DB
         dbManager.addAllAppSettings(settingsList);
@@ -101,7 +103,7 @@ public class AppSettingsHelper {
         return false;
     }
 
-    private AppSettingsSchema buildSettingsSchema(int aUserId, String aName, String aScreen,  String aValue)
+    private AppSettingsSchema buildSettingsSchema(long aUserId, String aName, String aScreen,  String aValue)
     {
         AppSettingsSchema appSettingsSchema = new AppSettingsSchema();
         appSettingsSchema.setUserId(aUserId);

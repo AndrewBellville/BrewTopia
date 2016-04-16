@@ -10,7 +10,7 @@ public class UserSchema {
     // Log cat tag
     private static final String LOG = "UserSchema";
 
-    int userId;
+    long userId;
     String UserName;
     private String Password;
     private String CreatedOn;
@@ -36,7 +36,7 @@ public class UserSchema {
     public void setCreatedOn(String aCreatedOn){
         this.CreatedOn = aCreatedOn;
     }
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
@@ -48,7 +48,7 @@ public class UserSchema {
         return this.Password;
     }
     public String getCreatedOn() { return this.CreatedOn; }
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 }
