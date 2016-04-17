@@ -253,7 +253,7 @@ public class AddEditViewBrew extends Fragment {
             if(!(TimerData.getInstance().isTimerActive()))
             {
                 //Set Brew into TimerData
-                TimerData.getInstance().setTimerData(dbManager.getBrew(brewName.getText().toString(), UserId));
+                TimerData.getInstance().setTimerData(dbManager.getBrew(brewSchema.getBrewId(), UserId));
             }
 
             //Create and intent which will open Timer Activity
@@ -368,13 +368,14 @@ public class AddEditViewBrew extends Fragment {
             //add brew name for all lists
             brew.setListBrewName();
 
-            if(dbManager.CreateABrew(brew) == 0)// 0 brews failed to create
+            long brewId = dbManager.CreateABrew(brew);
+            if( brewId == 0)// 0 brews failed to create
             {
                 Toast.makeText(getActivity(), "Duplicate Brew Name", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            brewSchema = dbManager.getBrew(brew.getBrewName(),brew.getUserId());
+            brewSchema = dbManager.getBrew(brewId,brew.getUserId());
         }
         else if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.EDIT)
         {

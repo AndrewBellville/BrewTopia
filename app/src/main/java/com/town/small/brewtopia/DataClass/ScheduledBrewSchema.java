@@ -12,8 +12,9 @@ import java.util.Locale;
 public class ScheduledBrewSchema {
 
     private long scheduleId=-1;
-    private String BrewName;
+    private long BrewId=-1;
     private long UserId=-1;
+    private String brewName = "";
     private String StartDate;
     private String AlertSecondaryDate;
     private long AlertSecondaryCalendarId=-1;
@@ -36,8 +37,8 @@ public class ScheduledBrewSchema {
     public ScheduledBrewSchema() {
     }
 
-    public ScheduledBrewSchema(String aBrewName, long aUserId) {
-        setBrewName(aBrewName);
+    public ScheduledBrewSchema(long aBrewId, long aUserId) {
+        setBrewId(aBrewId);
         setUserId(aUserId);
     }
 
@@ -157,8 +158,8 @@ public class ScheduledBrewSchema {
     public long getUserId() {
         return UserId;
     }
-    public String getBrewName() {
-        return BrewName;
+    public long getBrewId() {
+        return BrewId;
     }
     public String getStartDate() {
         return StartDate;
@@ -208,14 +209,17 @@ public class ScheduledBrewSchema {
     public long getEndBrewCalendarId() {
         return EndBrewCalendarId;
     }
+    public String getBrewName() {
+        return brewName;
+    }
 
 
     //Setters
     public void setUserId(long userId) {
         UserId = userId;
     }
-    public void setBrewName(String brewName) {
-        BrewName = brewName;
+    public void setBrewId(long BrewId) {
+        this.BrewId = BrewId;
     }
     public void setStartDate(String startDate) {
         StartDate = startDate;
@@ -265,6 +269,9 @@ public class ScheduledBrewSchema {
     }
     public void setEndBrewCalendarId(long endBrewCalendarId) {
         EndBrewCalendarId = endBrewCalendarId;
+    }
+    public void setBrewName(String brewName) {
+        this.brewName = brewName;
     }
 
 }

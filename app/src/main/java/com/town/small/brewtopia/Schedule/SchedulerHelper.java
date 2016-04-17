@@ -41,8 +41,12 @@ public class SchedulerHelper {
 
     public void createSchedule(BrewSchema aBrew)
     {
+        if(!appSettingsHelper.GetBoolAppSettingsByName(AppSettingsHelper.SCHEDULER_AUTO_CREATE))
+            return;
+
         //Create Schedule for Brew
-        ScheduledBrewSchema sBrew = new ScheduledBrewSchema(aBrew.getBrewName(), CurrentUser.getInstance().getUser().getUserId());
+        ScheduledBrewSchema sBrew = new ScheduledBrewSchema(aBrew.getBrewId(), CurrentUser.getInstance().getUser().getUserId());
+        sBrew.setBrewName(aBrew.getBrewName());
         sBrew.SetScheduledDates(aBrew.getPrimary(), aBrew.getSecondary(), aBrew.getBottle());
         sBrew.setColor(aBrew.getStyleSchema().getBrewStyleColor());
 

@@ -9,7 +9,7 @@ public class BrewNoteSchema {
     private static final String LOG = "BrewNoteSchema";
 
     private long noteId =-1;
-    private String BrewName;
+    private long BrewId=-1;
     private long UserId;
     private String CreatedOn;
     private String BrewNote;
@@ -19,8 +19,8 @@ public class BrewNoteSchema {
     }
 
     //Getters
-    public String getBrewName() {
-        return BrewName;
+    public long getBrewId() {
+        return BrewId;
     }
     public long getUserId() {
         return UserId;
@@ -38,8 +38,8 @@ public class BrewNoteSchema {
 
 
     //Setters
-    public void setBrewName(String brewName) {
-        BrewName = brewName;
+    public void setBrewId(long brewId) {
+        this.BrewId = brewId;
     }
     public void setUserId(long userId) {
         UserId = userId;

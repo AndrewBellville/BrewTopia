@@ -11,6 +11,15 @@
         android:divider="@android:color/transparent"
         android:dividerHeight="10.0sp"
         android:paddingBottom="60dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Additions Added"
+        android:id="@+id/noAdditionsTextView"
+        android:layout_below="@+id/brewAdditonsListView"
+        android:layout_centerHorizontal="true" />
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="50dp"

@@ -12,6 +12,15 @@
         android:divider="@android:color/transparent"
         android:dividerHeight="10.0sp"
         android:paddingBottom="60dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Notes Added"
+        android:id="@+id/noNotesTextView"
+        android:layout_below="@+id/brewNotesLstView"
+        android:layout_centerHorizontal="true" />
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -19,4 +28,6 @@
         android:id="@+id/AddNewButton"
         android:minHeight="50dp"
         android:layout_alignParentBottom="true"/>
+
+
 </RelativeLayout>

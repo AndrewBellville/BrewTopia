@@ -51,14 +51,12 @@ public class BrewSchema {
         for(Iterator<BoilAdditionsSchema> i = boilAdditionlist.iterator(); i.hasNext();)
         {
             BoilAdditionsSchema baSchema = i.next();
-            baSchema.setBrewName(getBrewName());
             baSchema.setUserId(getUserId());
         }
 
         for(Iterator<BrewNoteSchema> i = brewNoteSchemaList.iterator(); i.hasNext();)
         {
             BrewNoteSchema nSchema = i.next();
-            nSchema.setBrewName(getBrewName());
             nSchema.setUserId(getUserId());
         }
     }

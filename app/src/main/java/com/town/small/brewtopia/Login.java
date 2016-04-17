@@ -79,6 +79,8 @@ public class Login extends ActionBarActivity {
             Intent intent = new Intent(this, UserProfile.class);
             //set active user
             currentUser.setUser(dbManager.getUser(userName.getText().toString()));
+            //load all app setting for user
+            appSettingsHelper.LoadMap();
             //start next activity
             startActivity(intent);
             message.setText("");

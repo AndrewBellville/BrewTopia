@@ -56,7 +56,7 @@ public class UserBrewList extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 BrewSchema selectedRow = brewList.get(position);
-                BrewSelect(selectedRow.getBrewName());
+                BrewSelect(selectedRow.getBrewId());
             }
         });
         dbManager = DataBaseManager.getInstance(getActivity());
@@ -103,19 +103,19 @@ public class UserBrewList extends Fragment {
             adapter.setEventHandler(new CustomBListAdapter.EventHandler() {
                 @Override
                 public void OnDeleteClickListener(BrewSchema aBrewSchema) {
-                    dbManager.DeleteBrew(aBrewSchema.getBrewName(), userId);
+                    dbManager.DeleteBrew(aBrewSchema.getBrewId(), userId);
                 }
             });
             BrewListView.setAdapter(adapter);
         }
     }
 
-    private void BrewSelect(String aBrewName)
+    private void BrewSelect(long aBrewId)
     {
             Intent intent = new Intent(getActivity(), UserBrew.class);
 
             // Set the state of display if View brew cannot be null
-            BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.VIEW,dbManager.getBrew(aBrewName,userId));
+            BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.VIEW,dbManager.getBrew(aBrewId,userId));
 
             //start next activity
             startActivity(intent);

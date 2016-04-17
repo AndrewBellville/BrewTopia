@@ -43,6 +43,7 @@ public class AddEditViewBrewNotes extends Fragment {
     private static final String LOG = "AddEditViewBrewNotes";
 
     private ListView BrewNotesListView;
+    private TextView NoNotes;
     private DataBaseManager dbManager;
 
     //edit dialog
@@ -56,6 +57,7 @@ public class AddEditViewBrewNotes extends Fragment {
         Log.e(LOG, "Entering: onCreate");
 
         BrewNotesListView = (ListView)view.findViewById(R.id.brewNotesLstView);
+        NoNotes = (TextView)view.findViewById(R.id.noNotesTextView);
         dbManager = DataBaseManager.getInstance(getActivity());
 
         Button addButton = (Button)view.findViewById(R.id.AddNewButton);
@@ -83,6 +85,11 @@ public class AddEditViewBrewNotes extends Fragment {
         List<BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();
 
         brewNoteSchemaList.addAll(BrewActivityData.getInstance().getBrewNoteSchemaList());
+
+        if(brewNoteSchemaList.size() == 0)
+            NoNotes.setVisibility(View.VISIBLE);
+        else
+            NoNotes.setVisibility(View.INVISIBLE);
 
         //instantiate custom adapter
         CustomNListAdapter adapter = new CustomNListAdapter(brewNoteSchemaList, getActivity());
@@ -157,13 +164,13 @@ public class AddEditViewBrewNotes extends Fragment {
             if(aBrewNoteSchema.getNoteId() == -1)
             {
                 aBrewNoteSchema.setUserId(brewSchema.getUserId());
-                aBrewNoteSchema.setBrewName(brewSchema.getBrewName());
+                aBrewNoteSchema.setBrewId(brewSchema.getBrewId());
                 dbManager.addBrewNote(aBrewNoteSchema);
             }
             else
                 dbManager.updateBrewNotes(aBrewNoteSchema);
 
-            resetBrewData(aBrewNoteSchema.getBrewName(),aBrewNoteSchema.getUserId());
+            resetBrewData(aBrewNoteSchema.getBrewId(),aBrewNoteSchema.getUserId());
         }
         else
         {
@@ -175,12 +182,12 @@ public class AddEditViewBrewNotes extends Fragment {
     {
         //we should not be able to delete anything that doesnt exist so just delete
         dbManager.deleteBrewNoteById(aBrewNoteSchema.getNoteId());
-        resetBrewData(aBrewNoteSchema.getBrewName(),aBrewNoteSchema.getUserId());
+        resetBrewData(aBrewNoteSchema.getBrewId(),aBrewNoteSchema.getUserId());
     }
 
-    private void resetBrewData(String aBrewName, long aUserId)
+    private void resetBrewData(long aBrewId, long aUserId)
     {
-        BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(aBrewName,aUserId));
+        BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(aBrewId,aUserId));
         LoadBrewNoteView();
     }
 

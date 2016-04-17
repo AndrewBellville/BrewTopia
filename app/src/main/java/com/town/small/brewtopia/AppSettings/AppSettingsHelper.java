@@ -47,7 +47,7 @@ public class AppSettingsHelper {
         dbManager = DataBaseManager.getInstance(aContext);
     }
 
-    private void LoadMap()
+    public void LoadMap()
     {
         currentUser = CurrentUser.getInstance().getUser();
         List<AppSettingsSchema> settingsList = dbManager.getAllAppSettingsByUserId(currentUser.getUserId());
@@ -66,7 +66,6 @@ public class AppSettingsHelper {
 
         //Add all setting to DB
         dbManager.addAllAppSettings(settingsList);
-        LoadMap();
     }
 
     public void UpdateAppSettings(AppSettingsSchema aAppSettingsSchema, boolean isSet)
