@@ -222,12 +222,54 @@
             android:layout_alignRight="@+id/editTextSecondary"
             android:layout_alignEnd="@+id/editTextSecondary" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Batch Size"
+            android:id="@+id/textViewBatchSize"
+            android:layout_below="@+id/editTextIBU"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:ems="10"
+            android:id="@+id/editTextBatchSize"
+            android:layout_below="@+id/textViewBatchSize"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignRight="@+id/editTextSecondary"
+            android:layout_alignEnd="@+id/editTextSecondary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Efficiency"
+            android:id="@+id/textViewEfficiency"
+            android:layout_below="@+id/editTextBatchSize"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:ems="10"
+            android:id="@+id/editTextEfficiency"
+            android:layout_below="@+id/textViewEfficiency"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignRight="@+id/editTextSecondary"
+            android:layout_alignEnd="@+id/editTextSecondary" />
+
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Favorite"
             android:id="@+id/favoriteCheckBox"
-            android:layout_below="@+id/editTextIBU"
+            android:layout_below="@+id/editTextEfficiency"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 

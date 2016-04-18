@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 30;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 31;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -68,6 +68,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String ON_TAP = "OnTap";
     private static final String IBU = "IBU";
     private static final String METHOD = "Method";
+    private static final String BATCH_SIZE = "BatchSize";
+    private static final String EFFICIENCY = "Efficiency";
 
     // TABLE_BREWS_STYLES column names
     private static final String STYLE_NAME = "StyleName";
@@ -108,7 +110,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_BREWS = "CREATE TABLE "
             + TABLE_BREWS + "(" + BREW_NAME + " TEXT," + USER_ID + " INTEGER," + BOIL_TIME + " INTEGER," + PRIMARY + " INTEGER," + SECONDARY + " INTEGER," + BOTTLE + " INTEGER,"
             + DESCRIPTION + " TEXT," + STYLE + " TEXT," + CREATED_ON + " DATETIME," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL," + FAVORITE + " INTEGER,"
-            + SCHEDULED + " INTEGER," + ON_TAP + " INTEGER,"+ IBU + " REAL,"+ METHOD + " TEXT, PRIMARY KEY ("+ BREW_NAME +", "+ USER_ID +" ) )";
+            + SCHEDULED + " INTEGER," + ON_TAP + " INTEGER,"+ IBU + " REAL,"+ METHOD + " TEXT,"+ BATCH_SIZE + " REAL,"+ EFFICIENCY + " REAL, PRIMARY KEY ("+ BREW_NAME +", "+ USER_ID +" ) )";
 
     //CREATE_TABLE_BREWS_STYLES
     private static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
@@ -390,6 +392,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(IBU, aBrew.getIBU());
         values.put(METHOD, aBrew.getMethod());
         values.put(CREATED_ON, getDateTime());
+        values.put(BATCH_SIZE, aBrew.getBatchSize());
+        values.put(EFFICIENCY, aBrew.getEfficiency());
 
         //Add brew
         long row_id = db.insert(TABLE_BREWS,null,values);
@@ -452,6 +456,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
             brew.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
             brew.setIBU((c.getDouble(c.getColumnIndex(IBU))));
             brew.setMethod(c.getString(c.getColumnIndex(METHOD)));
+            brew.setBatchSize((c.getDouble(c.getColumnIndex(BATCH_SIZE))));
+            brew.setEfficiency((c.getDouble(c.getColumnIndex(EFFICIENCY))));
 
             //set boil additions
             brew.setBoilAdditionlist(get_all_boil_additions_by_brew_name(aBrewId, aUserId));
@@ -525,6 +531,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(ON_TAP, aBrew.getOnTap());
         values.put(IBU, aBrew.getIBU());
         values.put(METHOD, aBrew.getMethod());
+        values.put(BATCH_SIZE, aBrew.getBatchSize());
+        values.put(EFFICIENCY, aBrew.getEfficiency());
         //values.put(CREATED_ON, getDateTime());
 
         // updating row

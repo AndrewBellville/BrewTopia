@@ -30,6 +30,8 @@ public class BrewSchema {
     private int scheduled=0; //0 = no 1 = yes
     private int onTap=0; //0 = no 1 = yes
     private double IBU=0.0;
+    private double BatchSize=0.0;
+    private double Efficiency=0.0;
     private String method;
     private List <BoilAdditionsSchema> boilAdditionlist = new ArrayList<BoilAdditionsSchema>();
     private List <BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();;
@@ -147,6 +149,12 @@ public class BrewSchema {
     public String getMethod() {
         return method;
     }
+    public double getBatchSize() {
+        return BatchSize;
+    }
+    public double getEfficiency() {
+        return Efficiency;
+    }
 
 
     //setters
@@ -230,6 +238,12 @@ public class BrewSchema {
     }
     public void setMethod(String method) {
         this.method = method;
+    }
+    public void setBatchSize(double batchSize) {
+        BatchSize = batchSize;
+    }
+    public void setEfficiency(double efficiency) {
+        Efficiency = efficiency;
     }
 
 }

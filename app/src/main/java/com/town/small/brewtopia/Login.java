@@ -98,10 +98,10 @@ public class Login extends ActionBarActivity {
 
         if (validateUserCreate())
         {
-            message.setText("Successful Create");
+            message.setText("Successfully Created");
         }
         else {
-            message.setText("Failed Create");
+            message.setText("User Name Already Exists");
         }
         message.invalidate();
     }

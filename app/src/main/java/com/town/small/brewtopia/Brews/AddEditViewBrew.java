@@ -48,6 +48,8 @@ public class AddEditViewBrew extends Fragment {
     private EditText targetABV;
     private EditText method;
     private EditText IBU;
+    private EditText BatchSize;
+    private EditText Efficiency;
 
     private CheckBox favorite;
     private CheckBox onTap;
@@ -69,6 +71,8 @@ public class AddEditViewBrew extends Fragment {
     private KeyListener targetABVListener;
     private KeyListener methodListener;
     private KeyListener IBUListener;
+    private KeyListener BatchSizeListener;
+    private KeyListener EfficiencyListener;
 
     private DataBaseManager dbManager;
     private BrewActivityData brewActivityDataData;
@@ -99,6 +103,8 @@ public class AddEditViewBrew extends Fragment {
         targetABV = (EditText)mainView.findViewById(R.id.editTextTargetABV);
         method = (EditText)mainView.findViewById(R.id.editTextMethod);
         IBU = (EditText)mainView.findViewById(R.id.editTextIBU);
+        BatchSize = (EditText)mainView.findViewById(R.id.editTextBatchSize);
+        Efficiency = (EditText)mainView.findViewById(R.id.editTextEfficiency);
 
         startButton = (Button)returnView.findViewById(R.id.AddStartBrewButton);
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -132,6 +138,8 @@ public class AddEditViewBrew extends Fragment {
         targetABVListener = targetABV.getKeyListener();
         methodListener = method.getKeyListener();
         IBUListener = IBU.getKeyListener();
+        BatchSizeListener = BatchSize.getKeyListener();
+        EfficiencyListener = Efficiency.getKeyListener();
 
         UserId = CurrentUser.getInstance().getUser().getUserId();
 
@@ -223,6 +231,8 @@ public class AddEditViewBrew extends Fragment {
         favorite.setChecked(aBrewSchema.getBooleanFavorite());
         onTap.setChecked(aBrewSchema.getBooleanOnTap());
         scheduled.setChecked(aBrewSchema.getBooleanScheduled());
+        BatchSize.setText(Double.toString(aBrewSchema.getBatchSize()));
+        Efficiency.setText(Double.toString(aBrewSchema.getEfficiency()));
 
         // set to brew Style this might be deleted if its user created
         try
@@ -291,6 +301,8 @@ public class AddEditViewBrew extends Fragment {
         double fg=0.0;
         double abv=0.0;
         double ibu=0.0;
+        double bs=0.0;
+        double ef=0.0;
 
         try
         {
@@ -333,6 +345,16 @@ public class AddEditViewBrew extends Fragment {
             ibu = Double.parseDouble(IBU.getText().toString());
         }
         catch (Exception e){}
+        try
+        {
+            bs = Double.parseDouble(BatchSize.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            ef = Double.parseDouble(Efficiency.getText().toString());
+        }
+        catch (Exception e){}
 
 
         //Create Brew
@@ -358,6 +380,8 @@ public class AddEditViewBrew extends Fragment {
         brew.setBooleanFavorite(favorite.isChecked());
         brew.setBooleanOnTap(onTap.isChecked());
         brew.setBooleanScheduled(scheduled.isChecked());
+        brew.setBatchSize(bs);
+        brew.setEfficiency(ef);
 
         //Add Boil additions
         brew.setBoilAdditionlist(BrewActivityData.getInstance().getBaArray());
@@ -416,6 +440,8 @@ public class AddEditViewBrew extends Fragment {
         favorite.setChecked(false);
         onTap.setChecked(false);
         scheduled.setChecked(false);
+        BatchSize.setText("");
+        Efficiency.setText("");
         // set to None there should always be a None
         try
         {
@@ -490,6 +516,16 @@ public class AddEditViewBrew extends Fragment {
             IBU.setEnabled(false);
             //IBU.setFocusable(false);
 
+            BatchSize.setKeyListener(null);
+            BatchSize.setClickable(false);
+            BatchSize.setEnabled(false);
+            //BatchSize.setFocusable(false);
+
+            Efficiency.setKeyListener(null);
+            Efficiency.setClickable(false);
+            Efficiency.setEnabled(false);
+            //Efficiency.setFocusable(false);
+
             styleSpinner.setClickable(false);
 
             favorite.setClickable(false);
@@ -556,6 +592,16 @@ public class AddEditViewBrew extends Fragment {
             IBU.setClickable(true);
             IBU.setEnabled(true);
             //IBU.setFocusable(true);
+
+            BatchSize.setKeyListener(BatchSizeListener);
+            BatchSize.setClickable(true);
+            BatchSize.setEnabled(true);
+            //BatchSize.setFocusable(true);
+
+            Efficiency.setKeyListener(EfficiencyListener);
+            Efficiency.setClickable(true);
+            Efficiency.setEnabled(true);
+            //Efficiency.setFocusable(true);
 
             styleSpinner.setClickable(true);
 

@@ -7,7 +7,7 @@
                 android:endColor="@color/ColorToneL1"
                 android:angle="90"/>
             <corners android:radius="5dp"/>
-            <stroke android:width="2dp" android:color="#060d13"/>
+            <stroke android:width="2dp" android:color="#00060d13"/>
             <padding android:left="15dp" android:top="15dp" android:bottom="15dp"  android:right="15dp"/>
         </shape>
      </item>
@@ -18,7 +18,7 @@
                 android:endColor="@color/ColorToneL2"
                 android:angle="90"/>
             <corners android:radius="5dp"/>
-            <stroke android:width="2dp" android:color="#060d13"/>
+            <stroke android:width="2dp" android:color="#00060d13"/>
             <padding android:left="15dp" android:top="15dp" android:bottom="15dp"  android:right="15dp"/>
         </shape>
     </item>

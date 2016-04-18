@@ -21,7 +21,7 @@ import android.view.MenuItem;
 import com.town.small.brewtopia.AppSettings.AppSettings;
 import com.town.small.brewtopia.R;
 import com.town.small.brewtopia.Utilites.SlidingTabLayout;
-import com.town.small.brewtopia.UserInventory;
+import com.town.small.brewtopia.Inventory.UserInventory;
 
 public class UserBrew extends ActionBarActivity {
 

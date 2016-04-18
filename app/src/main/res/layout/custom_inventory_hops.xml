@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/hopsName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test"
+            android:textSize="17dip"
+            android:paddingTop="5dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft" />
+
+        <TextView
+            android:id="@+id/hopsAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Amount"
+            android:textSize="17dip"
+            android:paddingBottom="5dp"
+            android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
+            android:layout_below="@+id/hopsName"/>
+
+        <TextView
+            android:id="@+id/hopsIBU"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IBUs"
+            android:textSize="17dip"
+            android:paddingBottom="5dp"
+            android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
+            android:layout_below="@+id/hopsName"
+            android:layout_toRightOf="@+id/hopsAmount"
+            android:layout_toEndOf="@+id/hopsAmount" />
+
+        <TextView
+            android:id="@+id/hopsUse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use"
+            android:textSize="17dip"
+            android:paddingBottom="5dp"
+            android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
+            android:layout_below="@+id/hopsName"
+            android:layout_toRightOf="@+id/hopsIBU"
+            android:layout_toEndOf="@+id/hopsIBU"/>
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>

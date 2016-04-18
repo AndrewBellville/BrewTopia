@@ -12,7 +12,7 @@
     android:background="@drawable/brew_background">
 
     <TextView
-        android:text="Brew Topia"
+        android:text="@string/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="30sp"
@@ -23,66 +23,45 @@
         android:textColor="#B3A7A7"/>
 
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
         android:inputType="textPersonName"
         android:id="@+id/UserNameTextBox"
-        android:layout_below="@+id/UserLoginLabel"
-        android:layout_alignLeft="@+id/UserLoginLabel"
-        android:layout_alignStart="@+id/UserLoginLabel"
-        android:layout_alignRight="@+id/LoginTitle"
-        android:layout_alignEnd="@+id/LoginTitle"
-        android:background="@drawable/edit_text1"/>
+        android:hint="User Name"
+        android:background="@drawable/edit_text1"
+        android:textCursorDrawable="@drawable/edit_text_curser"
+        android:layout_marginTop="65dp"
+        android:layout_below="@+id/LoginTitle"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"/>
 
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/PasswordTextBox"
-        android:layout_below="@+id/PasswordLabel"
-        android:layout_alignLeft="@+id/PasswordLabel"
-        android:layout_alignStart="@+id/PasswordLabel"
-        android:layout_alignRight="@+id/UserNameTextBox"
-        android:layout_alignEnd="@+id/UserNameTextBox"
-        android:background="@drawable/edit_text1"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="UserName:"
-        android:id="@+id/UserLoginLabel"
-        android:layout_marginTop="25dp"
-        android:layout_below="@+id/LoginTitle"
-        android:layout_alignLeft="@+id/LoginTitle"
-        android:layout_alignStart="@+id/LoginTitle"
-        android:textColor="#B3A7A7"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Password:"
-        android:id="@+id/PasswordLabel"
+        android:hint="Password"
+        android:background="@drawable/edit_text1"
+        android:textCursorDrawable="@drawable/edit_text_curser"
         android:layout_below="@+id/UserNameTextBox"
-        android:layout_alignLeft="@+id/UserNameTextBox"
-        android:layout_alignStart="@+id/UserNameTextBox"
-        android:textColor="#B3A7A7"/>
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"/>
+
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/Login"
         android:id="@+id/LoginButton"
-        android:layout_marginTop="25dp"
         android:clickable="true"
         android:onClick="onLoginClick"
-        android:layout_below="@+id/PasswordTextBox"
-        android:layout_alignLeft="@+id/PasswordTextBox"
-        android:layout_alignStart="@+id/PasswordTextBox"
-        android:layout_alignRight="@+id/PasswordTextBox"
-        android:layout_alignEnd="@+id/PasswordTextBox"
         android:textColor="#ffffff"
-        android:background="@drawable/button1"/>
+        android:background="@drawable/button1"
+        android:layout_below="@+id/PasswordTextBox"
+        android:layout_marginTop="33dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -107,14 +86,13 @@
         android:id="@+id/CreateUserButton"
         android:clickable="true"
         android:onClick="onCreateClick"
-        android:layout_marginTop="31dp"
+        android:textColor="#ffffff"
+        android:background="@drawable/button1"
         android:layout_below="@+id/LoginButton"
         android:layout_alignRight="@+id/LoginButton"
         android:layout_alignEnd="@+id/LoginButton"
         android:layout_alignLeft="@+id/LoginButton"
-        android:layout_alignStart="@+id/LoginButton"
-        android:textColor="#ffffff"
-        android:background="@drawable/button1"/>
+        android:layout_alignStart="@+id/LoginButton" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -122,7 +100,7 @@
         android:id="@+id/MessageText"
         android:textColor="#ffff1800"
         android:layout_below="@+id/CreateUserButton"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -138,7 +116,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Continue without login"
-        android:id="@+id/textView4"
+        android:id="@+id/textViewNoLogin"
         android:textColor="@android:color/holo_blue_dark"
         android:layout_below="@+id/MessageText"
         android:layout_centerHorizontal="true" />

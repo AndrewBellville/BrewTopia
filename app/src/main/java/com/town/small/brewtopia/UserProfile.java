@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.town.small.brewtopia.AppSettings.AppSettings;
 import com.town.small.brewtopia.Brews.UserBrewList;
 import com.town.small.brewtopia.Calculations.UserCalculations;
+import com.town.small.brewtopia.Inventory.UserInventory;
 import com.town.small.brewtopia.Schedule.UserSchedule;
 import com.town.small.brewtopia.Utilites.SlidingTabLayout;
 
