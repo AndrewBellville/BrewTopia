@@ -24,6 +24,10 @@ public class CustomHopsExpandableListAdapter extends BaseExpandableListAdapter {
     // child data in format of header title, child title
     private HashMap<String, List<HopsSchema>> _listDataChild;
 
+    //event handling
+    private EventHandler eventHandler = null;
+    private boolean isEditable = true;
+
     public CustomHopsExpandableListAdapter(Context context, List<String> listDataHeader,
                                            HashMap<String, List<HopsSchema>> listChildData) {
         this._context = context;
@@ -104,6 +108,17 @@ public class CustomHopsExpandableListAdapter extends BaseExpandableListAdapter {
         lblListHeader.setTypeface(null, Typeface.BOLD);
         lblListHeader.setText(headerTitle);
 
+        TextView addTextView = (TextView) convertView.findViewById(R.id.AddTextView);
+        addTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(eventHandler != null)
+                {
+                    eventHandler.OnEditClick();
+                }
+            }
+        });
+
         return convertView;
     }
 
@@ -115,5 +130,27 @@ public class CustomHopsExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
+    }
+
+
+    public void setEditable(boolean editable) {
+        isEditable = editable;
+    }
+
+    /**
+     * Assign event handler to be passed needed events
+     */
+    public void setEventHandler(EventHandler eventHandler)
+    {
+        this.eventHandler = eventHandler;
+    }
+
+    /**
+     * This interface defines what events to be reported to
+     * the outside world
+     */
+    public interface EventHandler
+    {
+        void OnEditClick();
     }
 }

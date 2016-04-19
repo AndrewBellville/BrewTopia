@@ -1,5 +1,6 @@
 package com.town.small.brewtopia.Inventory;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -107,6 +108,16 @@ public class UserInventory extends Fragment {
         prepareHopsListData();
 
         HopsListAdapter = new CustomHopsExpandableListAdapter(getActivity(), HopsListDataHeader, HopsListDataChild);
+        HopsListAdapter.setEventHandler(new CustomHopsExpandableListAdapter.EventHandler() {
+            @Override
+            public void OnEditClick() {
+                //Set Selected hops in Activity Data
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.ADD);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewHops.class);
+                startActivity(intent);
+            }
+        });
 
         // setting list adapter
         expHopsListView.setAdapter(HopsListAdapter);
@@ -125,6 +136,13 @@ public class UserInventory extends Fragment {
                                 childPosition).getInventoryName(), Toast.LENGTH_SHORT)
                         .show();
                         */
+                //Set Selected hops in Activity Data
+                InventoryActivityData.getInstance().setHopsSchema(HopsListDataChild.get(HopsListDataHeader.get(groupPosition)).get(childPosition));
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.VIEW);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewHops.class);
+                startActivity(intent);
+
                 return false;
             }
         });

@@ -7,7 +7,7 @@ import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
  */
 public class ScheduleActivityData {
 
-    ScheduledBrewSchema scheduledBrewSchema;
+    private ScheduledBrewSchema scheduledBrewSchema;
 
     //Singleton
     private static ScheduleActivityData mInstance = null;
