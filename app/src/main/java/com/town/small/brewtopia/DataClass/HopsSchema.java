@@ -6,7 +6,7 @@ package com.town.small.brewtopia.DataClass;
 public class HopsSchema extends InventorySchema {
 
     private String Type="";
-    private String AA="";
+    private double AA=0.0;
     private String Use="";
     private int time=0;
     private double IBU=0.0;
@@ -16,7 +16,7 @@ public class HopsSchema extends InventorySchema {
     public String getType() {
         return Type;
     }
-    public String getAA() {
+    public double getAA() {
         return AA;
     }
     public String getUse() {
@@ -33,7 +33,7 @@ public class HopsSchema extends InventorySchema {
     public void setType(String type) {
         Type = type;
     }
-    public void setAA(String AA) {
+    public void setAA(double AA) {
         this.AA = AA;
     }
     public void setUse(String use) {

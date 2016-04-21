@@ -12,7 +12,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
+import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.DataClass.HopsSchema;
 import com.town.small.brewtopia.R;
@@ -103,7 +105,6 @@ public class AddEditViewHops extends ActionBarActivity {
         }
     }
 
-
     public void ifAdd()
     {
         ClearFields();
@@ -115,17 +116,15 @@ public class AddEditViewHops extends ActionBarActivity {
 
     public void ifEdit()
     {
-        deleteInventoryButton.setVisibility(View.VISIBLE);
+        deleteInventoryButton.setVisibility(View.INVISIBLE);
 
-        if(AddEditViewState != InventoryActivityData.DisplayMode.EDIT )
-        {
-            editInventoryButton.setText("Submit");
-            AddEditViewState = InventoryActivityData.DisplayMode.EDIT;
-            ToggleFieldEditable(true);
-        }
-        else{
-            validateSubmit();
-        }
+        //get brew and display
+        DisplayHops();
+        editInventoryButton.setText("Submit");
+        AddEditViewState = InventoryActivityData.DisplayMode.EDIT;
+
+        ToggleFieldEditable(false);
+        ToggleFieldEditable(true);
     }
 
     public void ifView()
@@ -136,7 +135,6 @@ public class AddEditViewHops extends ActionBarActivity {
         AddEditViewState = InventoryActivityData.DisplayMode.VIEW;
         deleteInventoryButton.setVisibility(View.VISIBLE);
         ToggleFieldEditable(false);
-
     }
 
     private void ClearFields()
@@ -153,11 +151,12 @@ public class AddEditViewHops extends ActionBarActivity {
     private void DisplayHops()
     {
         Log.e(LOG, "Entering: DisplayHops");
+
         //Reset all fields
         hopsName.setText(hopsSchema.getInventoryName());
         amount.setText(Double.toString(hopsSchema.getAmount()));
         type.setText(hopsSchema.getType());
-        AA.setText(hopsSchema.getAA());
+        AA.setText(Double.toString(hopsSchema.getAA()));
         use.setText(hopsSchema.getUse());
         time.setText(Integer.toString(hopsSchema.getTime()));
         IBU.setText(Double.toString(hopsSchema.getIBU()));
@@ -166,15 +165,92 @@ public class AddEditViewHops extends ActionBarActivity {
     private void validateSubmit() {
         Log.e(LOG, "Entering: validateSubmit");
 
+        if(hopsName.getText().toString().equals(""))
+        {
+            Toast.makeText(this, "Blank Data Field", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        //Create Hops
+        HopsSchema aHops;
+        if(hopsSchema == null)
+            aHops = new HopsSchema();
+        else
+            aHops = hopsSchema;
+
+        aHops.setInventoryId(aHops.getInventoryId());
+        aHops.setInventoryName(hopsName.getText().toString());
+        aHops.setUserId(CurrentUser.getInstance().getUser().getUserId());
+
+        double am=0.0;
+        double aa=0.0;
+        double ibu=0.0;
+        int t=0;
+
+        try
+        {
+            am = Double.parseDouble(amount.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            aa = Double.parseDouble(AA.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            ibu = Double.parseDouble(IBU.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            t = Integer.parseInt(time.getText().toString());
+        }
+        catch (Exception e){}
+
+        aHops.setAmount(am);
+        aHops.setAA(aa);
+        aHops.setIBU(ibu);
+        aHops.setTime(t);
+
+        aHops.setUse(use.getText().toString());
+        aHops.setType(type.getText().toString());
+
+
+        if(AddEditViewState == InventoryActivityData.DisplayMode.ADD)
+        {
+
+            long inventoryId = dbManager.CreateHops(aHops);
+            if( inventoryId == 0)// 0 brews failed to create
+            {
+                Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
+                return;
+            }
+            aHops.setInventoryId(inventoryId);
+        }
+        else if(AddEditViewState == InventoryActivityData.DisplayMode.EDIT)
+        {
+            dbManager.updateHops(aHops);
+        }
+
+        hopsSchema = aHops;
+
+        ifView();
 
     }
 
-    public void onEditClick(View aView){ifEdit();}
+    public void onEditClick(View aView){
+
+        if(AddEditViewState == InventoryActivityData.DisplayMode.VIEW )
+            ifEdit();
+        else
+            validateSubmit();
+    }
 
     public void onDeleteClick(View aView)
     {
         // delete Inventory
-        //dbManager.deleteBrewScheduledById(aScheduleSchema.getScheduleId());
+        dbManager.deleteHopsById(hopsSchema.getInventoryId());
         this.finish();
     }
 

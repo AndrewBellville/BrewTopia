@@ -73,6 +73,7 @@ android:orientation="vertical">
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
         android:ems="10"
         android:id="@+id/AAEditText"
         android:layout_below="@+id/AATextView"/>

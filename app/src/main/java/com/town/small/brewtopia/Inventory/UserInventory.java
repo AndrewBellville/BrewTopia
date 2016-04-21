@@ -10,6 +10,8 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import com.town.small.brewtopia.DataClass.CurrentUser;
+import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.DataClass.HopsSchema;
 import com.town.small.brewtopia.R;
 
@@ -33,6 +35,8 @@ public class UserInventory extends Fragment {
     List<String> HopsListDataHeader;
     HashMap<String, List<HopsSchema>> HopsListDataChild;
 
+    DataBaseManager dbManager;
+    long userId;
 
 
     @Override
@@ -44,10 +48,21 @@ public class UserInventory extends Fragment {
         expHopsListView = (ExpandableListView) view.findViewById(R.id.inventoryExpandableHopsList);
         expListView = (ExpandableListView) view.findViewById(R.id.inventoryExpandableList);
 
+        dbManager = DataBaseManager.getInstance(getActivity());
+        userId = CurrentUser.getInstance().getUser().getUserId();
+
         SetUpHopsList();
         SetUpList();
 
         return view;
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        SetUpHopsList();
+        SetUpList();
     }
 
     private void SetUpList()
@@ -112,6 +127,7 @@ public class UserInventory extends Fragment {
             @Override
             public void OnEditClick() {
                 //Set Selected hops in Activity Data
+                InventoryActivityData.getInstance().setHopsSchema(null);
                 InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.ADD);
                 //Start Activity
                 Intent intent = new Intent(getActivity(), AddEditViewHops.class);
@@ -176,16 +192,7 @@ public class UserInventory extends Fragment {
         HopsListDataChild = new HashMap<String, List<HopsSchema>>();
 
         // Adding child data
-        List<HopsSchema> hopsList = new ArrayList<HopsSchema>();
-        HopsSchema hopsSchema = new HopsSchema();
-        hopsSchema.setInventoryName("Test Hops Name");
-        hopsSchema.setAmount(0.25);
-        hopsSchema.setType("Pellet");
-        hopsSchema.setUse("Boil");
-        hopsSchema.setTime(45);
-        hopsSchema.setIBU(15.16);
-        hopsSchema.setAA("AA");
-        hopsList.add(hopsSchema);
+        List<HopsSchema> hopsList = dbManager.getAllHopsByUserId(userId);
 
         // Adding child data
         HopsListDataHeader.add("Hops ("+hopsList.size()+")");

@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 31;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 33;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -40,6 +40,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String TABLE_BREWS_SCHEDULED = "BrewsScheduled";
     private static final String TABLE_BREWS_CALCULATIONS = "Calculations";
     private static final String TABLE_APP_SETTINGS = "Settings";
+    private static final String TABLE_INVENTORY_HOPS = "Hops";
 
     // Common column names across Mulit tables
     private static final String ROW_ID = "rowid";
@@ -50,6 +51,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String ORIGINAL_GRAVITY = "OriginalGravity";
     private static final String FINAL_GRAVITY = "FinalGravity";
     private static final String ABV = "ABV";
+    //Common column names across Inventory tables
+    private static final String INVENTORY_NAME = "InventoryName";
+    private static final String INVENTORY_AMOUNT = "Amount";
 
     // USERS column names
     private static final String USER_NAME = "UserName";
@@ -100,6 +104,14 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String SETTING_VALUE = "SettingValue";
     private static final String SETTING_SCREEN = "SettingScreen";
 
+    // TABLE_INVENTORY_HOPS column names
+    private static final String INVENTORY_TYPE = "Type";
+    private static final String INVENTORY_AA = "AlphaAcid";
+    private static final String INVENTORY_USE = "Use";
+    private static final String INVENTORY_TIME = "Time";
+    private static final String INVENTORY_IBU = "IBU";
+
+
     // Table Create Statements
     //CREATE_TABLE_USERS
     private static final String CREATE_TABLE_USERS = "CREATE TABLE "
@@ -140,6 +152,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_APP_SETTINGS = "CREATE TABLE "
             + TABLE_APP_SETTINGS + "(" + USER_ID + " INTEGER," + SETTING_NAME + " TEXT," + SETTING_VALUE + " TEXT," + SETTING_SCREEN + " TEXT )";
 
+    //CREATE_TABLE_INVENTORY_HOPS
+    private static final String CREATE_TABLE_INVENTORY_HOPS = "CREATE TABLE "
+            + TABLE_INVENTORY_HOPS + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_NAME + " TEXT," + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT,"
+            + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER," + INVENTORY_IBU + " REAL )";
+
 
     //Singleton
     private static DataBaseManager mInstance = null;
@@ -167,6 +184,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS_CALCULATIONS);
         aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS_NOTES);
         aSQLiteDatabase.execSQL(CREATE_TABLE_APP_SETTINGS);
+        aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_HOPS);
 
         //Pre Load Data
         PreLoadAdminUser(aSQLiteDatabase);
@@ -186,6 +204,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_CALCULATIONS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_NOTES);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_APP_SETTINGS);
+        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_HOPS);
 
         // create new tables
         onCreate(aSQLiteDatabase);
@@ -1316,6 +1335,136 @@ public class DataBaseManager extends SQLiteOpenHelper {
             return false;
 
         return true;
+    }
+    //************************************Inventory functions***************
+
+    //************************************Hops functions***************
+    /*
+    * add Hops
+    */
+    public long CreateHops(HopsSchema aHopsSchema) {
+        Log.e(LOG, "Insert: addAppSetting["+aHopsSchema.getUserId()+", "+ aHopsSchema.getInventoryName() +"]");
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aHopsSchema.getUserId());
+        values.put(BREW_ID, aHopsSchema.getBrewId());
+        values.put(INVENTORY_NAME, aHopsSchema.getInventoryName());
+        values.put(INVENTORY_AMOUNT, aHopsSchema.getAmount());
+        values.put(INVENTORY_TYPE, aHopsSchema.getType());
+        values.put(INVENTORY_USE, aHopsSchema.getUse());
+        values.put(INVENTORY_IBU, aHopsSchema.getIBU());
+        values.put(INVENTORY_AA, aHopsSchema.getAA());
+        values.put(INVENTORY_TIME, aHopsSchema.getTime());
+
+
+        // insert row
+        return db.insert(TABLE_INVENTORY_HOPS,null,values);
+    }
+
+
+    /*
+* getting Hops by Inventory Id
+*/
+    public HopsSchema getHops(HopsSchema aHopsSchema) {
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_HOPS + " WHERE "
+                + ROW_ID + " = " +Long.toString(aHopsSchema.getInventoryId());
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        HopsSchema hopsSchema = new HopsSchema();
+        Log.e(LOG, "getAppSettingsBySettingName Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+
+            hopsSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
+            hopsSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+            hopsSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
+            hopsSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
+            hopsSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
+            hopsSchema.setType(c.getString(c.getColumnIndex(INVENTORY_TYPE)));
+            hopsSchema.setUse(c.getString(c.getColumnIndex(INVENTORY_USE)));
+            hopsSchema.setIBU(c.getDouble(c.getColumnIndex(INVENTORY_IBU)));
+            hopsSchema.setAA(c.getDouble(c.getColumnIndex(INVENTORY_AA)));
+            hopsSchema.setTime(c.getInt(c.getColumnIndex(INVENTORY_TIME)));
+        }
+
+        c.close();
+        return hopsSchema;
+    }
+
+    /*
+    * getting all Hops by user Id
+    */
+    public List<HopsSchema> getAllHopsByUserId(long aUserId) {
+        List<HopsSchema> hopsSchemaArrayList = new ArrayList<HopsSchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_HOPS + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllHopsByUserId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                HopsSchema hopsSchema = new HopsSchema();
+                hopsSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to boilList
+                hopsSchemaArrayList.add(getHops(hopsSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return hopsSchemaArrayList;
+    }
+
+    /*
+* Updating a Hops
+*/
+    public Boolean updateHops(HopsSchema aHopsSchema) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "updateHops Name["+aHopsSchema.getInventoryName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aHopsSchema.getUserId());
+        values.put(BREW_ID, aHopsSchema.getBrewId());
+        values.put(INVENTORY_NAME, aHopsSchema.getInventoryName());
+        values.put(INVENTORY_AMOUNT, aHopsSchema.getAmount());
+        values.put(INVENTORY_TYPE, aHopsSchema.getType());
+        values.put(INVENTORY_USE, aHopsSchema.getUse());
+        values.put(INVENTORY_IBU, aHopsSchema.getIBU());
+        values.put(INVENTORY_AA, aHopsSchema.getAA());
+        values.put(INVENTORY_TIME, aHopsSchema.getTime());
+
+        // updating row
+        int retVal = db.update(TABLE_INVENTORY_HOPS, values, ROW_ID + " = ?",
+                new String[] { Long.toString(aHopsSchema.getInventoryId()) });
+
+        //Update brew
+        if(!(retVal > 0) )
+            return false;
+
+        return true;
+    }
+
+    /*
+* delete Hops by Id
+*/
+    public void deleteHopsById(long aHopsId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteHopsById Hops Id["+Long.toString(aHopsId) +"]");
+
+        db.delete(TABLE_INVENTORY_HOPS, ROW_ID + " = ?",
+                new String[] { Long.toString(aHopsId) });
     }
 
     //************************************Helper functions***************
