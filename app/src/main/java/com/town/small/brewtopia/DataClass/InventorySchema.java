@@ -9,7 +9,8 @@ public class InventorySchema {
     private long BrewId=-1;
     private long UserId=-1;
     private String InventoryName="";
-    private double Amount=0.0;
+    private int InvetoryQty=0;
+
 
     //Getters
     public long getInventoryId() {
@@ -21,11 +22,11 @@ public class InventorySchema {
     public long getUserId() {
         return UserId;
     }
-    public double getAmount() {
-        return Amount;
-    }
     public String getInventoryName() {
         return InventoryName;
+    }
+    public int getInvetoryQty() {
+        return InvetoryQty;
     }
 
     //Setters
@@ -38,10 +39,10 @@ public class InventorySchema {
     public void setUserId(long userId) {
         UserId = userId;
     }
-    public void setAmount(double amount) {
-        Amount = amount;
-    }
     public void setInventoryName(String inventoryName) {
         InventoryName = inventoryName;
+    }
+    public void setInvetoryQty(int invetoryQty) {
+        InvetoryQty = invetoryQty;
     }
 }

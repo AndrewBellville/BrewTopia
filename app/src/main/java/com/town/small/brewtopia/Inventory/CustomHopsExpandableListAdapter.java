@@ -1,6 +1,7 @@
 package com.town.small.brewtopia.Inventory;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,7 +65,7 @@ public class CustomHopsExpandableListAdapter extends BaseExpandableListAdapter {
         TextView hopsUse = (TextView) convertView.findViewById(R.id.hopsUse);
 
         hopsName.setText(hopsSchema.getInventoryName());
-        hopsAmount.setText("Amount: "+Double.toString(hopsSchema.getAmount())+"oz");
+        hopsAmount.setText("Qty: "+ Integer.toString(hopsSchema.getInvetoryQty()));
         hopsIBUs.setText("IBU: "+Double.toString(hopsSchema.getIBU()));
         hopsUse.setText("");
 

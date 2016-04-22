@@ -32,6 +32,7 @@ public class AddEditViewHops extends ActionBarActivity {
 
     private ScrollView ScrollView;
     private EditText hopsName;
+    private EditText hopsQty;
     private EditText amount;
     private EditText type;
     private EditText AA;
@@ -46,6 +47,7 @@ public class AddEditViewHops extends ActionBarActivity {
     private KeyListener useListener;
     private KeyListener timeListener;
     private KeyListener IBUListener;
+    private KeyListener hopsQtyListener;
 
     private Button editInventoryButton;
     private Button deleteInventoryButton;
@@ -77,6 +79,8 @@ public class AddEditViewHops extends ActionBarActivity {
         use = (EditText)findViewById(R.id.useEditText);
         time = (EditText)findViewById(R.id.timeEditText);
         IBU = (EditText)findViewById(R.id.IBUEditText);
+        hopsQty = (EditText)findViewById(R.id.hopsQtyEditText);
+
 
         hopsNameListener = hopsName.getKeyListener();
         amountListener = amount.getKeyListener();
@@ -85,6 +89,7 @@ public class AddEditViewHops extends ActionBarActivity {
         useListener = use.getKeyListener();
         timeListener = time.getKeyListener();
         IBUListener = IBU.getKeyListener();
+        hopsQtyListener = hopsQty.getKeyListener();
 
         editInventoryButton = (Button)findViewById(R.id.inventoryEditButton);
         deleteInventoryButton = (Button)findViewById(R.id.inventoryDeleteButton);
@@ -140,6 +145,7 @@ public class AddEditViewHops extends ActionBarActivity {
     private void ClearFields()
     {
         hopsName.setText("");
+        hopsQty.setText("");
         amount.setText("");
         type.setText("");
         AA.setText("");
@@ -154,6 +160,7 @@ public class AddEditViewHops extends ActionBarActivity {
 
         //Reset all fields
         hopsName.setText(hopsSchema.getInventoryName());
+        hopsQty.setText(Integer.toString(hopsSchema.getInvetoryQty()));
         amount.setText(Double.toString(hopsSchema.getAmount()));
         type.setText(hopsSchema.getType());
         AA.setText(Double.toString(hopsSchema.getAA()));
@@ -186,6 +193,7 @@ public class AddEditViewHops extends ActionBarActivity {
         double aa=0.0;
         double ibu=0.0;
         int t=0;
+        int qt=0;
 
         try
         {
@@ -207,11 +215,18 @@ public class AddEditViewHops extends ActionBarActivity {
             t = Integer.parseInt(time.getText().toString());
         }
         catch (Exception e){}
+        try
+        {
+            qt = Integer.parseInt(hopsQty.getText().toString());
+        }
+        catch (Exception e){}
+
 
         aHops.setAmount(am);
         aHops.setAA(aa);
         aHops.setIBU(ibu);
         aHops.setTime(t);
+        aHops.setInvetoryQty(qt);
 
         aHops.setUse(use.getText().toString());
         aHops.setType(type.getText().toString());
@@ -287,12 +302,17 @@ public class AddEditViewHops extends ActionBarActivity {
             time.setKeyListener(null);
             time.setClickable(false);
             time.setEnabled(false);
-            //OriginalGravity.setFocusable(false);
+            //time.setFocusable(false);
 
             IBU.setKeyListener(null);
             IBU.setClickable(false);
             IBU.setEnabled(false);
-            //FinalGravity.setFocusable(false);
+            //IBU.setFocusable(false);
+
+            hopsQty.setKeyListener(null);
+            hopsQty.setClickable(false);
+            hopsQty.setEnabled(false);
+            //hopsQty.setFocusable(false);
         }
         else
         {
@@ -325,12 +345,17 @@ public class AddEditViewHops extends ActionBarActivity {
             time.setKeyListener(timeListener);
             time.setClickable(true);
             time.setEnabled(true);
-            //OriginalGravity.setFocusable(true);
+            //time.setFocusable(true);
 
             IBU.setKeyListener(IBUListener);
             IBU.setClickable(true);
             IBU.setEnabled(true);
-            //FinalGravity.setFocusable(true);
+            //IBU.setFocusable(true);
+
+            hopsQty.setKeyListener(hopsQtyListener);
+            hopsQty.setClickable(true);
+            hopsQty.setEnabled(true);
+            //hopsQty.setFocusable(true);
         }
     }
 

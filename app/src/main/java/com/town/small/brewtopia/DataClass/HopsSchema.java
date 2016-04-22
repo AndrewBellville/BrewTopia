@@ -10,6 +10,7 @@ public class HopsSchema extends InventorySchema {
     private String Use="";
     private int time=0;
     private double IBU=0.0;
+    private double Amount=0.0;
 
 
     //Getters
@@ -28,6 +29,9 @@ public class HopsSchema extends InventorySchema {
     public double getIBU() {
         return IBU;
     }
+    public double getAmount() {
+        return Amount;
+    }
 
     //Setters
     public void setType(String type) {
@@ -44,6 +48,9 @@ public class HopsSchema extends InventorySchema {
     }
     public void setIBU(double IBU) {
         this.IBU = IBU;
+    }
+    public void setAmount(double amount) {
+        Amount = amount;
     }
 
 }

@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 33;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 34;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -53,7 +53,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String ABV = "ABV";
     //Common column names across Inventory tables
     private static final String INVENTORY_NAME = "InventoryName";
-    private static final String INVENTORY_AMOUNT = "Amount";
+    private static final String INVENTORY_QTY = "InventoryQty";
+
 
     // USERS column names
     private static final String USER_NAME = "UserName";
@@ -110,6 +111,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String INVENTORY_USE = "Use";
     private static final String INVENTORY_TIME = "Time";
     private static final String INVENTORY_IBU = "IBU";
+    private static final String INVENTORY_AMOUNT = "Amount";
 
 
     // Table Create Statements
@@ -154,9 +156,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     //CREATE_TABLE_INVENTORY_HOPS
     private static final String CREATE_TABLE_INVENTORY_HOPS = "CREATE TABLE "
-            + TABLE_INVENTORY_HOPS + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_NAME + " TEXT," + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT,"
-            + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER," + INVENTORY_IBU + " REAL )";
-
+            + TABLE_INVENTORY_HOPS + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
+            + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT," + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER," + INVENTORY_IBU + " REAL )";
 
     //Singleton
     private static DataBaseManager mInstance = null;
@@ -1351,6 +1352,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(USER_ID, aHopsSchema.getUserId());
         values.put(BREW_ID, aHopsSchema.getBrewId());
         values.put(INVENTORY_NAME, aHopsSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aHopsSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aHopsSchema.getAmount());
         values.put(INVENTORY_TYPE, aHopsSchema.getType());
         values.put(INVENTORY_USE, aHopsSchema.getUse());
@@ -1385,6 +1387,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             hopsSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
             hopsSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
             hopsSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
+            hopsSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             hopsSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
             hopsSchema.setType(c.getString(c.getColumnIndex(INVENTORY_TYPE)));
             hopsSchema.setUse(c.getString(c.getColumnIndex(INVENTORY_USE)));
@@ -1437,6 +1440,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(USER_ID, aHopsSchema.getUserId());
         values.put(BREW_ID, aHopsSchema.getBrewId());
         values.put(INVENTORY_NAME, aHopsSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aHopsSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aHopsSchema.getAmount());
         values.put(INVENTORY_TYPE, aHopsSchema.getType());
         values.put(INVENTORY_USE, aHopsSchema.getUse());
