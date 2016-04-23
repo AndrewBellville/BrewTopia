@@ -19,7 +19,7 @@ android:orientation="vertical">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Name"
-        android:id="@+id/hopsNameLabeltextView"
+        android:id="@+id/NameLabeltextView"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -27,29 +27,29 @@ android:orientation="vertical">
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/hopsNameEditText"
-        android:layout_below="@+id/hopsNameLabeltextView" />
+        android:id="@+id/NameEditText"
+        android:layout_below="@+id/NameLabeltextView" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Qty"
-        android:id="@+id/hopsQtyLabeltextView"
-        android:layout_below="@+id/hopsNameEditText" />
+        android:id="@+id/QtyLabeltextView"
+        android:layout_below="@+id/NameEditText" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:id="@+id/hopsQtyEditText"
-        android:layout_below="@+id/hopsQtyLabeltextView" />
+        android:id="@+id/QtyEditText"
+        android:layout_below="@+id/QtyLabeltextView" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Amount (oz)"
+        android:text="Amount"
         android:id="@+id/amountTextView"
-        android:layout_below="@+id/hopsQtyEditText"
+        android:layout_below="@+id/QtyEditText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -64,8 +64,8 @@ android:orientation="vertical">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Type"
-        android:id="@+id/typeTextView"
+        android:text="Attenuation"
+        android:id="@+id/attenuationTextView"
         android:layout_below="@+id/amountEditText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -73,69 +73,64 @@ android:orientation="vertical">
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
         android:ems="10"
-        android:id="@+id/typeEditText"
-        android:layout_below="@+id/typeTextView" />
+        android:id="@+id/attenuationEditText"
+        android:layout_below="@+id/attenuationTextView" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="AA"
-        android:id="@+id/AATextView"
-        android:layout_below="@+id/typeEditText" />
+        android:text="Flocculation"
+        android:id="@+id/flocculationTextView"
+        android:layout_below="@+id/attenuationEditText" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/flocculationEditText"
+        android:layout_below="@+id/flocculationTextView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Optimum Temp Low"
+        android:id="@+id/optimumTempLowTextView"
+        android:layout_below="@+id/flocculationEditText" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
         android:ems="10"
-        android:id="@+id/AAEditText"
-        android:layout_below="@+id/AATextView"/>
+        android:id="@+id/optimumTempLowEditText"
+        android:layout_below="@+id/optimumTempLowTextView" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Use"
-        android:id="@+id/useTextView"
-        android:layout_below="@+id/AAEditText" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:id="@+id/useEditText"
-        android:layout_below="@+id/useTextView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Time"
-        android:id="@+id/timeTextView"
-        android:layout_below="@+id/useEditText" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/timeEditText"
-        android:layout_below="@+id/timeTextView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="IBU"
-        android:id="@+id/IBUTextView"
-        android:layout_below="@+id/timeEditText" />
+        android:text="Optimum Temp High"
+        android:id="@+id/optimumTempHighTextView"
+        android:layout_below="@+id/optimumTempLowEditText" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
         android:ems="10"
-        android:id="@+id/IBUEditText"
-        android:layout_below="@+id/IBUTextView" />
+        android:id="@+id/optimumTempHighEditText"
+        android:layout_below="@+id/optimumTempHighTextView" />
 
-    </RelativeLayout>
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Starter"
+        android:id="@+id/starterCheckBox"
+        android:layout_below="@+id/optimumTempHighEditText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+</RelativeLayout>
 
 </LinearLayout>

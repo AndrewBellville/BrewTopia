@@ -1,7 +1,6 @@
 package com.town.small.brewtopia.Inventory;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import com.town.small.brewtopia.DataClass.EquipmentSchema;
 import com.town.small.brewtopia.DataClass.HopsSchema;
 import com.town.small.brewtopia.R;
 
@@ -18,19 +18,19 @@ import java.util.List;
 /**
  * Created by Andrew on 4/17/2016.
  */
-public class CustomHopsExpandableListAdapter extends BaseExpandableListAdapter {
+public class CustomEquipmentExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context _context;
     private List<String> _listDataHeader; // header titles
     // child data in format of header title, child title
-    private HashMap<String, List<HopsSchema>> _listDataChild;
+    private HashMap<String, List<EquipmentSchema>> _listDataChild;
 
     //event handling
     private EventHandler eventHandler = null;
     private boolean isEditable = true;
 
-    public CustomHopsExpandableListAdapter(Context context, List<String> listDataHeader,
-                                           HashMap<String, List<HopsSchema>> listChildData) {
+    public CustomEquipmentExpandableListAdapter(Context context, List<String> listDataHeader,
+                                                HashMap<String, List<EquipmentSchema>> listChildData) {
         this._context = context;
         this._listDataHeader = listDataHeader;
         this._listDataChild = listChildData;
@@ -51,23 +51,23 @@ public class CustomHopsExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
-        final HopsSchema hopsSchema = (HopsSchema) getChild(groupPosition, childPosition);
+        final EquipmentSchema equipmentSchema = (EquipmentSchema) getChild(groupPosition, childPosition);
 
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this._context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.custom_inventory_hops, null);
+            convertView = infalInflater.inflate(R.layout.custom_inventory_equipment, null);
         }
 
-        TextView hopsName = (TextView) convertView.findViewById(R.id.hopsName);
-        TextView hopsQty = (TextView) convertView.findViewById(R.id.hopsQty);
-        TextView hopsAmount = (TextView) convertView.findViewById(R.id.hopsAmount);
-        TextView hopsUse = (TextView) convertView.findViewById(R.id.hopsUse);
+        TextView equipmentName = (TextView) convertView.findViewById(R.id.equipmentName);
+        TextView equipmentQty = (TextView) convertView.findViewById(R.id.equipmentQty);
+        TextView equipmentAmount = (TextView) convertView.findViewById(R.id.equipmentAmount);
+        TextView equipmentUse = (TextView) convertView.findViewById(R.id.equipmentUse);
 
-        hopsName.setText(hopsSchema.getInventoryName());
-        hopsQty.setText("Qty: "+ Integer.toString(hopsSchema.getInvetoryQty()));
-        hopsAmount.setText("Amount: "+Double.toString(hopsSchema.getAmount()));
-        hopsUse.setText("");
+        equipmentName.setText(equipmentSchema.getInventoryName());
+        equipmentQty.setText("Qty: "+ Integer.toString(equipmentSchema.getInvetoryQty()));
+        equipmentAmount.setText("Amount: "+Double.toString(equipmentSchema.getAmount()));
+        equipmentUse.setText("");
 
 
         return convertView;

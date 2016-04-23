@@ -12,7 +12,11 @@ import android.widget.Toast;
 
 import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataClass.DataBaseManager;
+import com.town.small.brewtopia.DataClass.EquipmentSchema;
+import com.town.small.brewtopia.DataClass.FermentablesSchema;
+import com.town.small.brewtopia.DataClass.GrainsSchema;
 import com.town.small.brewtopia.DataClass.HopsSchema;
+import com.town.small.brewtopia.DataClass.YeastSchema;
 import com.town.small.brewtopia.R;
 
 import java.util.ArrayList;
@@ -22,18 +26,35 @@ import java.util.List;
 
 public class UserInventory extends Fragment {
 
-
-    //Temp List
-    ExpandableListView expListView;
-    CustomExpandableListAdapter listAdapter;
-    List<String> listDataHeader;
-    HashMap<String, List<String>> listDataChild;
-
     //Hops List
     ExpandableListView expHopsListView;
     CustomHopsExpandableListAdapter HopsListAdapter;
     List<String> HopsListDataHeader;
     HashMap<String, List<HopsSchema>> HopsListDataChild;
+
+    //Fermentables List
+    ExpandableListView expFermentablesListView;
+    CustomFermentablesExpandableListAdapter FermentablesListAdapter;
+    List<String> FermentablesListDataHeader;
+    HashMap<String, List<FermentablesSchema>> FermentablesListDataChild;
+
+    //Grains List
+    ExpandableListView expGrainsListView;
+    CustomGrainsExpandableListAdapter GrainsListAdapter;
+    List<String> GrainsListDataHeader;
+    HashMap<String, List<GrainsSchema>> GrainsListDataChild;
+
+    //Yeast List
+    ExpandableListView expYeastListView;
+    CustomYeastExpandableListAdapter YeastListAdapter;
+    List<String> YeastListDataHeader;
+    HashMap<String, List<YeastSchema>> YeastListDataChild;
+
+    //Equipment List
+    ExpandableListView expEquipmentListView;
+    CustomEquipmentExpandableListAdapter EquipmentListAdapter;
+    List<String> EquipmentListDataHeader;
+    HashMap<String, List<EquipmentSchema>> EquipmentListDataChild;
 
     DataBaseManager dbManager;
     long userId;
@@ -46,13 +67,19 @@ public class UserInventory extends Fragment {
 
         // get the listview
         expHopsListView = (ExpandableListView) view.findViewById(R.id.inventoryExpandableHopsList);
-        expListView = (ExpandableListView) view.findViewById(R.id.inventoryExpandableList);
+        expFermentablesListView = (ExpandableListView) view.findViewById(R.id.inventoryExpandableFermentablesList);
+        expGrainsListView = (ExpandableListView) view.findViewById(R.id.inventoryExpandableGrainsList);
+        expYeastListView = (ExpandableListView) view.findViewById(R.id.inventoryExpandableYeastList);
+        expEquipmentListView = (ExpandableListView) view.findViewById(R.id.inventoryExpandableEquipmentList);
 
         dbManager = DataBaseManager.getInstance(getActivity());
         userId = CurrentUser.getInstance().getUser().getUserId();
 
         SetUpHopsList();
-        SetUpList();
+        SetUpFermentablesList();
+        SetUpGrainsList();
+        SetUpYeastList();
+        SetUpEquipmentList();
 
         return view;
     }
@@ -62,61 +89,13 @@ public class UserInventory extends Fragment {
     {
         super.onResume();
         SetUpHopsList();
-        SetUpList();
+        SetUpFermentablesList();
+        SetUpGrainsList();
+        SetUpYeastList();
+        SetUpEquipmentList();
     }
 
-    private void SetUpList()
-    {
-        // preparing list data
-        prepareListData();
-
-        listAdapter = new CustomExpandableListAdapter(getActivity(), listDataHeader, listDataChild);
-
-        // setting list adapter
-        expListView.setAdapter(listAdapter);
-        expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v,
-                                        int groupPosition, int childPosition, long id) {
-                /*
-                Toast.makeText(
-                        getActivity(),
-                        listDataHeader.get(groupPosition)
-                                + " : "
-                                + listDataChild.get(
-                                listDataHeader.get(groupPosition)).get(
-                                childPosition), Toast.LENGTH_SHORT)
-                        .show();
-                        */
-                return false;
-            }
-        });
-        expListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-
-            @Override
-            public void onGroupExpand(int groupPosition) {
-                /*
-                Toast.makeText(getActivity(),
-                        listDataHeader.get(groupPosition) + " Expanded",
-                        Toast.LENGTH_SHORT).show();
-                        */
-            }
-        });
-        expListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-
-            @Override
-            public void onGroupCollapse(int groupPosition) {
-                /*
-                Toast.makeText(getActivity(),
-                        listDataHeader.get(groupPosition) + " Collapsed",
-                        Toast.LENGTH_SHORT).show();
-                        */
-
-            }
-        });
-    }
-
+    //***************************Hops*****************************************
     private void SetUpHopsList()
     {
         // preparing list data
@@ -200,48 +179,337 @@ public class UserInventory extends Fragment {
         HopsListDataChild.put(HopsListDataHeader.get(0), hopsList); // Header, Child data
     }
 
-    private void prepareListData() {
-        listDataHeader = new ArrayList<String>();
-        listDataChild = new HashMap<String, List<String>>();
+    //***************************Fermentables*****************************************
+    private void SetUpFermentablesList()
+    {
+        // preparing list data
+        prepareFermentablesListData();
+
+        FermentablesListAdapter = new CustomFermentablesExpandableListAdapter(getActivity(), FermentablesListDataHeader, FermentablesListDataChild);
+        FermentablesListAdapter.setEventHandler(new CustomFermentablesExpandableListAdapter.EventHandler() {
+            @Override
+            public void OnEditClick() {
+                //Set Selected hops in Activity Data
+                InventoryActivityData.getInstance().setFermentablesSchema(null);
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.ADD);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewFermentables.class);
+                startActivity(intent);
+            }
+        });
+
+        // setting list adapter
+        expFermentablesListView.setAdapter(FermentablesListAdapter);
+        expFermentablesListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) {
+                /*
+                Toast.makeText(
+                        getActivity(),
+                        HopsListDataHeader.get(groupPosition)
+                                + " : "
+                                + HopsListDataChild.get(
+                                HopsListDataHeader.get(groupPosition)).get(
+                                childPosition).getInventoryName(), Toast.LENGTH_SHORT)
+                        .show();
+                        */
+                //Set Selected hops in Activity Data
+                InventoryActivityData.getInstance().setFermentablesSchema(FermentablesListDataChild.get(FermentablesListDataHeader.get(groupPosition)).get(childPosition));
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.VIEW);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewFermentables.class);
+                startActivity(intent);
+
+                return false;
+            }
+        });
+        expFermentablesListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                /*
+                Toast.makeText(getActivity(),
+                        HopsListDataHeader.get(groupPosition) + " Expanded",
+                        Toast.LENGTH_SHORT).show();
+                        */
+            }
+        });
+        expFermentablesListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+                /*
+                Toast.makeText(getActivity(),
+                        HopsListDataHeader.get(groupPosition) + " Collapsed",
+                        Toast.LENGTH_SHORT).show();
+                        */
+
+            }
+        });
+    }
+
+    private void prepareFermentablesListData() {
+        FermentablesListDataHeader = new ArrayList<String>();
+        FermentablesListDataChild = new HashMap<String, List<FermentablesSchema>>();
 
         // Adding child data
-        List<String> fermentables = new ArrayList<String>();
-        fermentables.add("Test fermentable 1");
-        fermentables.add("Test fermentable 2");
-        fermentables.add("Test fermentable 3");
-        fermentables.add("Test fermentable 4");
-        fermentables.add("Test fermentable 5");
-        fermentables.add("Test fermentable 6");
-
-        List<String> steepingGrains = new ArrayList<String>();
-        steepingGrains.add("Test Steeping Grains 1");
-        steepingGrains.add("Test Steeping Grains 2");
-        steepingGrains.add("Test Steeping Grains 3");
-        steepingGrains.add("Test Steeping Grains 4");
-        steepingGrains.add("Test Steeping Grains 5");
-
-        List<String> yeast = new ArrayList<String>();
-        yeast.add("Test Yeast 1");
-        yeast.add("Test Yeast 2");
-        yeast.add("Test Yeast 3");
-
-        List<String> equipment  = new ArrayList<String>();
-        equipment.add("Test Equipment 1");
-        equipment.add("Test Equipment 2");
-        equipment.add("Test Equipment 3");
-        equipment.add("Test Equipment 4");
-
+        List<FermentablesSchema> FermentablesList = dbManager.getAllFermentablesByUserId(userId);
 
         // Adding child data
-        listDataHeader.add("Fermentables ("+fermentables.size()+")");
-        listDataHeader.add("Steeping Grains ("+steepingGrains.size()+")");
-        listDataHeader.add("Yeast ("+yeast.size()+")");
-        listDataHeader.add("Equipment ("+equipment.size()+")");
+        FermentablesListDataHeader.add("Fermentables ("+FermentablesList.size()+")");
 
-        listDataChild.put(listDataHeader.get(0), fermentables); // Header, Child data
-        listDataChild.put(listDataHeader.get(1), steepingGrains);
-        listDataChild.put(listDataHeader.get(2), yeast);
-        listDataChild.put(listDataHeader.get(3), equipment);
+        FermentablesListDataChild.put(FermentablesListDataHeader.get(0), FermentablesList); // Header, Child data
+    }
+    //***************************Grains*****************************************
+    private void SetUpGrainsList()
+    {
+        // preparing list data
+        prepareGrainsListData();
+
+        GrainsListAdapter = new CustomGrainsExpandableListAdapter(getActivity(), GrainsListDataHeader, GrainsListDataChild);
+        GrainsListAdapter.setEventHandler(new CustomGrainsExpandableListAdapter.EventHandler() {
+            @Override
+            public void OnEditClick() {
+                //Set Selected hops in Activity Data
+                InventoryActivityData.getInstance().setGrainsSchema(null);
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.ADD);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewGrains.class);
+                startActivity(intent);
+            }
+        });
+
+        // setting list adapter
+        expGrainsListView.setAdapter(GrainsListAdapter);
+        expGrainsListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) {
+                /*
+                Toast.makeText(
+                        getActivity(),
+                        HopsListDataHeader.get(groupPosition)
+                                + " : "
+                                + HopsListDataChild.get(
+                                HopsListDataHeader.get(groupPosition)).get(
+                                childPosition).getInventoryName(), Toast.LENGTH_SHORT)
+                        .show();
+                        */
+                //Set Selected hops in Activity Data
+                InventoryActivityData.getInstance().setGrainsSchema(GrainsListDataChild.get(GrainsListDataHeader.get(groupPosition)).get(childPosition));
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.VIEW);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewGrains.class);
+                startActivity(intent);
+
+                return false;
+            }
+        });
+        expGrainsListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                /*
+                Toast.makeText(getActivity(),
+                        HopsListDataHeader.get(groupPosition) + " Expanded",
+                        Toast.LENGTH_SHORT).show();
+                        */
+            }
+        });
+        expGrainsListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+                /*
+                Toast.makeText(getActivity(),
+                        HopsListDataHeader.get(groupPosition) + " Collapsed",
+                        Toast.LENGTH_SHORT).show();
+                        */
+
+            }
+        });
+    }
+
+    private void prepareGrainsListData() {
+        GrainsListDataHeader = new ArrayList<String>();
+        GrainsListDataChild = new HashMap<String, List<GrainsSchema>>();
+
+        // Adding child data
+        List<GrainsSchema> grainsList = dbManager.getAllGrainsByUserId(userId);
+
+        // Adding child data
+        GrainsListDataHeader.add("Grains ("+grainsList.size()+")");
+
+        GrainsListDataChild.put(GrainsListDataHeader.get(0), grainsList); // Header, Child data
+    }
+    //***************************Yeast*****************************************
+    private void SetUpYeastList()
+    {
+        // preparing list data
+        prepareYeastListData();
+
+        YeastListAdapter = new CustomYeastExpandableListAdapter(getActivity(), YeastListDataHeader, YeastListDataChild);
+        YeastListAdapter.setEventHandler(new CustomYeastExpandableListAdapter.EventHandler() {
+            @Override
+            public void OnEditClick() {
+                //Set Selected hops in Activity Data
+                InventoryActivityData.getInstance().setYeastSchema(null);
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.ADD);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewYeast.class);
+                startActivity(intent);
+            }
+        });
+
+        // setting list adapter
+        expYeastListView.setAdapter(YeastListAdapter);
+        expYeastListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) {
+                /*
+                Toast.makeText(
+                        getActivity(),
+                        HopsListDataHeader.get(groupPosition)
+                                + " : "
+                                + HopsListDataChild.get(
+                                HopsListDataHeader.get(groupPosition)).get(
+                                childPosition).getInventoryName(), Toast.LENGTH_SHORT)
+                        .show();
+                        */
+                //Set Selected hops in Activity Data
+                InventoryActivityData.getInstance().setYeastSchema(YeastListDataChild.get(YeastListDataHeader.get(groupPosition)).get(childPosition));
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.VIEW);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewYeast.class);
+                startActivity(intent);
+
+                return false;
+            }
+        });
+        expYeastListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                /*
+                Toast.makeText(getActivity(),
+                        HopsListDataHeader.get(groupPosition) + " Expanded",
+                        Toast.LENGTH_SHORT).show();
+                        */
+            }
+        });
+        expYeastListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+                /*
+                Toast.makeText(getActivity(),
+                        HopsListDataHeader.get(groupPosition) + " Collapsed",
+                        Toast.LENGTH_SHORT).show();
+                        */
+
+            }
+        });
+    }
+
+    private void prepareYeastListData() {
+        YeastListDataHeader = new ArrayList<String>();
+        YeastListDataChild = new HashMap<String, List<YeastSchema>>();
+
+        // Adding child data
+        List<YeastSchema> yeastList = dbManager.getAllYeastByUserId(userId);
+
+        // Adding child data
+        YeastListDataHeader.add("Yeast ("+yeastList.size()+")");
+
+        YeastListDataChild.put(YeastListDataHeader.get(0), yeastList); // Header, Child data
+    }
+    //***************************Equipment*****************************************
+    private void SetUpEquipmentList()
+    {
+        // preparing list data
+        prepareEquipmentListData();
+
+        EquipmentListAdapter = new CustomEquipmentExpandableListAdapter(getActivity(), EquipmentListDataHeader, EquipmentListDataChild);
+        EquipmentListAdapter.setEventHandler(new CustomEquipmentExpandableListAdapter.EventHandler() {
+            @Override
+            public void OnEditClick() {
+                //Set Selected hops in Activity Data
+                InventoryActivityData.getInstance().setEquipmentSchema(null);
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.ADD);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewEquipment.class);
+                startActivity(intent);
+            }
+        });
+
+        // setting list adapter
+        expEquipmentListView.setAdapter(EquipmentListAdapter);
+        expEquipmentListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) {
+                /*
+                Toast.makeText(
+                        getActivity(),
+                        HopsListDataHeader.get(groupPosition)
+                                + " : "
+                                + HopsListDataChild.get(
+                                HopsListDataHeader.get(groupPosition)).get(
+                                childPosition).getInventoryName(), Toast.LENGTH_SHORT)
+                        .show();
+                        */
+                //Set Selected hops in Activity Data
+                InventoryActivityData.getInstance().setEquipmentSchema(EquipmentListDataChild.get(EquipmentListDataHeader.get(groupPosition)).get(childPosition));
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.VIEW);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewEquipment.class);
+                startActivity(intent);
+
+                return false;
+            }
+        });
+        expEquipmentListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                /*
+                Toast.makeText(getActivity(),
+                        HopsListDataHeader.get(groupPosition) + " Expanded",
+                        Toast.LENGTH_SHORT).show();
+                        */
+            }
+        });
+        expEquipmentListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+                /*
+                Toast.makeText(getActivity(),
+                        HopsListDataHeader.get(groupPosition) + " Collapsed",
+                        Toast.LENGTH_SHORT).show();
+                        */
+
+            }
+        });
+    }
+
+    private void prepareEquipmentListData() {
+        EquipmentListDataHeader = new ArrayList<String>();
+        EquipmentListDataChild = new HashMap<String, List<EquipmentSchema>>();
+
+        // Adding child data
+        List<EquipmentSchema> equipmentList = dbManager.getAllEquipmentByUserId(userId);
+
+        // Adding child data
+        EquipmentListDataHeader.add("Equipment ("+equipmentList.size()+")");
+
+        EquipmentListDataChild.put(EquipmentListDataHeader.get(0), equipmentList); // Header, Child data
     }
 
 }

@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import com.town.small.brewtopia.DataClass.FermentablesSchema;
+import com.town.small.brewtopia.DataClass.HopsSchema;
 import com.town.small.brewtopia.R;
 
 import java.util.HashMap;
@@ -16,15 +18,19 @@ import java.util.List;
 /**
  * Created by Andrew on 4/17/2016.
  */
-public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
+public class CustomFermentablesExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context _context;
     private List<String> _listDataHeader; // header titles
     // child data in format of header title, child title
-    private HashMap<String, List<String>> _listDataChild;
+    private HashMap<String, List<FermentablesSchema>> _listDataChild;
 
-    public CustomExpandableListAdapter(Context context, List<String> listDataHeader,
-                                 HashMap<String, List<String>> listChildData) {
+    //event handling
+    private EventHandler eventHandler = null;
+    private boolean isEditable = true;
+
+    public CustomFermentablesExpandableListAdapter(Context context, List<String> listDataHeader,
+                                                   HashMap<String, List<FermentablesSchema>> listChildData) {
         this._context = context;
         this._listDataHeader = listDataHeader;
         this._listDataChild = listChildData;
@@ -45,7 +51,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
-        final String childText = (String) getChild(groupPosition, childPosition);
+        final FermentablesSchema fermentablesSchema = (FermentablesSchema) getChild(groupPosition, childPosition);
 
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this._context
@@ -53,10 +59,17 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.custom_inventory_fermentables, null);
         }
 
-        TextView txtListChild = (TextView) convertView
-                .findViewById(R.id.lblListItem);
+        TextView fermentablesName = (TextView) convertView.findViewById(R.id.fermentablesName);
+        TextView fermentablesQty = (TextView) convertView.findViewById(R.id.fermentablesQty);
+        TextView fermentablesAmount = (TextView) convertView.findViewById(R.id.fermentablesAmount);
+        TextView fermentablesUse = (TextView) convertView.findViewById(R.id.fermentablesUse);
 
-        txtListChild.setText(childText);
+        fermentablesName.setText(fermentablesSchema.getInventoryName());
+        fermentablesQty.setText("Qty: "+ Integer.toString(fermentablesSchema.getInvetoryQty()));
+        fermentablesAmount.setText("Amount: "+Double.toString(fermentablesSchema.getAmount()));
+        fermentablesUse.setText("");
+
+
         return convertView;
     }
 
@@ -96,6 +109,17 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         lblListHeader.setTypeface(null, Typeface.BOLD);
         lblListHeader.setText(headerTitle);
 
+        TextView addTextView = (TextView) convertView.findViewById(R.id.AddTextView);
+        addTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(eventHandler != null)
+                {
+                    eventHandler.OnEditClick();
+                }
+            }
+        });
+
         return convertView;
     }
 
@@ -107,5 +131,27 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
+    }
+
+
+    public void setEditable(boolean editable) {
+        isEditable = editable;
+    }
+
+    /**
+     * Assign event handler to be passed needed events
+     */
+    public void setEventHandler(EventHandler eventHandler)
+    {
+        this.eventHandler = eventHandler;
+    }
+
+    /**
+     * This interface defines what events to be reported to
+     * the outside world
+     */
+    public interface EventHandler
+    {
+        void OnEditClick();
     }
 }

@@ -10,6 +10,7 @@ public class InventorySchema {
     private long UserId=-1;
     private String InventoryName="";
     private int InvetoryQty=0;
+    private double amount=0.0;
 
 
     //Getters
@@ -28,6 +29,9 @@ public class InventorySchema {
     public int getInvetoryQty() {
         return InvetoryQty;
     }
+    public double getAmount() {
+        return amount;
+    }
 
     //Setters
     public void setInventoryId(long inventoryId) {
@@ -44,5 +48,8 @@ public class InventorySchema {
     }
     public void setInvetoryQty(int invetoryQty) {
         InvetoryQty = invetoryQty;
+    }
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 }

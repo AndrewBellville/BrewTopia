@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 34;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 35;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -41,6 +41,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String TABLE_BREWS_CALCULATIONS = "Calculations";
     private static final String TABLE_APP_SETTINGS = "Settings";
     private static final String TABLE_INVENTORY_HOPS = "Hops";
+    private static final String TABLE_INVENTORY_FERMENTABLES = "Fermentables";
+    private static final String TABLE_INVENTORY_GRAINS = "Grains";
+    private static final String TABLE_INVENTORY_YEAST = "Yeast";
+    private static final String TABLE_INVENTORY_EQUIPMENT = "Equipment";
+
 
     // Common column names across Mulit tables
     private static final String ROW_ID = "rowid";
@@ -54,6 +59,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //Common column names across Inventory tables
     private static final String INVENTORY_NAME = "InventoryName";
     private static final String INVENTORY_QTY = "InventoryQty";
+    private static final String INVENTORY_AMOUNT = "Amount";
 
 
     // USERS column names
@@ -111,7 +117,18 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String INVENTORY_USE = "Use";
     private static final String INVENTORY_TIME = "Time";
     private static final String INVENTORY_IBU = "IBU";
-    private static final String INVENTORY_AMOUNT = "Amount";
+
+    // TABLE_INVENTORY_FERMENTABLES / TABLE_INVENTORY_GRAINS column names
+    private static final String INVENTORY_PPG = "PoundPerGallon";
+    private static final String INVENTORY_LOV = "Lovibond";
+    private static final String INVENTORY_BILL = "Bill";
+
+    // TABLE_INVENTORY_YEAST column names
+    private static final String INVENTORY_ATTENUATION = "Attenuation";
+    private static final String INVENTORY_FLOCCULATION = "Flocculation";
+    private static final String INVENTORY_OTL = "OptimumTempLow";
+    private static final String INVENTORY_OTH = "OptimumTempHigh";
+    private static final String INVENTORY_STARTER = "Starter";
 
 
     // Table Create Statements
@@ -159,6 +176,26 @@ public class DataBaseManager extends SQLiteOpenHelper {
             + TABLE_INVENTORY_HOPS + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT," + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER," + INVENTORY_IBU + " REAL )";
 
+    //CREATE_TABLE_INVENTORY_FERMENTABLES
+    private static final String CREATE_TABLE_INVENTORY_FERMENTABLES = "CREATE TABLE "
+            + TABLE_INVENTORY_FERMENTABLES + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
+            + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_BILL + " REAL )";
+
+    //CREATE_TABLE_INVENTORY_GRAINS
+    private static final String CREATE_TABLE_INVENTORY_GRAINS = "CREATE TABLE "
+            + TABLE_INVENTORY_GRAINS + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
+            + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_BILL + " REAL )";
+
+    //CREATE_TABLE_INVENTORY_YEAST
+    private static final String CREATE_TABLE_INVENTORY_YEAST = "CREATE TABLE "
+            + TABLE_INVENTORY_YEAST + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
+            + INVENTORY_AMOUNT + " REAL," + INVENTORY_FLOCCULATION + " TEXT," + INVENTORY_STARTER + " INTEGER," + INVENTORY_ATTENUATION + " REAL,"
+            + INVENTORY_OTL + " REAL," + INVENTORY_OTH + " REAL )";
+
+    //CREATE_TABLE_INVENTORY_EQUIPMENT
+    private static final String CREATE_TABLE_INVENTORY_EQUIPMENT = "CREATE TABLE "
+            + TABLE_INVENTORY_EQUIPMENT + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT," + INVENTORY_AMOUNT + " REAL )";
+
     //Singleton
     private static DataBaseManager mInstance = null;
 
@@ -186,6 +223,10 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL(CREATE_TABLE_BREWS_NOTES);
         aSQLiteDatabase.execSQL(CREATE_TABLE_APP_SETTINGS);
         aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_HOPS);
+        aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_FERMENTABLES);
+        aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_GRAINS);
+        aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_YEAST);
+        aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_EQUIPMENT);
 
         //Pre Load Data
         PreLoadAdminUser(aSQLiteDatabase);
@@ -206,6 +247,10 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_NOTES);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_APP_SETTINGS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_HOPS);
+        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_FERMENTABLES);
+        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_GRAINS);
+        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_YEAST);
+        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_EQUIPMENT);
 
         // create new tables
         onCreate(aSQLiteDatabase);
@@ -1344,7 +1389,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     * add Hops
     */
     public long CreateHops(HopsSchema aHopsSchema) {
-        Log.e(LOG, "Insert: addAppSetting["+aHopsSchema.getUserId()+", "+ aHopsSchema.getInventoryName() +"]");
+        Log.e(LOG, "Insert: CreateHops["+aHopsSchema.getUserId()+", "+ aHopsSchema.getInventoryName() +"]");
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -1379,7 +1424,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
 
         HopsSchema hopsSchema = new HopsSchema();
-        Log.e(LOG, "getAppSettingsBySettingName Count["+c.getCount()+"]");
+        Log.e(LOG, "getHops Count["+c.getCount()+"]");
         if (c.getCount() > 0 ) {
             c.moveToFirst();
 
@@ -1469,6 +1514,519 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         db.delete(TABLE_INVENTORY_HOPS, ROW_ID + " = ?",
                 new String[] { Long.toString(aHopsId) });
+    }
+
+    //************************************Fermentables functions***************
+    /*
+    * add Fermentables
+    */
+    public long CreateFermentable(FermentablesSchema aFermentablesSchema) {
+        Log.e(LOG, "Insert: CreateFermentable["+aFermentablesSchema.getUserId()+", "+ aFermentablesSchema.getInventoryName() +"]");
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aFermentablesSchema.getUserId());
+        values.put(BREW_ID, aFermentablesSchema.getBrewId());
+        values.put(INVENTORY_NAME, aFermentablesSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aFermentablesSchema.getInvetoryQty());
+        values.put(INVENTORY_AMOUNT, aFermentablesSchema.getAmount());
+
+        values.put(INVENTORY_PPG, aFermentablesSchema.getPoundPerGallon());
+        values.put(INVENTORY_LOV, aFermentablesSchema.getLovibond());
+        values.put(INVENTORY_BILL, aFermentablesSchema.getBill());
+
+        // insert row
+        return db.insert(TABLE_INVENTORY_FERMENTABLES,null,values);
+    }
+
+
+    /*
+* getting Fermentables by Inventory Id
+*/
+    public FermentablesSchema getFermentable(FermentablesSchema aFermentablesSchema) {
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_FERMENTABLES + " WHERE "
+                + ROW_ID + " = " +Long.toString(aFermentablesSchema.getInventoryId());
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        FermentablesSchema fermentablesSchema = new FermentablesSchema();
+        Log.e(LOG, "getFermentable Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+
+            fermentablesSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
+            fermentablesSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+            fermentablesSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
+            fermentablesSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
+            fermentablesSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
+            fermentablesSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
+
+            fermentablesSchema.setPoundPerGallon(c.getDouble(c.getColumnIndex(INVENTORY_PPG)));
+            fermentablesSchema.setLovibond(c.getDouble(c.getColumnIndex(INVENTORY_LOV)));
+            fermentablesSchema.setBill(c.getDouble(c.getColumnIndex(INVENTORY_BILL)));
+
+        }
+
+        c.close();
+        return fermentablesSchema;
+    }
+
+    /*
+    * getting all Fermentables by user Id
+    */
+    public List<FermentablesSchema> getAllFermentablesByUserId(long aUserId) {
+        List<FermentablesSchema> fermentablesSchemaArrayList = new ArrayList<FermentablesSchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_FERMENTABLES + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllFermentablesByUserId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                FermentablesSchema fermentablesSchema = new FermentablesSchema();
+                fermentablesSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to boilList
+                fermentablesSchemaArrayList.add(getFermentable(fermentablesSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return fermentablesSchemaArrayList;
+    }
+
+    /*
+* Updating a Fermentables
+*/
+    public Boolean updateFermentable(FermentablesSchema aFermentablesSchema) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "updateFermentable Name["+aFermentablesSchema.getInventoryName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aFermentablesSchema.getUserId());
+        values.put(BREW_ID, aFermentablesSchema.getBrewId());
+        values.put(INVENTORY_NAME, aFermentablesSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aFermentablesSchema.getInvetoryQty());
+        values.put(INVENTORY_AMOUNT, aFermentablesSchema.getAmount());
+
+        values.put(INVENTORY_PPG, aFermentablesSchema.getPoundPerGallon());
+        values.put(INVENTORY_LOV, aFermentablesSchema.getLovibond());
+        values.put(INVENTORY_BILL, aFermentablesSchema.getBill());
+
+
+        // updating row
+        int retVal = db.update(TABLE_INVENTORY_FERMENTABLES, values, ROW_ID + " = ?",
+                new String[] { Long.toString(aFermentablesSchema.getInventoryId()) });
+
+        //Update brew
+        if(!(retVal > 0) )
+            return false;
+
+        return true;
+    }
+
+    /*
+* delete Fermentables by Id
+*/
+    public void deleteFermentableById(long aFermentableId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteFermentableById Id["+Long.toString(aFermentableId) +"]");
+
+        db.delete(TABLE_INVENTORY_FERMENTABLES, ROW_ID + " = ?",
+                new String[] { Long.toString(aFermentableId) });
+    }
+
+    //************************************Grains functions***************
+    /*
+    * add Grains
+    */
+    public long CreateGrain (GrainsSchema aGrainsSchema) {
+        Log.e(LOG, "Insert: CreateGrain["+aGrainsSchema.getUserId()+", "+ aGrainsSchema.getInventoryName() +"]");
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aGrainsSchema.getUserId());
+        values.put(BREW_ID, aGrainsSchema.getBrewId());
+        values.put(INVENTORY_NAME, aGrainsSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aGrainsSchema.getInvetoryQty());
+        values.put(INVENTORY_AMOUNT, aGrainsSchema.getAmount());
+
+        values.put(INVENTORY_PPG, aGrainsSchema.getPoundPerGallon());
+        values.put(INVENTORY_LOV, aGrainsSchema.getLovibond());
+        values.put(INVENTORY_BILL, aGrainsSchema.getBill());
+
+        // insert row
+        return db.insert(TABLE_INVENTORY_GRAINS,null,values);
+    }
+
+
+    /*
+* getting Grains by Inventory Id
+*/
+    public GrainsSchema getGrain(GrainsSchema aGrainsSchema) {
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_GRAINS + " WHERE "
+                + ROW_ID + " = " +Long.toString(aGrainsSchema.getInventoryId());
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        GrainsSchema grainsSchema = new GrainsSchema();
+        Log.e(LOG, "getGrains Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+
+            grainsSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
+            grainsSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+            grainsSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
+            grainsSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
+            grainsSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
+            grainsSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
+
+            grainsSchema.setPoundPerGallon(c.getDouble(c.getColumnIndex(INVENTORY_PPG)));
+            grainsSchema.setLovibond(c.getDouble(c.getColumnIndex(INVENTORY_LOV)));
+            grainsSchema.setBill(c.getDouble(c.getColumnIndex(INVENTORY_BILL)));
+
+        }
+
+        c.close();
+        return grainsSchema;
+    }
+
+    /*
+    * getting all Grains by user Id
+    */
+    public List<GrainsSchema> getAllGrainsByUserId(long aUserId) {
+        List<GrainsSchema> grainsSchemaArrayList = new ArrayList<GrainsSchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_GRAINS + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllGrainsByUserId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                GrainsSchema grainsSchema = new GrainsSchema();
+                grainsSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to boilList
+                grainsSchemaArrayList.add(getGrain(grainsSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return grainsSchemaArrayList;
+    }
+
+    /*
+* Updating a Grains
+*/
+    public Boolean updateGrain(GrainsSchema aGrainsSchema) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "updateGrain Name["+aGrainsSchema.getInventoryName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aGrainsSchema.getUserId());
+        values.put(BREW_ID, aGrainsSchema.getBrewId());
+        values.put(INVENTORY_NAME, aGrainsSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aGrainsSchema.getInvetoryQty());
+        values.put(INVENTORY_AMOUNT, aGrainsSchema.getAmount());
+
+        values.put(INVENTORY_PPG, aGrainsSchema.getPoundPerGallon());
+        values.put(INVENTORY_LOV, aGrainsSchema.getLovibond());
+        values.put(INVENTORY_BILL, aGrainsSchema.getBill());
+
+
+        // updating row
+        int retVal = db.update(TABLE_INVENTORY_GRAINS, values, ROW_ID + " = ?",
+                new String[] { Long.toString(aGrainsSchema.getInventoryId()) });
+
+        //Update brew
+        if(!(retVal > 0) )
+            return false;
+
+        return true;
+    }
+
+    /*
+* delete Grains by Id
+*/
+    public void deleteGrainById(long aGrainId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteGrainById Id["+Long.toString(aGrainId) +"]");
+
+        db.delete(TABLE_INVENTORY_GRAINS, ROW_ID + " = ?",
+                new String[] { Long.toString(aGrainId) });
+    }
+
+    //************************************Yeast functions***************
+    /*
+    * add Yeast
+    */
+    public long CreateYeast(YeastSchema aYeastSchema) {
+        Log.e(LOG, "Insert: CreateYeast["+aYeastSchema.getUserId()+", "+ aYeastSchema.getInventoryName() +"]");
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aYeastSchema.getUserId());
+        values.put(BREW_ID, aYeastSchema.getBrewId());
+        values.put(INVENTORY_NAME, aYeastSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aYeastSchema.getInvetoryQty());
+        values.put(INVENTORY_AMOUNT, aYeastSchema.getAmount());
+
+        values.put(INVENTORY_ATTENUATION, aYeastSchema.getAttenuation());
+        values.put(INVENTORY_FLOCCULATION, aYeastSchema.getFlocculation());
+        values.put(INVENTORY_OTL, aYeastSchema.getOptimumTempLow());
+        values.put(INVENTORY_OTH, aYeastSchema.getOptimumTempHigh());
+        values.put(INVENTORY_STARTER, aYeastSchema.getStarter());
+
+
+        // insert row
+        return db.insert(TABLE_INVENTORY_YEAST,null,values);
+    }
+
+
+    /*
+* getting Yeast by Inventory Id
+*/
+    public YeastSchema getYeast(YeastSchema aYeastSchema) {
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_YEAST + " WHERE "
+                + ROW_ID + " = " +Long.toString(aYeastSchema.getInventoryId());
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        YeastSchema yeastSchema = new YeastSchema();
+        Log.e(LOG, "getYeast Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+
+            yeastSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
+            yeastSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+            yeastSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
+            yeastSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
+            yeastSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
+            yeastSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
+
+            yeastSchema.setAttenuation(c.getDouble(c.getColumnIndex(INVENTORY_ATTENUATION)));
+            yeastSchema.setFlocculation(c.getString(c.getColumnIndex(INVENTORY_FLOCCULATION)));
+            yeastSchema.setOptimumTempLow(c.getDouble(c.getColumnIndex(INVENTORY_OTL)));
+            yeastSchema.setOptimumTempHigh(c.getDouble(c.getColumnIndex(INVENTORY_OTH)));
+            yeastSchema.setStarter(c.getInt(c.getColumnIndex(INVENTORY_STARTER)));
+
+        }
+
+        c.close();
+        return yeastSchema;
+    }
+
+    /*
+    * getting all Yeast by user Id
+    */
+    public List<YeastSchema> getAllYeastByUserId(long aUserId) {
+        List<YeastSchema> yeastSchemaArrayList = new ArrayList<YeastSchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_YEAST + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllYeastByUserId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                YeastSchema yeastSchema = new YeastSchema();
+                yeastSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to boilList
+                yeastSchemaArrayList.add(getYeast(yeastSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return yeastSchemaArrayList;
+    }
+
+    /*
+* Updating a Yeast
+*/
+    public Boolean updateYeast(YeastSchema aYeastSchema) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "updateYeast Name["+aYeastSchema.getInventoryName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aYeastSchema.getUserId());
+        values.put(BREW_ID, aYeastSchema.getBrewId());
+        values.put(INVENTORY_NAME, aYeastSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aYeastSchema.getInvetoryQty());
+        values.put(INVENTORY_AMOUNT, aYeastSchema.getAmount());
+
+        values.put(INVENTORY_ATTENUATION, aYeastSchema.getAttenuation());
+        values.put(INVENTORY_FLOCCULATION, aYeastSchema.getFlocculation());
+        values.put(INVENTORY_OTL, aYeastSchema.getOptimumTempLow());
+        values.put(INVENTORY_OTH, aYeastSchema.getOptimumTempHigh());
+        values.put(INVENTORY_STARTER, aYeastSchema.getStarter());
+
+        // updating row
+        int retVal = db.update(TABLE_INVENTORY_YEAST, values, ROW_ID + " = ?",
+                new String[] { Long.toString(aYeastSchema.getInventoryId()) });
+
+        //Update brew
+        if(!(retVal > 0) )
+            return false;
+
+        return true;
+    }
+
+    /*
+* delete Yeast by Id
+*/
+    public void deleteYeastById(long aYeastId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteYeastById Id["+Long.toString(aYeastId) +"]");
+
+        db.delete(TABLE_INVENTORY_YEAST, ROW_ID + " = ?",
+                new String[] { Long.toString(aYeastId) });
+    }
+
+
+    //************************************Equipment functions***************
+    /*
+    * add Equipment
+    */
+    public long CreateEquipment(EquipmentSchema aEquipmentSchema) {
+        Log.e(LOG, "Insert: CreateEquipment["+aEquipmentSchema.getUserId()+", "+ aEquipmentSchema.getInventoryName() +"]");
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aEquipmentSchema.getUserId());
+        values.put(BREW_ID, aEquipmentSchema.getBrewId());
+        values.put(INVENTORY_NAME, aEquipmentSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aEquipmentSchema.getInvetoryQty());
+        values.put(INVENTORY_AMOUNT, aEquipmentSchema.getAmount());
+
+        // insert row
+        return db.insert(TABLE_INVENTORY_EQUIPMENT,null,values);
+    }
+
+
+    /*
+* getting Equipment by Inventory Id
+*/
+    public EquipmentSchema getEquipment(EquipmentSchema aEquipmentSchema) {
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_EQUIPMENT + " WHERE "
+                + ROW_ID + " = " +Long.toString(aEquipmentSchema.getInventoryId());
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        EquipmentSchema equipmentSchema = new EquipmentSchema();
+        Log.e(LOG, "getEquipment Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+
+            equipmentSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
+            equipmentSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+            equipmentSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
+            equipmentSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
+            equipmentSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
+            equipmentSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
+        }
+
+        c.close();
+        return equipmentSchema;
+    }
+
+    /*
+    * getting all Equipment by user Id
+    */
+    public List<EquipmentSchema> getAllEquipmentByUserId(long aUserId) {
+        List<EquipmentSchema> equipmentSchemaArrayList = new ArrayList<EquipmentSchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_EQUIPMENT + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllEquipmentByUserId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                EquipmentSchema equipmentSchema = new EquipmentSchema();
+                equipmentSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to boilList
+                equipmentSchemaArrayList.add(getEquipment(equipmentSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return equipmentSchemaArrayList;
+    }
+
+    /*
+* Updating a Equipment
+*/
+    public Boolean updateEquipment(EquipmentSchema aEquipmentSchema) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "updateEquipment Name["+aEquipmentSchema.getInventoryName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aEquipmentSchema.getUserId());
+        values.put(BREW_ID, aEquipmentSchema.getBrewId());
+        values.put(INVENTORY_NAME, aEquipmentSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aEquipmentSchema.getInvetoryQty());
+        values.put(INVENTORY_AMOUNT, aEquipmentSchema.getAmount());
+
+        // updating row
+        int retVal = db.update(TABLE_INVENTORY_EQUIPMENT, values, ROW_ID + " = ?",
+                new String[] { Long.toString(aEquipmentSchema.getInventoryId()) });
+
+        //Update brew
+        if(!(retVal > 0) )
+            return false;
+
+        return true;
+    }
+
+    /*
+* delete Equipment by Id
+*/
+    public void deleteEquipmentById(long aEquipmentId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteEquipmentById Id["+Long.toString(aEquipmentId) +"]");
+
+        db.delete(TABLE_INVENTORY_EQUIPMENT, ROW_ID + " = ?",
+                new String[] { Long.toString(aEquipmentId) });
     }
 
     //************************************Helper functions***************

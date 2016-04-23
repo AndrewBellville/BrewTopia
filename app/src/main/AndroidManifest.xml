@@ -25,7 +25,8 @@
         </activity>
         <activity
             android:name=".UserProfile"
-            android:label="@string/title_activity_user_profile" />
+            android:label="@string/title_activity_user_profile"
+            android:icon="@drawable/beer_dark"/>
         <activity
             android:name=".Timer.TimerPager"
             android:label="@string/title_activity_brew_timer_pager" />
@@ -48,9 +49,31 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".Brews.UserBrew"
+            android:windowSoftInputMode="adjustPan"
+            android:icon="@drawable/beer_dark"/>
+        <activity android:name=".AppSettings.AppSettings"
+            android:icon="@drawable/beer_dark"/>
+        <activity
+            android:name=".Inventory.AddEditViewHops"
+            android:icon="@drawable/beer_dark"
+            android:label="@string/title_activity_add_edit_view_schedule"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".Inventory.AddEditViewFermentables"
+            android:icon="@drawable/beer_dark"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".AppSettings.AppSettings" />
-        <activity android:name=".Inventory.AddEditViewHops"></activity>
+        <activity
+            android:name=".Inventory.AddEditViewGrains"
+            android:icon="@drawable/beer_dark"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Inventory.AddEditViewYeast"
+            android:icon="@drawable/beer_dark"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Inventory.AddEditViewEquipment"
+            android:icon="@drawable/beer_dark"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>
