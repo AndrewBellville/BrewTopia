@@ -36,6 +36,7 @@ public class TimerData {
     private boolean allAdditionsComplete = false;
     private boolean alarmActive = false;
     private boolean timerActive = false;
+    private boolean paused = false;
 
     //event handling
     private EventHandler eventHandler = null;
@@ -121,16 +122,24 @@ public class TimerData {
 
         //Initialise var
         allAdditionsComplete = false;
-        alarmActive = false;
         nextAddition = null;
         nextAdditionIterator = 0;
-        timerActive = true;
 
         //Set First addition
         if(getAdditionsList().size() > 0)
             nextAddition = getAdditionsList().get(nextAdditionIterator);
 
-        timer = new CountDownTimer(totalTime, 1000){
+        CreateTimer(totalTime);
+    }
+
+    private void CreateTimer(long startTime)
+    {
+        //Initialise var
+        alarmActive = false;
+        timerActive = true;
+        paused = false;
+
+        timer = new CountDownTimer(startTime, 1000){
             @Override
             public void onTick(long millisUntilFinished) {
                 millisRemaining = millisUntilFinished;//save if we want a pause feature
@@ -172,6 +181,7 @@ public class TimerData {
         r.stop();
         alarmActive = false;
         timerActive = false;
+        paused = false;
         timer.cancel();
         timer = null;
     }
@@ -179,8 +189,19 @@ public class TimerData {
     public void PauseTimer()
     {
         r.stop();
+        timerActive = false;
         alarmActive = false;
+        paused = true;
         timer.cancel();
+        timer = null;
+    }
+
+    public void ResumeTimer()
+    {
+        if(!paused)
+            return;
+
+        CreateTimer(millisRemaining);
     }
 
     public void AckTimer()
@@ -222,6 +243,9 @@ public class TimerData {
     }
     public boolean isTimerActive() {
         return timerActive;
+    }
+    public boolean isPaused() {
+        return paused;
     }
     public String getBrewName()
     {

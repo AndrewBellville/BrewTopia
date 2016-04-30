@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.town.small.brewtopia.Brews.BrewActivityData;
 import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.DataClass.EquipmentSchema;
@@ -80,13 +81,13 @@ public class AddEditViewEquipment extends ActionBarActivity {
 
         ToggleFieldEditable(false);
 
-        if(AddEditViewState == InventoryActivityData.DisplayMode.ADD)
-        {
+        if(AddEditViewState == InventoryActivityData.DisplayMode.ADD )
             ifAdd();
-        }
+        else if (AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD )
+            ifAddBrew();
         else
         {
-            equipmentSchema = InventoryActivityData.getInstance().getEquipmentSchema();
+            equipmentSchema = (EquipmentSchema) InventoryActivityData.getInstance().getEquipmentSchema();
             ifView();
         }
     }
@@ -97,6 +98,15 @@ public class AddEditViewEquipment extends ActionBarActivity {
         deleteInventoryButton.setVisibility(View.INVISIBLE);
         editInventoryButton.setText("Submit");
         AddEditViewState = InventoryActivityData.DisplayMode.ADD;
+        ToggleFieldEditable(true);
+    }
+
+    public void ifAddBrew()
+    {
+        ClearFields();
+        deleteInventoryButton.setVisibility(View.INVISIBLE);
+        editInventoryButton.setText("Submit");
+        AddEditViewState = InventoryActivityData.DisplayMode.BREW_ADD;
         ToggleFieldEditable(true);
     }
 
@@ -178,8 +188,8 @@ public class AddEditViewEquipment extends ActionBarActivity {
         aEquipmentSchema.setAmount(am);
         aEquipmentSchema.setInvetoryQty(qt);
 
-
-        if(AddEditViewState == InventoryActivityData.DisplayMode.ADD)
+        // If we are doing any adding we want to always create the base Inventory record
+        if(AddEditViewState == InventoryActivityData.DisplayMode.ADD || AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD)
         {
 
             long inventoryId = dbManager.CreateEquipment(aEquipmentSchema);
@@ -193,6 +203,20 @@ public class AddEditViewEquipment extends ActionBarActivity {
         else if(AddEditViewState == InventoryActivityData.DisplayMode.EDIT)
         {
             dbManager.updateEquipment(aEquipmentSchema);
+        }
+
+        // If this was a brew add we also want to add this to the brew
+        if(AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD)
+        {
+
+            aEquipmentSchema.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
+            long inventoryId = dbManager.CreateEquipment(aEquipmentSchema);
+            if( inventoryId == 0)// 0 brews failed to create
+            {
+                Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
+                return;
+            }
+            aEquipmentSchema.setInventoryId(inventoryId);
         }
 
         equipmentSchema = aEquipmentSchema;

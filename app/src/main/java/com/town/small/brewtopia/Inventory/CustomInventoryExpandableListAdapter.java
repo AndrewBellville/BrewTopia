@@ -8,8 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import com.town.small.brewtopia.DataClass.FermentablesSchema;
-import com.town.small.brewtopia.DataClass.HopsSchema;
+import com.town.small.brewtopia.DataClass.InventorySchema;
 import com.town.small.brewtopia.R;
 
 import java.util.HashMap;
@@ -18,19 +17,19 @@ import java.util.List;
 /**
  * Created by Andrew on 4/17/2016.
  */
-public class CustomFermentablesExpandableListAdapter extends BaseExpandableListAdapter {
+public class CustomInventoryExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context _context;
     private List<String> _listDataHeader; // header titles
     // child data in format of header title, child title
-    private HashMap<String, List<FermentablesSchema>> _listDataChild;
+    private HashMap<String, List<InventorySchema>> _listDataChild;
 
     //event handling
     private EventHandler eventHandler = null;
     private boolean isEditable = true;
 
-    public CustomFermentablesExpandableListAdapter(Context context, List<String> listDataHeader,
-                                                   HashMap<String, List<FermentablesSchema>> listChildData) {
+    public CustomInventoryExpandableListAdapter(Context context, List<String> listDataHeader,
+                                                HashMap<String, List<InventorySchema>> listChildData) {
         this._context = context;
         this._listDataHeader = listDataHeader;
         this._listDataChild = listChildData;
@@ -51,23 +50,23 @@ public class CustomFermentablesExpandableListAdapter extends BaseExpandableListA
     public View getChildView(int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
-        final FermentablesSchema fermentablesSchema = (FermentablesSchema) getChild(groupPosition, childPosition);
+        final InventorySchema hopsSchema = (InventorySchema) getChild(groupPosition, childPosition);
 
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this._context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.custom_inventory_fermentables, null);
+            convertView = infalInflater.inflate(R.layout.custom_row_inventory, null);
         }
 
-        TextView fermentablesName = (TextView) convertView.findViewById(R.id.fermentablesName);
-        TextView fermentablesQty = (TextView) convertView.findViewById(R.id.fermentablesQty);
-        TextView fermentablesAmount = (TextView) convertView.findViewById(R.id.fermentablesAmount);
-        TextView fermentablesUse = (TextView) convertView.findViewById(R.id.fermentablesUse);
+        TextView inventoryName = (TextView) convertView.findViewById(R.id.inventoryName);
+        TextView inventoryQty = (TextView) convertView.findViewById(R.id.inventoryQty);
+        TextView inventoryAmount = (TextView) convertView.findViewById(R.id.inventoryAmount);
+        TextView inventoryUse = (TextView) convertView.findViewById(R.id.inventoryUse);
 
-        fermentablesName.setText(fermentablesSchema.getInventoryName());
-        fermentablesQty.setText("Qty: "+ Integer.toString(fermentablesSchema.getInvetoryQty()));
-        fermentablesAmount.setText("Amount: "+Double.toString(fermentablesSchema.getAmount()));
-        fermentablesUse.setText("");
+        inventoryName.setText(hopsSchema.getInventoryName());
+        inventoryQty.setText("Qty: "+ Integer.toString(hopsSchema.getInvetoryQty()));
+        inventoryAmount.setText("Amount: "+Double.toString(hopsSchema.getAmount()));
+        inventoryUse.setText("");
 
 
         return convertView;
@@ -97,7 +96,7 @@ public class CustomFermentablesExpandableListAdapter extends BaseExpandableListA
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
-        String headerTitle = (String) getGroup(groupPosition);
+        final String headerTitle = (String) getGroup(groupPosition);
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this._context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -115,7 +114,7 @@ public class CustomFermentablesExpandableListAdapter extends BaseExpandableListA
             public void onClick(View view) {
                 if(eventHandler != null)
                 {
-                    eventHandler.OnEditClick();
+                    eventHandler.OnAddClick(headerTitle);
                 }
             }
         });
@@ -152,6 +151,6 @@ public class CustomFermentablesExpandableListAdapter extends BaseExpandableListA
      */
     public interface EventHandler
     {
-        void OnEditClick();
+        void OnAddClick(String headerString);
     }
 }

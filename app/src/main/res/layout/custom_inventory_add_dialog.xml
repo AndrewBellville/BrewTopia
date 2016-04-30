@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/layout_bg1"
+    android:orientation="vertical"
+    android:layout_marginTop="20dp"
+    android:layout_marginLeft="30dp"
+    android:layout_marginRight="30dp"
+    android:padding="7dp">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:id="@+id/listviewLayout"
+        android:layout_above="@+id/buttonTable">
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:id="@+id/inventoryAddListView"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Inventory"
+            android:id="@+id/noInventoryTextView"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal"
+            android:padding="20dp"/>
+    </LinearLayout>
+
+
+    <TableRow android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonTable"
+        android:layout_below="@+id/listviewLayout">
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="confirm"
+            android:id="@+id/confirmButton"
+            android:layout_centerVertical="true"
+            android:layout_alignRight="@+id/NoteEditText"
+            android:layout_alignEnd="@+id/NoteEditText"
+            android:layout_weight="1"/>
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add New"
+            android:id="@+id/addNewButton"
+            android:layout_centerVertical="true"
+            android:layout_alignRight="@+id/NoteEditText"
+            android:layout_alignEnd="@+id/NoteEditText"
+            android:layout_weight="1"/>
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:id="@+id/cancelButton"
+            android:layout_centerVertical="true"
+            android:layout_alignRight="@+id/NoteEditText"
+            android:layout_alignEnd="@+id/NoteEditText"
+            android:layout_weight="1"/>
+
+    </TableRow>
+
+
+</LinearLayout>

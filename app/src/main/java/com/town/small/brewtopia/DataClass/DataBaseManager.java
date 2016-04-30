@@ -1414,7 +1414,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
 * getting Hops by Inventory Id
 */
-    public HopsSchema getHops(HopsSchema aHopsSchema) {
+    public InventorySchema getHops(HopsSchema aHopsSchema) {
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_HOPS + " WHERE "
                 + ROW_ID + " = " +Long.toString(aHopsSchema.getInventoryId());
 
@@ -1448,10 +1448,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
     * getting all Hops by user Id
     */
-    public List<HopsSchema> getAllHopsByUserId(long aUserId) {
-        List<HopsSchema> hopsSchemaArrayList = new ArrayList<HopsSchema>();
+    public List<InventorySchema> getAllHopsByUserId(long aUserId) {
+        List<InventorySchema> hopsSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_HOPS + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId);
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " = " + (-1);
 
         Log.e(LOG, selectQuery);
 
@@ -1465,7 +1466,37 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 HopsSchema hopsSchema = new HopsSchema();
                 hopsSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
 
-                // adding to boilList
+                // adding to hopsSchemaArrayList
+                hopsSchemaArrayList.add(getHops(hopsSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return hopsSchemaArrayList;
+    }
+
+    /*
+* getting all Hops by user Id and brew Id
+*/
+    public List<InventorySchema> getAllHopsByUserIdandBrewId(long aUserId, long aBrewId) {
+        List<InventorySchema> hopsSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_HOPS + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " = " +Long.toString(aBrewId);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllHopsByUserIdandBrewId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                HopsSchema hopsSchema = new HopsSchema();
+                hopsSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to hopsSchemaArrayList
                 hopsSchemaArrayList.add(getHops(hopsSchema));
             } while (c.moveToNext());
         }
@@ -1544,7 +1575,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
 * getting Fermentables by Inventory Id
 */
-    public FermentablesSchema getFermentable(FermentablesSchema aFermentablesSchema) {
+    public InventorySchema getFermentable(FermentablesSchema aFermentablesSchema) {
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_FERMENTABLES + " WHERE "
                 + ROW_ID + " = " +Long.toString(aFermentablesSchema.getInventoryId());
 
@@ -1576,12 +1607,13 @@ public class DataBaseManager extends SQLiteOpenHelper {
     }
 
     /*
-    * getting all Fermentables by user Id
-    */
-    public List<FermentablesSchema> getAllFermentablesByUserId(long aUserId) {
-        List<FermentablesSchema> fermentablesSchemaArrayList = new ArrayList<FermentablesSchema>();
+* getting all Fermentables by user Id
+*/
+    public List<InventorySchema> getAllFermentablesByUserId(long aUserId) {
+        List<InventorySchema> fermentablesSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_FERMENTABLES + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId);
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " = " + (-1);
 
         Log.e(LOG, selectQuery);
 
@@ -1596,6 +1628,36 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 fermentablesSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
 
                 // adding to boilList
+                fermentablesSchemaArrayList.add(getFermentable(fermentablesSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return fermentablesSchemaArrayList;
+    }
+
+    /*
+    * getting all Fermentables by user Id and Brew Id
+    */
+    public List<InventorySchema> getAllFermentablesByUserIdandBrewId(long aUserId,  long aBrewId) {
+        List<InventorySchema> fermentablesSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_FERMENTABLES + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                +" AND "+ BREW_ID + " = " +Long.toString(aBrewId);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllFermentablesByUserIdandBrewId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                FermentablesSchema fermentablesSchema = new FermentablesSchema();
+                fermentablesSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to fermentablesSchemaArrayList
                 fermentablesSchemaArrayList.add(getFermentable(fermentablesSchema));
             } while (c.moveToNext());
         }
@@ -1674,7 +1736,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
 * getting Grains by Inventory Id
 */
-    public GrainsSchema getGrain(GrainsSchema aGrainsSchema) {
+    public InventorySchema getGrain(GrainsSchema aGrainsSchema) {
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_GRAINS + " WHERE "
                 + ROW_ID + " = " +Long.toString(aGrainsSchema.getInventoryId());
 
@@ -1708,10 +1770,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
     * getting all Grains by user Id
     */
-    public List<GrainsSchema> getAllGrainsByUserId(long aUserId) {
-        List<GrainsSchema> grainsSchemaArrayList = new ArrayList<GrainsSchema>();
+    public List<InventorySchema> getAllGrainsByUserId(long aUserId) {
+        List<InventorySchema> grainsSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_GRAINS + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId);
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " = " + (-1);
 
         Log.e(LOG, selectQuery);
 
@@ -1725,7 +1788,37 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 GrainsSchema grainsSchema = new GrainsSchema();
                 grainsSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
 
-                // adding to boilList
+                // adding to grainsSchemaArrayList
+                grainsSchemaArrayList.add(getGrain(grainsSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return grainsSchemaArrayList;
+    }
+
+    /*
+* getting all Grains by user Id and Brew Id
+*/
+    public List<InventorySchema> getAllGrainsByUserIdandBrewId(long aUserId, long aBrewId) {
+        List<InventorySchema> grainsSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_GRAINS + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " = " +Long.toString(aBrewId);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllGrainsByUserIdandBrewId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                GrainsSchema grainsSchema = new GrainsSchema();
+                grainsSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to grainsSchemaArrayList
                 grainsSchemaArrayList.add(getGrain(grainsSchema));
             } while (c.moveToNext());
         }
@@ -1807,7 +1900,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
 * getting Yeast by Inventory Id
 */
-    public YeastSchema getYeast(YeastSchema aYeastSchema) {
+    public InventorySchema getYeast(YeastSchema aYeastSchema) {
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_YEAST + " WHERE "
                 + ROW_ID + " = " +Long.toString(aYeastSchema.getInventoryId());
 
@@ -1843,10 +1936,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
     * getting all Yeast by user Id
     */
-    public List<YeastSchema> getAllYeastByUserId(long aUserId) {
-        List<YeastSchema> yeastSchemaArrayList = new ArrayList<YeastSchema>();
+    public List<InventorySchema> getAllYeastByUserId(long aUserId) {
+        List<InventorySchema> yeastSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_YEAST + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId);
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " = " + (-1);
 
         Log.e(LOG, selectQuery);
 
@@ -1860,7 +1954,37 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 YeastSchema yeastSchema = new YeastSchema();
                 yeastSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
 
-                // adding to boilList
+                // adding to yeastSchemaArrayList
+                yeastSchemaArrayList.add(getYeast(yeastSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return yeastSchemaArrayList;
+    }
+
+    /*
+* getting all Yeast by user Id and Brew Id
+*/
+    public List<InventorySchema> getAllYeastByUserIdandBrewId(long aUserId, long  aBrewId) {
+        List<InventorySchema> yeastSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_YEAST + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND "+ BREW_ID + " = " +Long.toString(aBrewId);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllYeastByUserIdandBrewId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                YeastSchema yeastSchema = new YeastSchema();
+                yeastSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to yeastSchemaArrayList
                 yeastSchemaArrayList.add(getYeast(yeastSchema));
             } while (c.moveToNext());
         }
@@ -1937,7 +2061,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
 * getting Equipment by Inventory Id
 */
-    public EquipmentSchema getEquipment(EquipmentSchema aEquipmentSchema) {
+    public InventorySchema getEquipment(EquipmentSchema aEquipmentSchema) {
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_EQUIPMENT + " WHERE "
                 + ROW_ID + " = " +Long.toString(aEquipmentSchema.getInventoryId());
 
@@ -1966,10 +2090,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
     * getting all Equipment by user Id
     */
-    public List<EquipmentSchema> getAllEquipmentByUserId(long aUserId) {
-        List<EquipmentSchema> equipmentSchemaArrayList = new ArrayList<EquipmentSchema>();
+    public List<InventorySchema> getAllEquipmentByUserId(long aUserId) {
+        List<InventorySchema> equipmentSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_EQUIPMENT + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId);
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " = " + (-1);
 
         Log.e(LOG, selectQuery);
 
@@ -1983,7 +2108,37 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 EquipmentSchema equipmentSchema = new EquipmentSchema();
                 equipmentSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
 
-                // adding to boilList
+                // adding to equipmentSchemaArrayList
+                equipmentSchemaArrayList.add(getEquipment(equipmentSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return equipmentSchemaArrayList;
+    }
+
+    /*
+* getting all Equipment by user Id and brew Id
+*/
+    public List<InventorySchema> getAllEquipmentByUserIdandBrewId(long aUserId, long aBrewId) {
+        List<InventorySchema> equipmentSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_EQUIPMENT + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                +" AND "+ BREW_ID + " = " +Long.toString(aBrewId);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllEquipmentByUserIdandBrewId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                EquipmentSchema equipmentSchema = new EquipmentSchema();
+                equipmentSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to equipmentSchemaArrayList
                 equipmentSchemaArrayList.add(getEquipment(equipmentSchema));
             } while (c.moveToNext());
         }

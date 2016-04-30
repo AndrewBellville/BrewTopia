@@ -527,6 +527,7 @@ public class AddEditViewBrew extends Fragment {
             //Efficiency.setFocusable(false);
 
             styleSpinner.setClickable(false);
+            styleSpinner.setEnabled(false);
 
             favorite.setClickable(false);
             onTap.setClickable(false);
@@ -604,6 +605,7 @@ public class AddEditViewBrew extends Fragment {
             //Efficiency.setFocusable(true);
 
             styleSpinner.setClickable(true);
+            styleSpinner.setEnabled(true);
 
             favorite.setClickable(true);
             onTap.setClickable(true);

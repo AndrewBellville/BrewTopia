@@ -68,7 +68,7 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
         if(hasColor)
         {
             LinearLayout colorLayout= (LinearLayout)view.findViewById(R.id.ColorlinearLayout);
-            colorLayout.setMinimumHeight(250);
+            colorLayout.setMinimumHeight(290);
             colorLayout.setMinimumWidth(80);
             try{
                 colorLayout.setBackgroundColor(Color.parseColor(brewSchema.getStyleSchema().getBrewStyleColor()));

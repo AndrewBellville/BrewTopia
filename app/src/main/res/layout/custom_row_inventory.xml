@@ -9,7 +9,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/yeastName"
+            android:id="@+id/inventoryName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Test"
@@ -19,38 +19,38 @@
             android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft" />
 
         <TextView
-            android:id="@+id/yeastQty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Qty"
-            android:textSize="17dip"
-            android:paddingBottom="5dp"
-            android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
-            android:layout_below="@+id/yeastName"/>
-
-        <TextView
-            android:id="@+id/yeastAmount"
+            android:id="@+id/inventoryAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Amount"
             android:textSize="17dip"
             android:paddingBottom="5dp"
             android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
-            android:layout_below="@+id/yeastName"
-            android:layout_toRightOf="@+id/yeastQty"
-            android:layout_toEndOf="@+id/yeastQty" />
+            android:layout_below="@+id/inventoryName"/>
 
         <TextView
-            android:id="@+id/yeastUse"
+            android:id="@+id/inventoryQty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Qty"
+            android:textSize="17dip"
+            android:paddingBottom="5dp"
+            android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
+            android:layout_below="@+id/inventoryName"
+            android:layout_toRightOf="@+id/inventoryAmount"
+            android:layout_toEndOf="@+id/inventoryAmount" />
+
+        <TextView
+            android:id="@+id/inventoryUse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Use"
             android:textSize="17dip"
             android:paddingBottom="5dp"
             android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
-            android:layout_below="@+id/yeastName"
-            android:layout_toRightOf="@+id/yeastAmount"
-            android:layout_toEndOf="@+id/yeastAmount"/>
+            android:layout_below="@+id/inventoryName"
+            android:layout_toRightOf="@+id/inventoryQty"
+            android:layout_toEndOf="@+id/inventoryQty"/>
 
     </RelativeLayout>
 

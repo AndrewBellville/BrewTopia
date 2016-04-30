@@ -50,6 +50,8 @@ public class AddEditViewBrewNotes extends Fragment {
     private BrewNoteSchema editBrewNoteSchema;
     private EditText noteText;
 
+    private boolean init = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,12 +72,14 @@ public class AddEditViewBrewNotes extends Fragment {
 
         LoadBrewNoteView();
 
+        init  = true;
+
         return view;
     }
 
     @Override
     public void setMenuVisibility(boolean isShown) {
-        if(isShown)
+        if(isShown && init)
             LoadBrewNoteView();
     }
 

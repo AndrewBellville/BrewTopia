@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.town.small.brewtopia.Brews.BrewActivityData;
 import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.DataClass.HopsSchema;
@@ -99,13 +100,13 @@ public class AddEditViewHops extends ActionBarActivity {
 
         ToggleFieldEditable(false);
 
-        if(AddEditViewState == InventoryActivityData.DisplayMode.ADD)
-        {
+        if(AddEditViewState == InventoryActivityData.DisplayMode.ADD )
             ifAdd();
-        }
+        else if (AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD )
+            ifAddBrew();
         else
         {
-            hopsSchema = InventoryActivityData.getInstance().getHopsSchema();
+            hopsSchema = (HopsSchema) InventoryActivityData.getInstance().getHopsSchema();
             ifView();
         }
     }
@@ -116,6 +117,15 @@ public class AddEditViewHops extends ActionBarActivity {
         deleteInventoryButton.setVisibility(View.INVISIBLE);
         editInventoryButton.setText("Submit");
         AddEditViewState = InventoryActivityData.DisplayMode.ADD;
+        ToggleFieldEditable(true);
+    }
+
+    public void ifAddBrew()
+    {
+        ClearFields();
+        deleteInventoryButton.setVisibility(View.INVISIBLE);
+        editInventoryButton.setText("Submit");
+        AddEditViewState = InventoryActivityData.DisplayMode.BREW_ADD;
         ToggleFieldEditable(true);
     }
 
@@ -231,8 +241,8 @@ public class AddEditViewHops extends ActionBarActivity {
         aHops.setUse(use.getText().toString());
         aHops.setType(type.getText().toString());
 
-
-        if(AddEditViewState == InventoryActivityData.DisplayMode.ADD)
+        // If we are doing any adding we want to always create the base Inventory record
+        if(AddEditViewState == InventoryActivityData.DisplayMode.ADD || AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD)
         {
 
             long inventoryId = dbManager.CreateHops(aHops);
@@ -246,6 +256,20 @@ public class AddEditViewHops extends ActionBarActivity {
         else if(AddEditViewState == InventoryActivityData.DisplayMode.EDIT)
         {
             dbManager.updateHops(aHops);
+        }
+
+        // If this was a brew add we also want to add this to the brew
+        if(AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD)
+        {
+
+            aHops.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
+            long inventoryId = dbManager.CreateHops(aHops);
+            if( inventoryId == 0)// 0 brews failed to create
+            {
+                Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
+                return;
+            }
+            aHops.setInventoryId(inventoryId);
         }
 
         hopsSchema = aHops;

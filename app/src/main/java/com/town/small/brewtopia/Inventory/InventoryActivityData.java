@@ -4,6 +4,7 @@ import com.town.small.brewtopia.DataClass.EquipmentSchema;
 import com.town.small.brewtopia.DataClass.FermentablesSchema;
 import com.town.small.brewtopia.DataClass.GrainsSchema;
 import com.town.small.brewtopia.DataClass.HopsSchema;
+import com.town.small.brewtopia.DataClass.InventorySchema;
 import com.town.small.brewtopia.DataClass.YeastSchema;
 
 /**
@@ -13,16 +14,16 @@ public class InventoryActivityData {
 
     //State for AddEditView Brew and Brew Name if Edit/View
     public enum DisplayMode {
-        ADD, EDIT, VIEW
+        ADD, BREW_ADD, EDIT, VIEW
     };
 
     private DisplayMode AddEditViewState = DisplayMode.VIEW; // STATES: Add, Edit, View
 
-    private HopsSchema hopsSchema;
-    private FermentablesSchema fermentablesSchema;
-    private GrainsSchema grainsSchema;
-    private YeastSchema yeastSchema;
-    private EquipmentSchema equipmentSchema;
+    private InventorySchema hopsSchema;
+    private InventorySchema fermentablesSchema;
+    private InventorySchema grainsSchema;
+    private InventorySchema yeastSchema;
+    private InventorySchema equipmentSchema;
 
     //Singleton
     private static InventoryActivityData mInstance = null;
@@ -39,43 +40,43 @@ public class InventoryActivityData {
     }
 
     //getters
-    public HopsSchema getHopsSchema() {
+    public InventorySchema getHopsSchema() {
         return hopsSchema;
     }
     public DisplayMode getAddEditViewState() {
         return AddEditViewState;
     }
-    public FermentablesSchema getFermentablesSchema() {
+    public InventorySchema getFermentablesSchema() {
         return fermentablesSchema;
     }
-    public GrainsSchema getGrainsSchema() {
+    public InventorySchema getGrainsSchema() {
         return grainsSchema;
     }
-    public YeastSchema getYeastSchema() {
+    public InventorySchema getYeastSchema() {
         return yeastSchema;
     }
-    public EquipmentSchema getEquipmentSchema() {
+    public InventorySchema getEquipmentSchema() {
         return equipmentSchema;
     }
 
 
     //Setters
-    public void setHopsSchema(HopsSchema hopsSchema) {
+    public void setHopsSchema(InventorySchema hopsSchema) {
         this.hopsSchema = hopsSchema;
     }
     public void setAddEditViewState(DisplayMode addEditViewState) {
         AddEditViewState = addEditViewState;
     }
-    public void setFermentablesSchema(FermentablesSchema fermentablesSchema) {
+    public void setFermentablesSchema(InventorySchema fermentablesSchema) {
         this.fermentablesSchema = fermentablesSchema;
     }
-    public void setGrainsSchema(GrainsSchema grainsSchema) {
+    public void setGrainsSchema(InventorySchema grainsSchema) {
         this.grainsSchema = grainsSchema;
     }
-    public void setYeastSchema(YeastSchema yeastSchema) {
+    public void setYeastSchema(InventorySchema yeastSchema) {
         this.yeastSchema = yeastSchema;
     }
-    public void setEquipmentSchema(EquipmentSchema equipmentSchema) {
+    public void setEquipmentSchema(InventorySchema equipmentSchema) {
         this.equipmentSchema = equipmentSchema;
     }
 

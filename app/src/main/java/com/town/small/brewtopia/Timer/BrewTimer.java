@@ -24,6 +24,7 @@ public class BrewTimer extends Fragment {
     private TextView brewName;
     private Button AckButton;
     private Button StartStopButton;
+    private Button pauseButton;
 
     private TimerData td;
     private boolean isBackground = false;
@@ -46,6 +47,14 @@ public class BrewTimer extends Fragment {
             @Override
             public void onClick(View view) {
                 StartStopTimerClick(view);
+            }
+        });
+
+        pauseButton = (Button) view.findViewById(R.id.pauseButton);
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PauseTimerClick(view);
             }
         });
 
@@ -123,6 +132,11 @@ public class BrewTimer extends Fragment {
             td.StopTimer();
             getActivity().finish();
         }
+        else if(td.isPaused())
+        {
+            td.ResumeTimer();
+            SetStartStopButtonText();
+        }
         else
         {
             td.startTimer(getActivity());
@@ -135,16 +149,18 @@ public class BrewTimer extends Fragment {
         if(td.isTimerActive())
         {
             StartStopButton.setText("Stop");
+            pauseButton.setVisibility(View.VISIBLE);
         }
         else{
             StartStopButton.setText("Start");
+            pauseButton.setVisibility(View.INVISIBLE);
         }
     }
 
-     //TODO: IF WANTED
     public void PauseTimerClick(View aView)
     {
         td.PauseTimer();
+        SetStartStopButtonText();
     }
 
     private void FireAlarm()
@@ -156,8 +172,10 @@ public class BrewTimer extends Fragment {
     public void TimerFinished() {
         brewTimer.setText("Done");
         FireAlarm();
-        if (td.isAlarmActive())
+        if (td.isAlarmActive()) {
             AckButton.setVisibility(View.VISIBLE);
+            pauseButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void setTimeDisplay(long millisUntilFinished, BoilAdditionsSchema nextAddition)
