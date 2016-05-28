@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 35;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 37;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -45,6 +45,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String TABLE_INVENTORY_GRAINS = "Grains";
     private static final String TABLE_INVENTORY_YEAST = "Yeast";
     private static final String TABLE_INVENTORY_EQUIPMENT = "Equipment";
+    private static final String TABLE_INVENTORY_OTHER = "Other";
 
 
     // Common column names across Mulit tables
@@ -60,6 +61,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String INVENTORY_NAME = "InventoryName";
     private static final String INVENTORY_QTY = "InventoryQty";
     private static final String INVENTORY_AMOUNT = "Amount";
+    private static final String INVENTORY_UOFM = "InventoryUofM";
 
 
     // USERS column names
@@ -174,27 +176,35 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_INVENTORY_HOPS
     private static final String CREATE_TABLE_INVENTORY_HOPS = "CREATE TABLE "
             + TABLE_INVENTORY_HOPS + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
-            + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT," + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER," + INVENTORY_IBU + " REAL )";
+            + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT," + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER," + INVENTORY_UOFM + " TEXT,"
+            + INVENTORY_IBU + " REAL )";
 
     //CREATE_TABLE_INVENTORY_FERMENTABLES
     private static final String CREATE_TABLE_INVENTORY_FERMENTABLES = "CREATE TABLE "
             + TABLE_INVENTORY_FERMENTABLES + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
-            + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_BILL + " REAL )";
+            + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_BILL + " REAL )";
 
     //CREATE_TABLE_INVENTORY_GRAINS
     private static final String CREATE_TABLE_INVENTORY_GRAINS = "CREATE TABLE "
             + TABLE_INVENTORY_GRAINS + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
-            + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_BILL + " REAL )";
+            + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_BILL + " REAL )";
 
     //CREATE_TABLE_INVENTORY_YEAST
     private static final String CREATE_TABLE_INVENTORY_YEAST = "CREATE TABLE "
             + TABLE_INVENTORY_YEAST + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_AMOUNT + " REAL," + INVENTORY_FLOCCULATION + " TEXT," + INVENTORY_STARTER + " INTEGER," + INVENTORY_ATTENUATION + " REAL,"
-            + INVENTORY_OTL + " REAL," + INVENTORY_OTH + " REAL )";
+            + INVENTORY_OTL + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_OTH + " REAL )";
 
     //CREATE_TABLE_INVENTORY_EQUIPMENT
     private static final String CREATE_TABLE_INVENTORY_EQUIPMENT = "CREATE TABLE "
-            + TABLE_INVENTORY_EQUIPMENT + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT," + INVENTORY_AMOUNT + " REAL )";
+            + TABLE_INVENTORY_EQUIPMENT + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
+            + INVENTORY_UOFM + " TEXT," + INVENTORY_AMOUNT + " REAL )";
+
+    //CREATE_TABLE_INVENTORY_OTHER
+    private static final String CREATE_TABLE_INVENTORY_OTHER = "CREATE TABLE "
+            + TABLE_INVENTORY_OTHER + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
+            + INVENTORY_UOFM + " TEXT," + INVENTORY_AMOUNT + " REAL )";
+
 
     //Singleton
     private static DataBaseManager mInstance = null;
@@ -227,6 +237,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_GRAINS);
         aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_YEAST);
         aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_EQUIPMENT);
+        aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_OTHER);
 
         //Pre Load Data
         PreLoadAdminUser(aSQLiteDatabase);
@@ -238,6 +249,33 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase aSQLiteDatabase, int aOldVersion, int aNewVersion) {
         // on upgrade drop older tables
         Log.e(LOG, "Entering: onUpgrade OldVersion["+aOldVersion+"] NewVersion["+aNewVersion+"]");
+        updateAllTables(aSQLiteDatabase, aOldVersion);
+    }
+
+    private void updateAllTables(SQLiteDatabase aSQLiteDatabase, int aOldVersion)
+    {
+        // Started maintaining data at DB 35
+        if(aOldVersion < 35)
+            dropAllTables(aSQLiteDatabase);
+
+        if(aOldVersion < 36)
+        {
+            //aSQLiteDatabase.execSQL("ALTER TABLE foo ADD COLUMN new_column INTEGER DEFAULT 0");
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ TABLE_INVENTORY_HOPS +" ADD COLUMN "+ INVENTORY_UOFM +" TEXT DEFAULT '' ");
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ TABLE_INVENTORY_FERMENTABLES +" ADD COLUMN "+ INVENTORY_UOFM +" TEXT DEFAULT '' ");
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ TABLE_INVENTORY_GRAINS +" ADD COLUMN "+ INVENTORY_UOFM +" TEXT DEFAULT '' ");
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ TABLE_INVENTORY_YEAST +" ADD COLUMN "+ INVENTORY_UOFM +" TEXT DEFAULT '' ");
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ TABLE_INVENTORY_EQUIPMENT +" ADD COLUMN "+ INVENTORY_UOFM +" TEXT DEFAULT '' ");
+        }
+
+        if(aOldVersion < 37)
+        {
+            aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_OTHER);
+        }
+    }
+
+    private void dropAllTables(SQLiteDatabase aSQLiteDatabase)
+    {
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_STYLES);
@@ -251,6 +289,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_GRAINS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_YEAST);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_EQUIPMENT);
+        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_OTHER);
 
         // create new tables
         onCreate(aSQLiteDatabase);
@@ -474,11 +513,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
             {
                 brewNoteSchema.setBrewId(row_id);
             }
+            for(InventorySchema inventorySchema: aBrew.getBrewInventorySchemaList())
+            {
+                inventorySchema.setBrewId(row_id);
+            }
         }
         if(!(add_all_boil_additions(aBrew.getBoilAdditionlist())))
-            return 0;// 0 failed created
+            return -1;// -1 failed created
         if(!(addAllBrewNotes(aBrew.getBrewNoteSchemaList())))
-            return 0;// 0 failed created
+            return -1;// -1 failed created
+        if(!(CreateBrewInventoryHelper(aBrew.getBrewInventorySchemaList())))
+            return -1;// -1 failed created
 
         return row_id; // All create created retrun brew Id
     }
@@ -635,6 +680,14 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         //delete all schedules
         deleteBrewScheduled(aBrewId,aUserId);
+
+        //delete all Inventory
+        deleteHopsByBrewIdUserId(aBrewId,aUserId);
+        deleteFermentablesByBrewIdUserId(aBrewId,aUserId);
+        deleteGrainsByBrewIdUserId(aBrewId,aUserId);
+        deleteYeastByBrewIdUserId(aBrewId,aUserId);
+        deleteEquipmentByBrewIdUserId(aBrewId,aUserId);
+        deleteOtherByBrewIdUserId(aBrewId,aUserId);
     }
 
     //******************************Brews Style Table function*********************************
@@ -1398,6 +1451,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(BREW_ID, aHopsSchema.getBrewId());
         values.put(INVENTORY_NAME, aHopsSchema.getInventoryName());
         values.put(INVENTORY_QTY, aHopsSchema.getInvetoryQty());
+        values.put(INVENTORY_UOFM, aHopsSchema.getInventoryUOfM());
         values.put(INVENTORY_AMOUNT, aHopsSchema.getAmount());
         values.put(INVENTORY_TYPE, aHopsSchema.getType());
         values.put(INVENTORY_USE, aHopsSchema.getUse());
@@ -1434,6 +1488,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             hopsSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
             hopsSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             hopsSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
+            hopsSchema.setInventoryUOfM(c.getString(c.getColumnIndex(INVENTORY_UOFM)));
             hopsSchema.setType(c.getString(c.getColumnIndex(INVENTORY_TYPE)));
             hopsSchema.setUse(c.getString(c.getColumnIndex(INVENTORY_USE)));
             hopsSchema.setIBU(c.getDouble(c.getColumnIndex(INVENTORY_IBU)));
@@ -1518,6 +1573,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_NAME, aHopsSchema.getInventoryName());
         values.put(INVENTORY_QTY, aHopsSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aHopsSchema.getAmount());
+        values.put(INVENTORY_UOFM, aHopsSchema.getInventoryUOfM());
         values.put(INVENTORY_TYPE, aHopsSchema.getType());
         values.put(INVENTORY_USE, aHopsSchema.getUse());
         values.put(INVENTORY_IBU, aHopsSchema.getIBU());
@@ -1533,6 +1589,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
             return false;
 
         return true;
+    }
+
+    /*
+* Delete All brew Hops by Brew Id User Id
+*/
+    public void deleteHopsByBrewIdUserId( long aBrewId, long aUserId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteHopsByBrewIdUserId Name["+aBrewId+"]");
+
+        db.delete(TABLE_INVENTORY_HOPS, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
+                new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
     }
 
     /*
@@ -1562,7 +1629,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_NAME, aFermentablesSchema.getInventoryName());
         values.put(INVENTORY_QTY, aFermentablesSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aFermentablesSchema.getAmount());
-
+        values.put(INVENTORY_UOFM, aFermentablesSchema.getInventoryUOfM());
         values.put(INVENTORY_PPG, aFermentablesSchema.getPoundPerGallon());
         values.put(INVENTORY_LOV, aFermentablesSchema.getLovibond());
         values.put(INVENTORY_BILL, aFermentablesSchema.getBill());
@@ -1595,7 +1662,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             fermentablesSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
             fermentablesSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             fermentablesSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
-
+            fermentablesSchema.setInventoryUOfM(c.getString(c.getColumnIndex(INVENTORY_UOFM)));
             fermentablesSchema.setPoundPerGallon(c.getDouble(c.getColumnIndex(INVENTORY_PPG)));
             fermentablesSchema.setLovibond(c.getDouble(c.getColumnIndex(INVENTORY_LOV)));
             fermentablesSchema.setBill(c.getDouble(c.getColumnIndex(INVENTORY_BILL)));
@@ -1679,7 +1746,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_NAME, aFermentablesSchema.getInventoryName());
         values.put(INVENTORY_QTY, aFermentablesSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aFermentablesSchema.getAmount());
-
+        values.put(INVENTORY_UOFM, aFermentablesSchema.getInventoryUOfM());
         values.put(INVENTORY_PPG, aFermentablesSchema.getPoundPerGallon());
         values.put(INVENTORY_LOV, aFermentablesSchema.getLovibond());
         values.put(INVENTORY_BILL, aFermentablesSchema.getBill());
@@ -1694,6 +1761,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
             return false;
 
         return true;
+    }
+
+    /*
+* Delete All brew Fermentables by Brew Id User Id
+*/
+    public void deleteFermentablesByBrewIdUserId( long aBrewId, long aUserId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteFermentablesByBrewIdUserId Name["+aBrewId+"]");
+
+        db.delete(TABLE_INVENTORY_FERMENTABLES, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
+                new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
     }
 
     /*
@@ -1723,7 +1801,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_NAME, aGrainsSchema.getInventoryName());
         values.put(INVENTORY_QTY, aGrainsSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aGrainsSchema.getAmount());
-
+        values.put(INVENTORY_UOFM, aGrainsSchema.getInventoryUOfM());
         values.put(INVENTORY_PPG, aGrainsSchema.getPoundPerGallon());
         values.put(INVENTORY_LOV, aGrainsSchema.getLovibond());
         values.put(INVENTORY_BILL, aGrainsSchema.getBill());
@@ -1756,7 +1834,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             grainsSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
             grainsSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             grainsSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
-
+            grainsSchema.setInventoryUOfM(c.getString(c.getColumnIndex(INVENTORY_UOFM)));
             grainsSchema.setPoundPerGallon(c.getDouble(c.getColumnIndex(INVENTORY_PPG)));
             grainsSchema.setLovibond(c.getDouble(c.getColumnIndex(INVENTORY_LOV)));
             grainsSchema.setBill(c.getDouble(c.getColumnIndex(INVENTORY_BILL)));
@@ -1840,7 +1918,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_NAME, aGrainsSchema.getInventoryName());
         values.put(INVENTORY_QTY, aGrainsSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aGrainsSchema.getAmount());
-
+        values.put(INVENTORY_UOFM, aGrainsSchema.getInventoryUOfM());
         values.put(INVENTORY_PPG, aGrainsSchema.getPoundPerGallon());
         values.put(INVENTORY_LOV, aGrainsSchema.getLovibond());
         values.put(INVENTORY_BILL, aGrainsSchema.getBill());
@@ -1855,6 +1933,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
             return false;
 
         return true;
+    }
+
+    /*
+* Delete All brew Grains by Brew Id User Id
+*/
+    public void deleteGrainsByBrewIdUserId( long aBrewId, long aUserId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteGrainsByBrewIdUserId Name["+aBrewId+"]");
+
+        db.delete(TABLE_INVENTORY_GRAINS, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
+                new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
     }
 
     /*
@@ -1884,7 +1973,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_NAME, aYeastSchema.getInventoryName());
         values.put(INVENTORY_QTY, aYeastSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aYeastSchema.getAmount());
-
+        values.put(INVENTORY_UOFM, aYeastSchema.getInventoryUOfM());
         values.put(INVENTORY_ATTENUATION, aYeastSchema.getAttenuation());
         values.put(INVENTORY_FLOCCULATION, aYeastSchema.getFlocculation());
         values.put(INVENTORY_OTL, aYeastSchema.getOptimumTempLow());
@@ -1920,7 +2009,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             yeastSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
             yeastSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             yeastSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
-
+            yeastSchema.setInventoryUOfM(c.getString(c.getColumnIndex(INVENTORY_UOFM)));
             yeastSchema.setAttenuation(c.getDouble(c.getColumnIndex(INVENTORY_ATTENUATION)));
             yeastSchema.setFlocculation(c.getString(c.getColumnIndex(INVENTORY_FLOCCULATION)));
             yeastSchema.setOptimumTempLow(c.getDouble(c.getColumnIndex(INVENTORY_OTL)));
@@ -2006,7 +2095,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_NAME, aYeastSchema.getInventoryName());
         values.put(INVENTORY_QTY, aYeastSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aYeastSchema.getAmount());
-
+        values.put(INVENTORY_UOFM, aYeastSchema.getInventoryUOfM());
         values.put(INVENTORY_ATTENUATION, aYeastSchema.getAttenuation());
         values.put(INVENTORY_FLOCCULATION, aYeastSchema.getFlocculation());
         values.put(INVENTORY_OTL, aYeastSchema.getOptimumTempLow());
@@ -2022,6 +2111,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
             return false;
 
         return true;
+    }
+
+    /*
+* Delete All brew Yeast by Brew Id User Id
+*/
+    public void deleteYeastByBrewIdUserId( long aBrewId, long aUserId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteYeastByBrewIdUserId Name["+aBrewId+"]");
+
+        db.delete(TABLE_INVENTORY_YEAST, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
+                new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
     }
 
     /*
@@ -2052,6 +2152,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_NAME, aEquipmentSchema.getInventoryName());
         values.put(INVENTORY_QTY, aEquipmentSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aEquipmentSchema.getAmount());
+        values.put(INVENTORY_UOFM, aEquipmentSchema.getInventoryUOfM());
 
         // insert row
         return db.insert(TABLE_INVENTORY_EQUIPMENT,null,values);
@@ -2081,6 +2182,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             equipmentSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
             equipmentSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             equipmentSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
+            equipmentSchema.setInventoryUOfM(c.getString(c.getColumnIndex(INVENTORY_UOFM)));
         }
 
         c.close();
@@ -2160,6 +2262,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_NAME, aEquipmentSchema.getInventoryName());
         values.put(INVENTORY_QTY, aEquipmentSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aEquipmentSchema.getAmount());
+        values.put(INVENTORY_UOFM, aEquipmentSchema.getInventoryUOfM());
 
         // updating row
         int retVal = db.update(TABLE_INVENTORY_EQUIPMENT, values, ROW_ID + " = ?",
@@ -2173,6 +2276,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
     }
 
     /*
+* Delete All brew Equipment by Brew Id User Id
+*/
+    public void deleteEquipmentByBrewIdUserId( long aBrewId, long aUserId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteEquipmentByBrewIdUserId Name["+aBrewId+"]");
+
+        db.delete(TABLE_INVENTORY_EQUIPMENT, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
+                new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
+    }
+
+    /*
 * delete Equipment by Id
 */
     public void deleteEquipmentById(long aEquipmentId)
@@ -2183,6 +2297,168 @@ public class DataBaseManager extends SQLiteOpenHelper {
         db.delete(TABLE_INVENTORY_EQUIPMENT, ROW_ID + " = ?",
                 new String[] { Long.toString(aEquipmentId) });
     }
+
+    //************************************Other functions***************
+    /*
+    * add Other
+    */
+    public long CreateOther(OtherSchema aOtherSchema) {
+        Log.e(LOG, "Insert: CreateOther["+aOtherSchema.getUserId()+", "+ aOtherSchema.getInventoryName() +"]");
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aOtherSchema.getUserId());
+        values.put(BREW_ID, aOtherSchema.getBrewId());
+        values.put(INVENTORY_NAME, aOtherSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aOtherSchema.getInvetoryQty());
+        values.put(INVENTORY_AMOUNT, aOtherSchema.getAmount());
+        values.put(INVENTORY_UOFM, aOtherSchema.getInventoryUOfM());
+
+        // insert row
+        return db.insert(TABLE_INVENTORY_OTHER,null,values);
+    }
+
+
+    /*
+* getting Other by Inventory Id
+*/
+    public InventorySchema getOther(OtherSchema aOtherSchema) {
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_OTHER + " WHERE "
+                + ROW_ID + " = " +Long.toString(aOtherSchema.getInventoryId());
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        OtherSchema otherSchema = new OtherSchema();
+        Log.e(LOG, "getOther Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+
+            otherSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
+            otherSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+            otherSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
+            otherSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
+            otherSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
+            otherSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
+            otherSchema.setInventoryUOfM(c.getString(c.getColumnIndex(INVENTORY_UOFM)));
+        }
+
+        c.close();
+        return otherSchema;
+    }
+
+    /*
+    * getting all Other by user Id
+    */
+    public List<InventorySchema> getAllOtherByUserId(long aUserId) {
+        List<InventorySchema> otherSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_OTHER + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " = " + (-1);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllOtherByUserId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                OtherSchema otherSchema = new OtherSchema();
+                otherSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to otherSchemaArrayList
+                otherSchemaArrayList.add(getOther(otherSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return otherSchemaArrayList;
+    }
+
+    /*
+* getting all Other by user Id and brew Id
+*/
+    public List<InventorySchema> getAllOtherByUserIdandBrewId(long aUserId, long aBrewId) {
+        List<InventorySchema> otherSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_INVENTORY_OTHER + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                +" AND "+ BREW_ID + " = " +Long.toString(aBrewId);
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllOtherByUserIdandBrewId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                OtherSchema otherSchema = new OtherSchema();
+                otherSchema.setInventoryId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                // adding to otherSchemaArrayList
+                otherSchemaArrayList.add(getOther(otherSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return otherSchemaArrayList;
+    }
+
+    /*
+* Updating a Other
+*/
+    public Boolean updateOther(OtherSchema aOtherSchema) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "updateOther Name["+aOtherSchema.getInventoryName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(USER_ID, aOtherSchema.getUserId());
+        values.put(BREW_ID, aOtherSchema.getBrewId());
+        values.put(INVENTORY_NAME, aOtherSchema.getInventoryName());
+        values.put(INVENTORY_QTY, aOtherSchema.getInvetoryQty());
+        values.put(INVENTORY_AMOUNT, aOtherSchema.getAmount());
+        values.put(INVENTORY_UOFM, aOtherSchema.getInventoryUOfM());
+
+        // updating row
+        int retVal = db.update(TABLE_INVENTORY_OTHER, values, ROW_ID + " = ?",
+                new String[] { Long.toString(aOtherSchema.getInventoryId()) });
+
+        //Update brew
+        if(!(retVal > 0) )
+            return false;
+
+        return true;
+    }
+
+    /*
+* Delete All brew Other by Brew Id User Id
+*/
+    public void deleteOtherByBrewIdUserId( long aBrewId, long aUserId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteOtherByBrewIdUserId Name["+aBrewId+"]");
+
+        db.delete(TABLE_INVENTORY_OTHER, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
+                new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
+    }
+
+    /*
+* delete Other by Id
+*/
+    public void deleteOtherById(long aOtherId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteOtherById Id["+Long.toString(aOtherId) +"]");
+
+        db.delete(TABLE_INVENTORY_OTHER, ROW_ID + " = ?",
+                new String[] { Long.toString(aOtherId) });
+    }
+
 
     //************************************Helper functions***************
     /*
@@ -2222,5 +2498,35 @@ public class DataBaseManager extends SQLiteOpenHelper {
         nBrew.setBrewNote(brewNote);
 
         addBrewNote(nBrew);
+    }
+
+    /*
+    Add Inventory to brew on create
+     */
+    private boolean CreateBrewInventoryHelper(List<InventorySchema> aInventorySchemas)
+    {
+        boolean retVal = true;
+        long rsts = -1;
+
+        for (InventorySchema inventorySchema : aInventorySchemas) {
+
+            if (inventorySchema instanceof HopsSchema)
+                rsts=CreateHops((HopsSchema) inventorySchema);
+            else if (inventorySchema instanceof FermentablesSchema)
+                rsts=CreateFermentable((FermentablesSchema) inventorySchema);
+            else if (inventorySchema instanceof GrainsSchema)
+                rsts=CreateGrain((GrainsSchema) inventorySchema);
+            else if (inventorySchema instanceof YeastSchema)
+                rsts=CreateYeast((YeastSchema) inventorySchema);
+            else if (inventorySchema instanceof EquipmentSchema)
+                rsts=CreateEquipment((EquipmentSchema) inventorySchema);
+            else if (inventorySchema instanceof OtherSchema)
+                rsts=CreateOther((OtherSchema) inventorySchema);
+
+            if(rsts < 0)
+                retVal  = false;
+        }
+
+        return retVal;
     }
 }

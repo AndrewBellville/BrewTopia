@@ -28,6 +28,7 @@ import com.town.small.brewtopia.DataClass.FermentablesSchema;
 import com.town.small.brewtopia.DataClass.GrainsSchema;
 import com.town.small.brewtopia.DataClass.HopsSchema;
 import com.town.small.brewtopia.DataClass.InventorySchema;
+import com.town.small.brewtopia.DataClass.OtherSchema;
 import com.town.small.brewtopia.DataClass.YeastSchema;
 import com.town.small.brewtopia.R;
 
@@ -47,7 +48,8 @@ public class UserInventory extends Fragment {
         Fermentables,
         Grains,
         Yeast,
-        Equipment
+        Equipment,
+        Other
     };
 
     //Inventory List
@@ -159,40 +161,61 @@ public class UserInventory extends Fragment {
         for(InventoryCategories inventoryCategories :  InventoryCategories.values())
         {
             List<InventorySchema> inventorySchemaList;
+
+
             if(inventoryCategories == InventoryCategories.Hops)
             {
-                if(isBrewDisplay)
+                if(isBrewDisplay && !(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >= 0))
+                    inventorySchemaList = prepareInventoryListDataHelper(inventoryCategories);
+                else if(isBrewDisplay)
                     inventorySchemaList = dbManager.getAllHopsByUserIdandBrewId(userId, BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
                 else
                     inventorySchemaList = dbManager.getAllHopsByUserId(userId);
             }
             else if(inventoryCategories == InventoryCategories.Fermentables)
             {
-                if(isBrewDisplay)
+                if(isBrewDisplay && !(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >= 0))
+                    inventorySchemaList = prepareInventoryListDataHelper(inventoryCategories);
+                else if(isBrewDisplay)
                     inventorySchemaList = dbManager.getAllFermentablesByUserIdandBrewId(userId, BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
                 else
                     inventorySchemaList = dbManager.getAllFermentablesByUserId(userId);
             }
             else if(inventoryCategories == InventoryCategories.Grains)
             {
-                if(isBrewDisplay)
+                if(isBrewDisplay && !(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >= 0))
+                    inventorySchemaList = prepareInventoryListDataHelper(inventoryCategories);
+                else if(isBrewDisplay)
                     inventorySchemaList = dbManager.getAllGrainsByUserIdandBrewId(userId, BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
                 else
                     inventorySchemaList = dbManager.getAllGrainsByUserId(userId);
             }
             else if(inventoryCategories == InventoryCategories.Yeast)
             {
-                if(isBrewDisplay)
+                if(isBrewDisplay && !(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >= 0))
+                    inventorySchemaList = prepareInventoryListDataHelper(inventoryCategories);
+                else if(isBrewDisplay)
                     inventorySchemaList = dbManager.getAllYeastByUserIdandBrewId(userId, BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
                 else
                     inventorySchemaList = dbManager.getAllYeastByUserId(userId);
             }
             else if(inventoryCategories == InventoryCategories.Equipment)
             {
-                if(isBrewDisplay)
+                if(isBrewDisplay && !(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >= 0))
+                    inventorySchemaList = prepareInventoryListDataHelper(inventoryCategories);
+                else if(isBrewDisplay)
                     inventorySchemaList = dbManager.getAllEquipmentByUserIdandBrewId(userId, BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
                 else
                     inventorySchemaList = dbManager.getAllEquipmentByUserId(userId);
+            }
+            else if(inventoryCategories == InventoryCategories.Other)
+            {
+                if(isBrewDisplay && !(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >= 0))
+                    inventorySchemaList = prepareInventoryListDataHelper(inventoryCategories);
+                else if(isBrewDisplay)
+                    inventorySchemaList = dbManager.getAllOtherByUserIdandBrewId(userId, BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
+                else
+                    inventorySchemaList = dbManager.getAllOtherByUserId(userId);
             }
             else
                 inventorySchemaList = new ArrayList<InventorySchema>();
@@ -201,6 +224,29 @@ public class UserInventory extends Fragment {
             InventoryListDataHeader.add(headerText);
             InventoryListDataChild.put(headerText, inventorySchemaList); // Header, Child data
         }
+    }
+
+    private ArrayList<InventorySchema> prepareInventoryListDataHelper(InventoryCategories aInventoryCategories)
+    {
+        ArrayList<InventorySchema> inventorySchemas = new ArrayList<InventorySchema>();
+
+        for(InventorySchema inventorySchema : BrewActivityData.getInstance().getBrewInventorySchemaList())
+        {
+            if(inventorySchema instanceof HopsSchema && aInventoryCategories == InventoryCategories.Hops)
+                inventorySchemas.add(inventorySchema);
+            if(inventorySchema instanceof FermentablesSchema && aInventoryCategories == InventoryCategories.Fermentables)
+                inventorySchemas.add(inventorySchema);
+            if(inventorySchema instanceof GrainsSchema && aInventoryCategories == InventoryCategories.Grains)
+                inventorySchemas.add(inventorySchema);
+            if(inventorySchema instanceof YeastSchema && aInventoryCategories == InventoryCategories.Yeast)
+                inventorySchemas.add(inventorySchema);
+            if(inventorySchema instanceof EquipmentSchema && aInventoryCategories == InventoryCategories.Equipment)
+                inventorySchemas.add(inventorySchema);
+            if(inventorySchema instanceof OtherSchema && aInventoryCategories == InventoryCategories.Other)
+                inventorySchemas.add(inventorySchema);
+        }
+
+        return inventorySchemas;
     }
 
     private void addClickInventory(String aHeaderTitle) {
@@ -285,6 +331,22 @@ public class UserInventory extends Fragment {
                 startActivity(intent);
             }
         }
+        else if(aHeaderTitle.contains(InventoryCategories.Other.toString()) )
+        {
+            if(isBrewDisplay)
+            {
+                addToBrewDialog(InventoryCategories.Other);
+            }
+            else
+            {
+                //Set Selected Inventory in Activity Data
+                InventoryActivityData.getInstance().setOtherSchema(null);
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.ADD);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewOther.class);
+                startActivity(intent);
+            }
+        }
 
     }
 
@@ -321,10 +383,17 @@ public class UserInventory extends Fragment {
             startActivity(intent);
         }
         else if (inventorySchema instanceof EquipmentSchema) {
-            InventoryActivityData.getInstance().setYeastSchema(inventorySchema);
+            InventoryActivityData.getInstance().setEquipmentSchema(inventorySchema);
             InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.VIEW);
             //Start Activity
             Intent intent = new Intent(getActivity(), AddEditViewEquipment.class);
+            startActivity(intent);
+        }
+        else if (inventorySchema instanceof OtherSchema) {
+            InventoryActivityData.getInstance().setOtherSchema(inventorySchema);
+            InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.VIEW);
+            //Start Activity
+            Intent intent = new Intent(getActivity(), AddEditViewOther.class);
             startActivity(intent);
         }
     }
@@ -387,6 +456,17 @@ public class UserInventory extends Fragment {
                 startActivity(intent);
             }
         }
+        else if(aInventoryCategories ==InventoryCategories.Other )
+        {
+            if(isBrewDisplay){
+                //Set Selected Inventory in Activity Data
+                InventoryActivityData.getInstance().setOtherSchema(null);
+                InventoryActivityData.getInstance().setAddEditViewState(InventoryActivityData.DisplayMode.BREW_ADD);
+                //Start Activity
+                Intent intent = new Intent(getActivity(), AddEditViewOther.class);
+                startActivity(intent);
+            }
+        }
 
     }
 
@@ -413,6 +493,8 @@ public class UserInventory extends Fragment {
             inventorySchemas = dbManager.getAllYeastByUserId(userId);
         else if(aInventoryCategories == InventoryCategories.Equipment)
             inventorySchemas = dbManager.getAllEquipmentByUserId(userId);
+        else if(aInventoryCategories == InventoryCategories.Other)
+            inventorySchemas = dbManager.getAllOtherByUserId(userId);
         else
             inventorySchemas= new ArrayList<InventorySchema>();
 
@@ -481,20 +563,30 @@ public class UserInventory extends Fragment {
 
     private void AddFromList(InventoryCategories aInventoryCategories, List<InventorySchema> selectedInventorySchemas)
     {
-        for(InventorySchema inventorySchema : selectedInventorySchemas)
+        if(isBrewDisplay && !(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >= 0))
         {
-            inventorySchema.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
+            for (InventorySchema inventorySchema : selectedInventorySchemas) {
+                BrewActivityData.getInstance().getBrewInventorySchemaList().add(inventorySchema);
+            }
+        }
+        else
+        {
+            for (InventorySchema inventorySchema : selectedInventorySchemas) {
+                inventorySchema.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
 
-            if(aInventoryCategories == InventoryCategories.Hops)
-                dbManager.CreateHops((HopsSchema) inventorySchema);
-            else if(aInventoryCategories == InventoryCategories.Fermentables)
-                dbManager.CreateFermentable((FermentablesSchema) inventorySchema);
-            else if(aInventoryCategories == InventoryCategories.Grains)
-                dbManager.CreateGrain((GrainsSchema) inventorySchema);
-            else if(aInventoryCategories == InventoryCategories.Yeast)
-                dbManager.CreateYeast((YeastSchema) inventorySchema);
-            else if(aInventoryCategories == InventoryCategories.Equipment)
-                dbManager.CreateEquipment((EquipmentSchema) inventorySchema);
+                if (aInventoryCategories == InventoryCategories.Hops)
+                    dbManager.CreateHops((HopsSchema) inventorySchema);
+                else if (aInventoryCategories == InventoryCategories.Fermentables)
+                    dbManager.CreateFermentable((FermentablesSchema) inventorySchema);
+                else if (aInventoryCategories == InventoryCategories.Grains)
+                    dbManager.CreateGrain((GrainsSchema) inventorySchema);
+                else if (aInventoryCategories == InventoryCategories.Yeast)
+                    dbManager.CreateYeast((YeastSchema) inventorySchema);
+                else if (aInventoryCategories == InventoryCategories.Equipment)
+                    dbManager.CreateEquipment((EquipmentSchema) inventorySchema);
+                else if (aInventoryCategories == InventoryCategories.Other)
+                    dbManager.CreateOther((OtherSchema) inventorySchema);
+            }
         }
 
         SetUpInventoryList();

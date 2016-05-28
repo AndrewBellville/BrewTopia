@@ -74,6 +74,10 @@
             android:name=".Inventory.AddEditViewEquipment"
             android:icon="@drawable/beer_dark"
             android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Inventory.AddEditViewOther"
+            android:icon="@drawable/beer_dark"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>

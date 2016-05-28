@@ -24,6 +24,7 @@ public class InventoryActivityData {
     private InventorySchema grainsSchema;
     private InventorySchema yeastSchema;
     private InventorySchema equipmentSchema;
+    private InventorySchema otherSchema;
 
     //Singleton
     private static InventoryActivityData mInstance = null;
@@ -58,7 +59,9 @@ public class InventoryActivityData {
     public InventorySchema getEquipmentSchema() {
         return equipmentSchema;
     }
-
+    public InventorySchema getOtherSchema() {
+        return otherSchema;
+    }
 
     //Setters
     public void setHopsSchema(InventorySchema hopsSchema) {
@@ -78,6 +81,9 @@ public class InventoryActivityData {
     }
     public void setEquipmentSchema(InventorySchema equipmentSchema) {
         this.equipmentSchema = equipmentSchema;
+    }
+    public void setOtherSchema(InventorySchema otherSchema) {
+        this.otherSchema = otherSchema;
     }
 
 }

@@ -92,7 +92,6 @@ public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapt
 
 
         Spinner UofMSpinner = (Spinner)view.findViewById(R.id.UofMSpinner);
-        UofMSpinner.setEnabled(false);
         ArrayAdapter<String> UofMAdapter;
         List<String> UOfMs = APPUTILS.UofM;
 
@@ -137,7 +136,7 @@ public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapt
         listItemEditText2.setEnabled(false);
 
         UofMSpinner.setClickable(false);
-
+        UofMSpinner.setEnabled(false);
 
         return view;
     }

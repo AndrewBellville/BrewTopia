@@ -1,15 +1,11 @@
 package com.town.small.brewtopia.Brews;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -18,16 +14,13 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.town.small.brewtopia.R;
 import com.town.small.brewtopia.DataClass.*;
-import com.town.small.brewtopia.Timer.BrewTimer;
 import com.town.small.brewtopia.Timer.TimerData;
 import com.town.small.brewtopia.Timer.TimerPager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AddEditViewBrew extends Fragment {
@@ -75,7 +68,7 @@ public class AddEditViewBrew extends Fragment {
     private KeyListener EfficiencyListener;
 
     private DataBaseManager dbManager;
-    private BrewActivityData brewActivityDataData;
+    private BrewActivityData brewActivityData;
     private BrewSchema brewSchema;
 
     @Override
@@ -143,19 +136,19 @@ public class AddEditViewBrew extends Fragment {
 
         UserId = CurrentUser.getInstance().getUser().getUserId();
 
-        brewActivityDataData = BrewActivityData.getInstance();
+        brewActivityData = BrewActivityData.getInstance();
 
         setBrewStyleSpinner();
 
-        if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD) {
+        if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD) {
             ifAdd();
         }
-         else if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.EDIT) {
-            brewSchema = brewActivityDataData.getAddEditViewBrew();
+         else if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.EDIT) {
+            brewSchema = brewActivityData.getAddEditViewBrew();
             ifEdit();
         }
-        else if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.VIEW) {
-            brewSchema = brewActivityDataData.getAddEditViewBrew();
+        else if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.VIEW) {
+            brewSchema = brewActivityData.getAddEditViewBrew();
             ifView();
         }
         return returnView;
@@ -166,7 +159,7 @@ public class AddEditViewBrew extends Fragment {
         ClearFields();
         startButton.setVisibility(View.INVISIBLE);
         editBrewButton.setText("Submit");
-        brewActivityDataData.setAddEditViewState(BrewActivityData.DisplayMode.ADD);
+        brewActivityData.setAddEditViewState(BrewActivityData.DisplayMode.ADD);
         ToggleFieldEditable(true);
     }
 
@@ -177,7 +170,7 @@ public class AddEditViewBrew extends Fragment {
         //get brew and display
         DisplayBrew(brewSchema);
         editBrewButton.setText("Submit");
-        brewActivityDataData.setAddEditViewState(BrewActivityData.DisplayMode.EDIT);
+        brewActivityData.setAddEditViewState(BrewActivityData.DisplayMode.EDIT);
 
         ToggleFieldEditable(false);
         ToggleFieldEditable(true);
@@ -191,7 +184,7 @@ public class AddEditViewBrew extends Fragment {
         startButton.setText("Start Brew");
         startButton.setVisibility(View.VISIBLE);
         //Set EditText to not editable and hide button
-        brewActivityDataData.setAddEditViewState(BrewActivityData.DisplayMode.VIEW);
+        brewActivityData.setAddEditViewState(BrewActivityData.DisplayMode.VIEW);
         ToggleFieldEditable(false);
 
     }
@@ -257,7 +250,7 @@ public class AddEditViewBrew extends Fragment {
 
     public void onStartButtonClick(View aView)
     {
-        if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.VIEW)
+        if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.VIEW)
         {
             //If we have an active timer we dont want to create a new one
             if(!(TimerData.getInstance().isTimerActive()))
@@ -276,7 +269,7 @@ public class AddEditViewBrew extends Fragment {
 
     public void onEditClick(View aView)
     {
-        if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.VIEW )
+        if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.VIEW )
             ifEdit();
         else
             validateSubmit();
@@ -386,14 +379,15 @@ public class AddEditViewBrew extends Fragment {
         //Add Boil additions
         brew.setBoilAdditionlist(BrewActivityData.getInstance().getBaArray());
         brew.setBrewNoteSchemaList(BrewActivityData.getInstance().getBrewNoteSchemaList());
+        brew.setBrewInventorySchemaList(BrewActivityData.getInstance().getBrewInventorySchemaList());
 
-        if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD)
+        if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD)
         {
-            //add brew name for all lists
-            brew.setListBrewName();
+            //add user Id for lists
+            brew.setListUserId();
 
             long brewId = dbManager.CreateABrew(brew);
-            if( brewId == 0)// 0 brews failed to create
+            if( brewId == -1)// -1 brews failed to create
             {
                 Toast.makeText(getActivity(), "Duplicate Brew Name", Toast.LENGTH_LONG).show();
                 return;
@@ -401,25 +395,16 @@ public class AddEditViewBrew extends Fragment {
 
             brewSchema = dbManager.getBrew(brewId,brew.getUserId());
         }
-        else if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.EDIT)
+        else if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.EDIT)
         {
             dbManager.updateABrew(brew);
 
             brewSchema = brew;
         }
 
-        brewActivityDataData.setAddEditViewBrew(brewSchema);
+        brewActivityData.setAddEditViewBrew(brewSchema);
 
         ifView();
-    }
-
-    //TODO: MAKE TAB VIEW FOR THIS
-    public void onAddBoilAdditions(View aView)
-    {
-        //Create and intent which will open activity AddEditViewBoilAdditions
-        Intent intent = new Intent(getActivity(), AddEditViewBoilAdditions.class);
-        //start next activity
-        startActivity(intent);
     }
 
     private void ClearFields()
@@ -536,7 +521,7 @@ public class AddEditViewBrew extends Fragment {
         else
         {
             //addEditButton.setVisibility(View.VISIBLE);
-            if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD)
+            if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD)
             {
                 brewName.setKeyListener(brewNameListener);
                 brewName.setClickable(true);

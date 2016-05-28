@@ -133,11 +133,19 @@ public class AddEditViewBoilAdditions extends Fragment {
         editAdditionTime.setText(Integer.toString(editBoilAdditionsSchema.getAdditionTime()));
 
         editAdditionQty = (EditText) dialogView.findViewById(R.id.additionQtyEditText);
-        editAdditionQty.setText(Double.toString(editBoilAdditionsSchema.getAdditionTime()));
+        editAdditionQty.setText(Double.toString(editBoilAdditionsSchema.getAdditionQty()));
 
         editUOfMSpinner = (Spinner) dialogView.findViewById(R.id.UofMSpinner);
         editUOfMSpinner.setAdapter(UofMAdapter);
 
+        try
+        {
+            editUOfMSpinner.setSelection(UofMAdapter.getPosition(editBoilAdditionsSchema.getUOfM()));
+        }
+        catch (Exception e)
+        {
+            editUOfMSpinner.setSelection(0);
+        }
 
         final AlertDialog alertDialog = alertDialogBuilder.create();
 

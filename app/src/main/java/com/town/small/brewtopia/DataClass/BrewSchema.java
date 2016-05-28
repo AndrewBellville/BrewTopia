@@ -34,7 +34,8 @@ public class BrewSchema {
     private double Efficiency=0.0;
     private String method;
     private List <BoilAdditionsSchema> boilAdditionlist = new ArrayList<BoilAdditionsSchema>();
-    private List <BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();;
+    private List <BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();
+    private List <InventorySchema> brewInventorySchemaList = new ArrayList<InventorySchema>();
     private String Style;
     private BrewStyleSchema StyleSchema;
 
@@ -48,7 +49,7 @@ public class BrewSchema {
         this.BrewName = aBrewName;
     }
 
-    public void setListBrewName()
+    public void setListUserId()
     {
         for(Iterator<BoilAdditionsSchema> i = boilAdditionlist.iterator(); i.hasNext();)
         {
@@ -155,6 +156,11 @@ public class BrewSchema {
     public double getEfficiency() {
         return Efficiency;
     }
+    public List<InventorySchema> getBrewInventorySchemaList() {
+        return brewInventorySchemaList;
+    }
+
+
 
 
     //setters
@@ -244,6 +250,9 @@ public class BrewSchema {
     }
     public void setEfficiency(double efficiency) {
         Efficiency = efficiency;
+    }
+    public void setBrewInventorySchemaList(List<InventorySchema> brewInventorySchemaList) {
+        this.brewInventorySchemaList = brewInventorySchemaList;
     }
 
 }

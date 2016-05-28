@@ -11,6 +11,7 @@ public class InventorySchema {
     private String InventoryName="";
     private int InvetoryQty=0;
     private double amount=0.0;
+    private String InventoryUOfM="";
 
 
     //Getters
@@ -32,6 +33,9 @@ public class InventorySchema {
     public double getAmount() {
         return amount;
     }
+    public String getInventoryUOfM() {
+        return InventoryUOfM;
+    }
 
     //Setters
     public void setInventoryId(long inventoryId) {
@@ -52,4 +56,8 @@ public class InventorySchema {
     public void setAmount(double amount) {
         this.amount = amount;
     }
+    public void setInventoryUOfM(String inventoryUOfM) {
+        InventoryUOfM = inventoryUOfM;
+    }
+
 }

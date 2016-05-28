@@ -1,8 +1,8 @@
 package com.town.small.brewtopia.Inventory;
 
 import android.content.Context;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.KeyListener;
 import android.util.Log;
@@ -20,42 +20,34 @@ import com.town.small.brewtopia.Brews.BrewActivityData;
 import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataClass.DataBaseManager;
-import com.town.small.brewtopia.DataClass.HopsSchema;
+import com.town.small.brewtopia.DataClass.EquipmentSchema;
+import com.town.small.brewtopia.DataClass.OtherSchema;
 import com.town.small.brewtopia.R;
 
 import java.util.List;
 
-public class AddEditViewHops extends ActionBarActivity {
+public class AddEditViewOther extends ActionBarActivity {
 
     // Log cat tag
-    private static final String LOG = "AddEditViewHops";
+    private static final String LOG = "AddEditViewOther";
 
     private InventoryActivityData.DisplayMode AddEditViewState;
 
-    private HopsSchema hopsSchema;
+    private OtherSchema otherSchema;
     private DataBaseManager dbManager;
     private Toolbar toolbar;
 
     private ScrollView ScrollView;
-    private EditText hopsName;
-    private EditText hopsQty;
+    private EditText Name;
+    private EditText Qty;
     private EditText amount;
-    private EditText type;
-    private EditText AA;
-    private EditText use;
-    private EditText time;
-    private EditText IBU;
     private Spinner editUOfMSpinner;
     private ArrayAdapter<String> UofMAdapter;
 
-    private KeyListener hopsNameListener;
+    private KeyListener NameListener;
     private KeyListener amountListener;
-    private KeyListener typeListener;
-    private KeyListener AAListener;
-    private KeyListener useListener;
-    private KeyListener timeListener;
-    private KeyListener IBUListener;
-    private KeyListener hopsQtyListener;
+    private KeyListener QtyListener;
+
 
     private Button editInventoryButton;
     private Button deleteInventoryButton;
@@ -69,7 +61,7 @@ public class AddEditViewHops extends ActionBarActivity {
 
         //Add add edit layout default
         LayoutInflater inflater =  (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.activity_add_edit_view_hops, null);
+        View view = inflater.inflate(R.layout.activity_add_edit_view_equipment, null);
 
         ScrollView = (ScrollView)findViewById(R.id.inventoryScrollView);
         ScrollView.addView(view);
@@ -78,16 +70,11 @@ public class AddEditViewHops extends ActionBarActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle("Hops");
+        setTitle("Other");
 
-        hopsName = (EditText)findViewById(R.id.hopsNameEditText);
+        Name = (EditText)findViewById(R.id.NameEditText);
         amount = (EditText)findViewById(R.id.amountEditText);
-        type = (EditText)findViewById(R.id.typeEditText);
-        AA = (EditText)findViewById(R.id.AAEditText);
-        use = (EditText)findViewById(R.id.useEditText);
-        time = (EditText)findViewById(R.id.timeEditText);
-        IBU = (EditText)findViewById(R.id.IBUEditText);
-        hopsQty = (EditText)findViewById(R.id.hopsQtyEditText);
+        Qty = (EditText)findViewById(R.id.QtyEditText);
 
         List<String> UOfMs = APPUTILS.UofM;
         UofMAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, UOfMs);
@@ -96,14 +83,9 @@ public class AddEditViewHops extends ActionBarActivity {
         editUOfMSpinner = (Spinner) findViewById(R.id.UofMSpinner);
         editUOfMSpinner.setAdapter(UofMAdapter);
 
-        hopsNameListener = hopsName.getKeyListener();
+        NameListener = Name.getKeyListener();
         amountListener = amount.getKeyListener();
-        typeListener = type.getKeyListener();
-        AAListener = AA.getKeyListener();
-        useListener = use.getKeyListener();
-        timeListener = time.getKeyListener();
-        IBUListener = IBU.getKeyListener();
-        hopsQtyListener = hopsQty.getKeyListener();
+        QtyListener = Qty.getKeyListener();
 
         editInventoryButton = (Button)findViewById(R.id.inventoryEditButton);
         deleteInventoryButton = (Button)findViewById(R.id.inventoryDeleteButton);
@@ -119,7 +101,7 @@ public class AddEditViewHops extends ActionBarActivity {
             ifAddBrew();
         else
         {
-            hopsSchema = (HopsSchema) InventoryActivityData.getInstance().getHopsSchema();
+            otherSchema = (OtherSchema) InventoryActivityData.getInstance().getOtherSchema();
             ifView();
         }
     }
@@ -147,7 +129,7 @@ public class AddEditViewHops extends ActionBarActivity {
         deleteInventoryButton.setVisibility(View.INVISIBLE);
 
         //get brew and display
-        DisplayHops();
+        DisplayOther();
         editInventoryButton.setText("Submit");
         AddEditViewState = InventoryActivityData.DisplayMode.EDIT;
 
@@ -157,7 +139,7 @@ public class AddEditViewHops extends ActionBarActivity {
 
     public void ifView()
     {
-        DisplayHops();
+        DisplayOther();
         editInventoryButton.setText("Edit");
         //Set EditText to not editable and hide button
         AddEditViewState = InventoryActivityData.DisplayMode.VIEW;
@@ -167,33 +149,23 @@ public class AddEditViewHops extends ActionBarActivity {
 
     private void ClearFields()
     {
-        hopsName.setText("");
-        hopsQty.setText("");
+        Name.setText("");
+        Qty.setText("");
         amount.setText("");
-        type.setText("");
-        AA.setText("");
-        use.setText("");
-        time.setText("");
-        IBU.setText("");
     }
 
-    private void DisplayHops()
+    private void DisplayOther()
     {
-        Log.e(LOG, "Entering: DisplayHops");
+        Log.e(LOG, "Entering: DisplayOther");
 
         //Reset all fields
-        hopsName.setText(hopsSchema.getInventoryName());
-        hopsQty.setText(Integer.toString(hopsSchema.getInvetoryQty()));
-        amount.setText(Double.toString(hopsSchema.getAmount()));
-        type.setText(hopsSchema.getType());
-        AA.setText(Double.toString(hopsSchema.getAA()));
-        use.setText(hopsSchema.getUse());
-        time.setText(Integer.toString(hopsSchema.getTime()));
-        IBU.setText(Double.toString(hopsSchema.getIBU()));
+        Name.setText(otherSchema.getInventoryName());
+        Qty.setText(Integer.toString(otherSchema.getInvetoryQty()));
+        amount.setText(Double.toString(otherSchema.getAmount()));
 
         try
         {
-            editUOfMSpinner.setSelection(UofMAdapter.getPosition(hopsSchema.getInventoryUOfM()));
+            editUOfMSpinner.setSelection(UofMAdapter.getPosition(otherSchema.getInventoryUOfM()));
         }
         catch (Exception e)
         {
@@ -204,27 +176,24 @@ public class AddEditViewHops extends ActionBarActivity {
     private void validateSubmit() {
         Log.e(LOG, "Entering: validateSubmit");
 
-        if(hopsName.getText().toString().equals(""))
+        if(Name.getText().toString().equals(""))
         {
             Toast.makeText(this, "Blank Data Field", Toast.LENGTH_LONG).show();
             return;
         }
 
-        //Create Hops
-        HopsSchema aHops;
-        if(hopsSchema == null)
-            aHops = new HopsSchema();
+        //Create Equipment
+        OtherSchema aOtherSchema;
+        if(otherSchema == null)
+            aOtherSchema = new OtherSchema();
         else
-            aHops = hopsSchema;
+            aOtherSchema = otherSchema;
 
-        aHops.setInventoryId(aHops.getInventoryId());
-        aHops.setInventoryName(hopsName.getText().toString());
-        aHops.setUserId(CurrentUser.getInstance().getUser().getUserId());
+        aOtherSchema.setInventoryId(aOtherSchema.getInventoryId());
+        aOtherSchema.setInventoryName(Name.getText().toString());
+        aOtherSchema.setUserId(CurrentUser.getInstance().getUser().getUserId());
 
         double am=0.0;
-        double aa=0.0;
-        double ibu=0.0;
-        int t=0;
         int qt=0;
 
         try
@@ -234,73 +203,51 @@ public class AddEditViewHops extends ActionBarActivity {
         catch (Exception e){}
         try
         {
-            aa = Double.parseDouble(AA.getText().toString());
-        }
-        catch (Exception e){}
-        try
-        {
-            ibu = Double.parseDouble(IBU.getText().toString());
-        }
-        catch (Exception e){}
-        try
-        {
-            t = Integer.parseInt(time.getText().toString());
-        }
-        catch (Exception e){}
-        try
-        {
-            qt = Integer.parseInt(hopsQty.getText().toString());
+            qt = Integer.parseInt(Qty.getText().toString());
         }
         catch (Exception e){}
 
-
-        aHops.setAmount(am);
-        aHops.setAA(aa);
-        aHops.setIBU(ibu);
-        aHops.setTime(t);
-        aHops.setInvetoryQty(qt);
-        aHops.setInventoryUOfM(editUOfMSpinner.getSelectedItem().toString());
-
-        aHops.setUse(use.getText().toString());
-        aHops.setType(type.getText().toString());
+        aOtherSchema.setAmount(am);
+        aOtherSchema.setInvetoryQty(qt);
+        aOtherSchema.setInventoryUOfM(editUOfMSpinner.getSelectedItem().toString());
 
         // If we are doing any adding we want to always create the base Inventory record
         if(AddEditViewState == InventoryActivityData.DisplayMode.ADD || AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD)
         {
 
-            long inventoryId = dbManager.CreateHops(aHops);
+            long inventoryId = dbManager.CreateOther(aOtherSchema);
             if( inventoryId == -1)// -1 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;
             }
-            aHops.setInventoryId(inventoryId);
+            aOtherSchema.setInventoryId(inventoryId);
         }
         else if(AddEditViewState == InventoryActivityData.DisplayMode.EDIT)
         {
-            dbManager.updateHops(aHops);
+           dbManager.updateOther(aOtherSchema);
         }
 
         // If this was on brew activity add we also want to add this to the brew and the brew already exists
         if(AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD && BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >=0)
         {
 
-            aHops.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
-            long inventoryId = dbManager.CreateHops(aHops);
+            aOtherSchema.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
+            long inventoryId = dbManager.CreateOther(aOtherSchema);
             if( inventoryId == -1)// -1 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;
             }
-            aHops.setInventoryId(inventoryId);
+            aOtherSchema.setInventoryId(inventoryId);
         }
         else if(AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD && !(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >=0))
         {
             // add to Brew activity data to be added when brew is created
-            BrewActivityData.getInstance().getBrewInventorySchemaList().add(aHops);
+            BrewActivityData.getInstance().getBrewInventorySchemaList().add(aOtherSchema);
         }
 
-        hopsSchema = aHops;
+        otherSchema = aOtherSchema;
 
         ifView();
 
@@ -317,7 +264,7 @@ public class AddEditViewHops extends ActionBarActivity {
     public void onDeleteClick(View aView)
     {
         // delete Inventory
-        dbManager.deleteHopsById(hopsSchema.getInventoryId());
+        dbManager.deleteOtherById(otherSchema.getInventoryId());
         this.finish();
     }
 
@@ -326,94 +273,45 @@ public class AddEditViewHops extends ActionBarActivity {
         //Reset all fields
         if(!aEditable) {
             //addEditButton.setVisibility(View.INVISIBLE);
-            hopsName.setKeyListener(null);
-            hopsName.setClickable(false);
-            hopsName.setEnabled(false);
-            //hopsName.setFocusable(false);
+            Name.setKeyListener(null);
+            Name.setClickable(false);
+            Name.setEnabled(false);
+            //Name.setFocusable(false);
 
             amount.setKeyListener(null);
             amount.setClickable(false);
             amount.setEnabled(false);
             //amount.setFocusable(false);
 
-            type.setKeyListener(null);
-            type.setClickable(false);
-            type.setEnabled(false);
-            //type.setFocusable(false);
-
-            AA.setKeyListener(null);
-            AA.setClickable(false);
-            AA.setEnabled(false);
-            //AA.setFocusable(false);
-
-            use.setKeyListener(null);
-            use.setClickable(false);
-            use.setEnabled(false);
-            //use.setFocusable(false);
-
-            time.setKeyListener(null);
-            time.setClickable(false);
-            time.setEnabled(false);
-            //time.setFocusable(false);
-
-            IBU.setKeyListener(null);
-            IBU.setClickable(false);
-            IBU.setEnabled(false);
-            //IBU.setFocusable(false);
-
-            hopsQty.setKeyListener(null);
-            hopsQty.setClickable(false);
-            hopsQty.setEnabled(false);
-            //hopsQty.setFocusable(false);
+            Qty.setKeyListener(null);
+            Qty.setClickable(false);
+            Qty.setEnabled(false);
+            //Qty.setFocusable(false);
 
             editUOfMSpinner.setClickable(false);
             editUOfMSpinner.setEnabled(false);
         }
         else
         {
-            //addEditButton.setVisibility(View.VISIBLE);
-            hopsName.setKeyListener(hopsNameListener);
-            hopsName.setClickable(true);
-            hopsName.setEnabled(true);
-            //hopsName.setFocusable(true);
+            //addEditButton.setVisibility(View.INVISIBLE);
+            Name.setKeyListener(NameListener);
+            Name.setClickable(true);
+            Name.setEnabled(true);
+            //Name.setFocusable(true);
 
             amount.setKeyListener(amountListener);
             amount.setClickable(true);
             amount.setEnabled(true);
             //amount.setFocusable(true);
 
-            type.setKeyListener(typeListener);
-            type.setClickable(true);
-            type.setEnabled(true);
-            //type.setFocusable(true);
-
-            AA.setKeyListener(AAListener);
-            AA.setClickable(true);
-            AA.setEnabled(true);
-            //AA.setFocusable(true);
-
-            use.setKeyListener(useListener);
-            use.setClickable(true);
-            use.setEnabled(true);
-            //use.setFocusable(true);
-
-            time.setKeyListener(timeListener);
-            time.setClickable(true);
-            time.setEnabled(true);
-            //time.setFocusable(true);
-
-            IBU.setKeyListener(IBUListener);
-            IBU.setClickable(true);
-            IBU.setEnabled(true);
-            //IBU.setFocusable(true);
-
-            hopsQty.setKeyListener(hopsQtyListener);
-            hopsQty.setClickable(true);
-            hopsQty.setEnabled(true);
-            //hopsQty.setFocusable(true);
+            Qty.setKeyListener(QtyListener);
+            Qty.setClickable(true);
+            Qty.setEnabled(true);
+            //Qty.setFocusable(true);
 
             editUOfMSpinner.setClickable(true);
             editUOfMSpinner.setEnabled(true);
+
         }
     }
 

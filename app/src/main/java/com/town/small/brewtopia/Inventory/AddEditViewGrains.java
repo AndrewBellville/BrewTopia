@@ -9,17 +9,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.town.small.brewtopia.Brews.BrewActivityData;
+import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.DataClass.FermentablesSchema;
 import com.town.small.brewtopia.DataClass.GrainsSchema;
 import com.town.small.brewtopia.R;
+
+import java.util.List;
 
 public class AddEditViewGrains extends ActionBarActivity {
 
@@ -36,6 +41,8 @@ public class AddEditViewGrains extends ActionBarActivity {
     private EditText Name;
     private EditText Qty;
     private EditText amount;
+    private Spinner editUOfMSpinner;
+    private ArrayAdapter<String> UofMAdapter;
 
     private EditText poundPerGallon;
     private EditText Lovibond;
@@ -78,6 +85,13 @@ public class AddEditViewGrains extends ActionBarActivity {
         poundPerGallon = (EditText)findViewById(R.id.poundPerGallonEditText);
         Lovibond = (EditText)findViewById(R.id.lovibondEditText);
         bill = (EditText)findViewById(R.id.billEditText);
+
+        List<String> UOfMs = APPUTILS.UofM;
+        UofMAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, UOfMs);
+        // Specify the layout to use when the list of choices appears
+        UofMAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        editUOfMSpinner = (Spinner) findViewById(R.id.UofMSpinner);
+        editUOfMSpinner.setAdapter(UofMAdapter);
 
         NameListener = Name.getKeyListener();
         amountListener = amount.getKeyListener();
@@ -169,6 +183,15 @@ public class AddEditViewGrains extends ActionBarActivity {
         Lovibond.setText(Double.toString(grainsSchema.getLovibond()));
         bill.setText(Double.toString(grainsSchema.getBill()));
 
+        try
+        {
+            editUOfMSpinner.setSelection(UofMAdapter.getPosition(grainsSchema.getInventoryUOfM()));
+        }
+        catch (Exception e)
+        {
+            editUOfMSpinner.setSelection(0);
+        }
+
     }
 
     private void validateSubmit() {
@@ -231,13 +254,14 @@ public class AddEditViewGrains extends ActionBarActivity {
         aGrainsSchema.setPoundPerGallon(ppg);
         aGrainsSchema.setLovibond(l);
         aGrainsSchema.setBill(b);
+        aGrainsSchema.setInventoryUOfM(editUOfMSpinner.getSelectedItem().toString());
 
         // If we are doing any adding we want to always create the base Inventory record
         if(AddEditViewState == InventoryActivityData.DisplayMode.ADD || AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD)
         {
 
             long inventoryId = dbManager.CreateGrain(aGrainsSchema);
-            if( inventoryId == 0)// 0 brews failed to create
+            if( inventoryId == -1)// -1 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;
@@ -249,18 +273,23 @@ public class AddEditViewGrains extends ActionBarActivity {
             dbManager.updateGrain(aGrainsSchema);
         }
 
-        // If this was a brew add we also want to add this to the brew
-        if(AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD)
+        // If this was on brew activity add we also want to add this to the brew and the brew already exists
+        if(AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD && BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >=0)
         {
 
             aGrainsSchema.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
             long inventoryId = dbManager.CreateGrain(aGrainsSchema);
-            if( inventoryId == 0)// 0 brews failed to create
+            if( inventoryId == -1)// -1 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;
             }
             aGrainsSchema.setInventoryId(inventoryId);
+        }
+        else if(AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD && !(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >=0))
+        {
+            // add to Brew activity data to be added when brew is created
+            BrewActivityData.getInstance().getBrewInventorySchemaList().add(aGrainsSchema);
         }
 
         grainsSchema = aGrainsSchema;
@@ -319,6 +348,9 @@ public class AddEditViewGrains extends ActionBarActivity {
             bill.setEnabled(false);
             //bill.setFocusable(false);
 
+            editUOfMSpinner.setClickable(false);
+            editUOfMSpinner.setEnabled(false);
+
         }
         else
         {
@@ -352,6 +384,9 @@ public class AddEditViewGrains extends ActionBarActivity {
             bill.setClickable(true);
             bill.setEnabled(true);
             //bill.setFocusable(true);
+
+            editUOfMSpinner.setClickable(true);
+            editUOfMSpinner.setEnabled(true);
         }
     }
 

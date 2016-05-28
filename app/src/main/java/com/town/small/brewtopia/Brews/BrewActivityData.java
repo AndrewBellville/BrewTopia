@@ -4,6 +4,7 @@ import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.DataClass.DataBaseManager;
+import com.town.small.brewtopia.DataClass.InventorySchema;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class BrewActivityData {
 
     private List<BoilAdditionsSchema> baArray = new ArrayList<BoilAdditionsSchema>();
     private List<BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();
+    private List<InventorySchema> brewInventorySchemaList = new ArrayList<InventorySchema>();
 
     //State for AddEditView Brew and Brew Name if Edit/View
     public enum DisplayMode {
@@ -56,6 +58,11 @@ public class BrewActivityData {
         for(BrewNoteSchema item: list) clone.add(item);
         return clone;
     }
+    public static List<InventorySchema> cloneInventoryList(List<InventorySchema> list) {
+        List<InventorySchema> clone = new ArrayList<InventorySchema>(list.size());
+        for(InventorySchema item: list) clone.add(item);
+        return clone;
+    }
 
 //getters
     public List<BoilAdditionsSchema> getBaArray() {
@@ -70,6 +77,9 @@ public class BrewActivityData {
     public List<BrewNoteSchema> getBrewNoteSchemaList() {
         return brewNoteSchemaList;
     }
+    public List<InventorySchema> getBrewInventorySchemaList() {
+        return brewInventorySchemaList;
+    }
 
 
     //setters
@@ -80,11 +90,15 @@ public class BrewActivityData {
         AddEditViewBrew = addEditViewBrew;
         setBaArray(cloneAdditionList(addEditViewBrew.getBoilAdditionlist()));
         setBrewNoteSchemaList(cloneNoteList(addEditViewBrew.getBrewNoteSchemaList()));
+        setBrewInventorySchemaList(cloneInventoryList(addEditViewBrew.getBrewInventorySchemaList()));
     }
     public void setAddEditViewState(DisplayMode addEditViewState) {
         AddEditViewState = addEditViewState;
     }
     public void setBrewNoteSchemaList(List<BrewNoteSchema> brewNoteSchemaList) {
         this.brewNoteSchemaList = brewNoteSchemaList;
+    }
+    public void setBrewInventorySchemaList(List<InventorySchema> brewInventorySchemaList) {
+        this.brewInventorySchemaList = brewInventorySchemaList;
     }
 }

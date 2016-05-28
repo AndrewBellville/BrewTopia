@@ -61,12 +61,18 @@ android:orientation="vertical">
         android:id="@+id/amountEditText"
         android:layout_below="@+id/amountTextView" />
 
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/UofMSpinner"
+        android:layout_below="@+id/amountEditText" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Pound Per Gallon (PPG)"
         android:id="@+id/poundPerGallonTextView"
-        android:layout_below="@+id/amountEditText"
+        android:layout_below="@+id/UofMSpinner"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 

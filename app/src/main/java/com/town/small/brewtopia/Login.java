@@ -16,7 +16,7 @@ public class Login extends ActionBarActivity {
 
     // Log cat tag
     private static final String LOG = "Login";
-    private static final String VERSION = "v0.0.3.3";
+    private static final String VERSION = "v0.1.0.0";
 
     private EditText userName;
     private EditText password;
