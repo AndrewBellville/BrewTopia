@@ -1,11 +1,10 @@
 package com.town.small.brewtopia.AppSettings;
 
 import android.content.Context;
-import android.widget.TableRow;
 
 import com.town.small.brewtopia.DataClass.AppSettingsSchema;
 import com.town.small.brewtopia.DataClass.CurrentUser;
-import com.town.small.brewtopia.DataClass.DataBaseManager;
+import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.DataClass.UserSchema;
 
 import java.util.ArrayList;

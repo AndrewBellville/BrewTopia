@@ -9,10 +9,9 @@ import android.provider.CalendarContract;
 
 import com.town.small.brewtopia.AppSettings.AppSettingsHelper;
 import com.town.small.brewtopia.DataClass.APPUTILS;
-import com.town.small.brewtopia.DataClass.AppSettingsSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.DataClass.CurrentUser;
-import com.town.small.brewtopia.DataClass.DataBaseManager;
+import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
 
 import java.text.ParseException;

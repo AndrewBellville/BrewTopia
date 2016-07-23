@@ -19,8 +19,7 @@ import android.widget.Toast;
 import com.town.small.brewtopia.Brews.BrewActivityData;
 import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.CurrentUser;
-import com.town.small.brewtopia.DataClass.DataBaseManager;
-import com.town.small.brewtopia.DataClass.EquipmentSchema;
+import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.DataClass.OtherSchema;
 import com.town.small.brewtopia.R;
 

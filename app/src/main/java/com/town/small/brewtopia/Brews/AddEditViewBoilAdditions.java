@@ -1,37 +1,27 @@
 package com.town.small.brewtopia.Brews;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
-import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
-import com.town.small.brewtopia.DataClass.DataBaseManager;
+import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 public class AddEditViewBoilAdditions extends Fragment {

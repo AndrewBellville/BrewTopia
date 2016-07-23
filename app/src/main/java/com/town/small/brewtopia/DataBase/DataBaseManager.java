@@ -1,4 +1,4 @@
-package com.town.small.brewtopia.DataClass;
+package com.town.small.brewtopia.DataBase;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,14 +8,28 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.town.small.brewtopia.DataClass.APPUTILS;
+import com.town.small.brewtopia.DataClass.AppSettingsSchema;
+import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
+import com.town.small.brewtopia.DataClass.BrewNoteSchema;
+import com.town.small.brewtopia.DataClass.BrewSchema;
+import com.town.small.brewtopia.DataClass.BrewStyleSchema;
+import com.town.small.brewtopia.DataClass.CalculationsSchema;
+import com.town.small.brewtopia.DataClass.EquipmentSchema;
+import com.town.small.brewtopia.DataClass.FermentablesSchema;
+import com.town.small.brewtopia.DataClass.GrainsSchema;
+import com.town.small.brewtopia.DataClass.HopsSchema;
+import com.town.small.brewtopia.DataClass.InventorySchema;
+import com.town.small.brewtopia.DataClass.OtherSchema;
+import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
+import com.town.small.brewtopia.DataClass.UserSchema;
+import com.town.small.brewtopia.DataClass.YeastSchema;
+
 import java.io.ByteArrayOutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,186 +39,190 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 39;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 40;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
     private static final String LOG = "DataBaseManager";
 
     // Table Names
-    private static final String TABLE_USERS = "Users";
-    private static final String TABLE_BREWS = "Brews";
-    private static final String TABLE_BREWS_STYLES = "BrewsStyles";
-    private static final String TABLE_BREWS_NOTES = "BrewNotes";
-    private static final String TABLE_BOIL_ADDITIONS = "BoilAdditions";
-    private static final String TABLE_BREWS_SCHEDULED = "BrewsScheduled";
-    private static final String TABLE_BREWS_CALCULATIONS = "Calculations";
-    private static final String TABLE_APP_SETTINGS = "Settings";
-    private static final String TABLE_INVENTORY_HOPS = "Hops";
-    private static final String TABLE_INVENTORY_FERMENTABLES = "Fermentables";
-    private static final String TABLE_INVENTORY_GRAINS = "Grains";
-    private static final String TABLE_INVENTORY_YEAST = "Yeast";
-    private static final String TABLE_INVENTORY_EQUIPMENT = "Equipment";
-    private static final String TABLE_INVENTORY_OTHER = "Other";
+    protected static final String TABLE_USERS = "Users";
+    protected static final String TABLE_BREWS = "Brews";
+    protected static final String TABLE_BREWS_STYLES = "BrewsStyles";
+    protected static final String TABLE_BREWS_NOTES = "BrewNotes";
+    protected static final String TABLE_BOIL_ADDITIONS = "BoilAdditions";
+    protected static final String TABLE_BREWS_SCHEDULED = "BrewsScheduled";
+    protected static final String TABLE_BREWS_CALCULATIONS = "Calculations";
+    protected static final String TABLE_APP_SETTINGS = "Settings";
+    protected static final String TABLE_INVENTORY_HOPS = "Hops";
+    protected static final String TABLE_INVENTORY_FERMENTABLES = "Fermentables";
+    protected static final String TABLE_INVENTORY_GRAINS = "Grains";
+    protected static final String TABLE_INVENTORY_YEAST = "Yeast";
+    protected static final String TABLE_INVENTORY_EQUIPMENT = "Equipment";
+    protected static final String TABLE_INVENTORY_OTHER = "Other";
 
 
     // Common column names across Mulit tables
-    private static final String ROW_ID = "rowid";
-    private static final String CREATED_ON = "CreatedOn";
-    private static final String USER_ID = "UserId"; // primary keys
-    private static final String BREW_ID = "BrewId"; // primary keys
-    private static final String NOTE = "Note";
-    private static final String ORIGINAL_GRAVITY = "OriginalGravity";
-    private static final String FINAL_GRAVITY = "FinalGravity";
-    private static final String ABV = "ABV";
+    protected static final String ROW_ID = "rowid";
+    protected static final String CREATED_ON = "CreatedOn";
+    protected static final String USER_ID = "UserId"; // primary keys
+    protected static final String BREW_ID = "BrewId"; // primary keys
+    protected static final String NOTE = "Note";
+    protected static final String ORIGINAL_GRAVITY = "OriginalGravity";
+    protected static final String FINAL_GRAVITY = "FinalGravity";
+    protected static final String ABV = "ABV";
     //Common column names across Inventory tables
-    private static final String INVENTORY_NAME = "InventoryName";
-    private static final String INVENTORY_QTY = "InventoryQty";
-    private static final String INVENTORY_AMOUNT = "Amount";
-    private static final String INVENTORY_UOFM = "InventoryUofM";
+    protected static final String INVENTORY_NAME = "InventoryName";
+    protected static final String INVENTORY_QTY = "InventoryQty";
+    protected static final String INVENTORY_AMOUNT = "Amount";
+    protected static final String INVENTORY_UOFM = "InventoryUofM";
 
 
     // USERS column names
-    private static final String USER_NAME = "UserName";
-    private static final String PASSWORD = "Password";
+    protected static final String USER_NAME = "UserName";
+    protected static final String PASSWORD = "Password";
 
     // BREWS column names
-    private static final String BREW_NAME = "BrewName";
-    private static final String BOIL_TIME = "BoilTime";
-    private static final String PRIMARY = "PrimaryFermentation";
-    private static final String SECONDARY = "Secondary";
-    private static final String BOTTLE = "Bottle";
-    private static final String DESCRIPTION = "Description";
-    private static final String STYLE = "Style";
-    private static final String FAVORITE = "Favorite";
-    private static final String SCHEDULED = "Scheduled";
-    private static final String ON_TAP = "OnTap";
-    private static final String IBU = "IBU";
-    private static final String METHOD = "Method";
-    private static final String BATCH_SIZE = "BatchSize";
-    private static final String EFFICIENCY = "Efficiency";
+    protected static final String BREW_NAME = "BrewName";
+    protected static final String BOIL_TIME = "BoilTime";
+    protected static final String PRIMARY = "PrimaryFermentation";
+    protected static final String SECONDARY = "Secondary";
+    protected static final String BOTTLE = "Bottle";
+    protected static final String DESCRIPTION = "Description";
+    protected static final String STYLE = "Style";
+    protected static final String FAVORITE = "Favorite";
+    protected static final String SCHEDULED = "Scheduled";
+    protected static final String ON_TAP = "OnTap";
+    protected static final String IBU = "IBU";
+    protected static final String METHOD = "Method";
+    protected static final String BATCH_SIZE = "BatchSize";
+    protected static final String EFFICIENCY = "Efficiency";
 
     // TABLE_BREWS_STYLES column names
-    private static final String STYLE_NAME = "StyleName";
-    private static final String STYLE_COLOR = "StyleColor";
+    protected static final String STYLE_NAME = "StyleName";
+    protected static final String STYLE_COLOR = "StyleColor";
 
     // BOIL_ADDITIONS column names
-    private static final String ADDITION_NAME = "AdditionName";
-    private static final String ADDITION_TIME = "AdditionTime";
-    private static final String ADDITION_QTY = "AdditionQty";
-    private static final String ADDITION_UOFM = "AdditionUofM";
+    protected static final String ADDITION_NAME = "AdditionName";
+    protected static final String ADDITION_TIME = "AdditionTime";
+    protected static final String ADDITION_QTY = "AdditionQty";
+    protected static final String ADDITION_UOFM = "AdditionUofM";
 
     // BREWS_SCHEDULED column names
-    private static final String SECONDARY_ALERT_DATE = "SecondaryAlertDate";
-    private static final String BOTTLE_ALERT_DATE = "BottleAlertDate";
-    private static final String END_BREW_DATE = "EndBrewDate";
-    private static final String ACTIVE = "Active";
-    private static final String SECONDARY_ALERT_CALENDAR_ID = "SecondaryAlertCalendarId";
-    private static final String BOTTLE_ALERT_CALENDAR_ID = "BottleAlertCalendarId";
-    private static final String END_BREW_CALENDAR_ID = "EndBrewCalendarId";
+    protected static final String SECONDARY_ALERT_DATE = "SecondaryAlertDate";
+    protected static final String BOTTLE_ALERT_DATE = "BottleAlertDate";
+    protected static final String END_BREW_DATE = "EndBrewDate";
+    protected static final String ACTIVE = "Active";
+    protected static final String SECONDARY_ALERT_CALENDAR_ID = "SecondaryAlertCalendarId";
+    protected static final String BOTTLE_ALERT_CALENDAR_ID = "BottleAlertCalendarId";
+    protected static final String END_BREW_CALENDAR_ID = "EndBrewCalendarId";
 
 
     // TABLE_BREWS_CALCULATIONS column names
-    private static final String CALCULATION_ABV = "CalculationAbv";
-    private static final String CALCULATION_NAME = "CalculationName";
+    protected static final String CALCULATION_ABV = "CalculationAbv";
+    protected static final String CALCULATION_NAME = "CalculationName";
 
     // TABLE_APP_SETTINGS column names
-    private static final String SETTING_NAME = "SettingName";
-    private static final String SETTING_VALUE = "SettingValue";
-    private static final String SETTING_SCREEN = "SettingScreen";
+    protected static final String SETTING_NAME = "SettingName";
+    protected static final String SETTING_VALUE = "SettingValue";
+    protected static final String SETTING_SCREEN = "SettingScreen";
 
     // TABLE_INVENTORY_HOPS column names
-    private static final String INVENTORY_TYPE = "Type";
-    private static final String INVENTORY_AA = "AlphaAcid";
-    private static final String INVENTORY_USE = "Use";
-    private static final String INVENTORY_TIME = "Time";
-    private static final String INVENTORY_IBU = "IBU";
+    protected static final String INVENTORY_TYPE = "Type";
+    protected static final String INVENTORY_AA = "AlphaAcid";
+    protected static final String INVENTORY_USE = "Use";
+    protected static final String INVENTORY_TIME = "Time";
+    protected static final String INVENTORY_IBU = "IBU";
 
     // TABLE_INVENTORY_FERMENTABLES / TABLE_INVENTORY_GRAINS column names
-    private static final String INVENTORY_PPG = "PoundPerGallon";
-    private static final String INVENTORY_LOV = "Lovibond";
-    private static final String INVENTORY_BILL = "Bill";
+    protected static final String INVENTORY_PPG = "PoundPerGallon";
+    protected static final String INVENTORY_LOV = "Lovibond";
+    protected static final String INVENTORY_BILL = "Bill";
 
     // TABLE_INVENTORY_YEAST column names
-    private static final String INVENTORY_ATTENUATION = "Attenuation";
-    private static final String INVENTORY_FLOCCULATION = "Flocculation";
-    private static final String INVENTORY_OTL = "OptimumTempLow";
-    private static final String INVENTORY_OTH = "OptimumTempHigh";
-    private static final String INVENTORY_STARTER = "Starter";
+    protected static final String INVENTORY_ATTENUATION = "Attenuation";
+    protected static final String INVENTORY_FLOCCULATION = "Flocculation";
+    protected static final String INVENTORY_OTL = "OptimumTempLow";
+    protected static final String INVENTORY_OTH = "OptimumTempHigh";
+    protected static final String INVENTORY_STARTER = "Starter";
 
 
     // Table Create Statements
     //CREATE_TABLE_USERS
-    private static final String CREATE_TABLE_USERS = "CREATE TABLE "
-            + TABLE_USERS + "(" + USER_NAME + " TEXT PRIMARY KEY,"
-            + PASSWORD + " TEXT," + CREATED_ON + " DATETIME )";
+    protected static final String CREATE_TABLE_USERS = "CREATE TABLE "
+            + TABLE_USERS + "(" + USER_ID + " INTEGER PRIMARY KEY,"
+            + USER_NAME + " TEXT,"+ PASSWORD + " TEXT," + CREATED_ON + " DATETIME )";
 
     //CREATE_TABLE_BREWS
-    private static final String CREATE_TABLE_BREWS = "CREATE TABLE "
+    protected static final String CREATE_TABLE_BREWS = "CREATE TABLE "
             + TABLE_BREWS + "(" + BREW_NAME + " TEXT," + USER_ID + " INTEGER," + BOIL_TIME + " INTEGER," + PRIMARY + " INTEGER," + SECONDARY + " INTEGER," + BOTTLE + " INTEGER,"
             + DESCRIPTION + " TEXT," + STYLE + " TEXT," + CREATED_ON + " DATETIME," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL," + FAVORITE + " INTEGER,"
             + SCHEDULED + " INTEGER," + ON_TAP + " INTEGER,"+ IBU + " REAL,"+ METHOD + " TEXT,"+ BATCH_SIZE + " REAL,"+ EFFICIENCY + " REAL, PRIMARY KEY ("+ BREW_NAME +", "+ USER_ID +" ) )";
 
     //CREATE_TABLE_BREWS_STYLES
-    private static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
+    protected static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
             + TABLE_BREWS_STYLES + "(" + STYLE_NAME + " TEXT," + USER_ID + " INTEGER," + STYLE_COLOR + " TEXT, PRIMARY KEY ("+ STYLE_NAME +", "+ USER_ID +" ) )";
 
     //CREATE_TABLE_BOIL_ADDITIONS
-    private static final String CREATE_TABLE_BOIL_ADDITIONS = "CREATE TABLE "
+    protected static final String CREATE_TABLE_BOIL_ADDITIONS = "CREATE TABLE "
             + TABLE_BOIL_ADDITIONS + "(" + BREW_ID + " INTEGER," + USER_ID + " INTEGER," + ADDITION_NAME + " TEXT," + ADDITION_TIME + " INTEGER,"
             +  ADDITION_QTY + " REAL," +  ADDITION_UOFM + " TEXT )";
 
     //CREATE_TABLE_BREWS_SCHEDULED
-    private static final String CREATE_TABLE_BREWS_SCHEDULED = "CREATE TABLE "
+    protected static final String CREATE_TABLE_BREWS_SCHEDULED = "CREATE TABLE "
             + TABLE_BREWS_SCHEDULED + "(" + BREW_ID + " INTEGER," + USER_ID + " INTEGER," + BREW_NAME + " TEXT," + CREATED_ON + " DATETIME," + SECONDARY_ALERT_DATE
             + " DATETIME," + BOTTLE_ALERT_DATE + " DATETIME," + END_BREW_DATE + " DATETIME," +  ACTIVE + " INTEGER," +  NOTE + " TEXT," +  STYLE_COLOR + " TEXT,"
             + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL," + SECONDARY_ALERT_CALENDAR_ID + " INTEGER,"+ BOTTLE_ALERT_CALENDAR_ID
             + " INTEGER,"+ END_BREW_CALENDAR_ID + " INTEGER )";
 
     //CREATE_TABLE_BREWS_CALCULATIONS
-    private static final String CREATE_TABLE_BREWS_CALCULATIONS = "CREATE TABLE "
+    protected static final String CREATE_TABLE_BREWS_CALCULATIONS = "CREATE TABLE "
             + TABLE_BREWS_CALCULATIONS + "(" + CALCULATION_ABV + " TEXT," + CALCULATION_NAME + " TEXT, PRIMARY KEY ("+ CALCULATION_ABV +", "+ CALCULATION_NAME +" ) )";
 
     //CREATE_TABLE_BREWS_NOTES
-    private static final String CREATE_TABLE_BREWS_NOTES = "CREATE TABLE "
+    protected static final String CREATE_TABLE_BREWS_NOTES = "CREATE TABLE "
             + TABLE_BREWS_NOTES + "(" + BREW_ID + " INTEGER," + USER_ID + " INTEGER," + NOTE + " TEXT," + CREATED_ON + " DATETIME )";
 
     //CREATE_TABLE_APP_SETTINGS
-    private static final String CREATE_TABLE_APP_SETTINGS = "CREATE TABLE "
+    protected static final String CREATE_TABLE_APP_SETTINGS = "CREATE TABLE "
             + TABLE_APP_SETTINGS + "(" + USER_ID + " INTEGER," + SETTING_NAME + " TEXT," + SETTING_VALUE + " TEXT," + SETTING_SCREEN + " TEXT )";
 
     //CREATE_TABLE_INVENTORY_HOPS
-    private static final String CREATE_TABLE_INVENTORY_HOPS = "CREATE TABLE "
+    protected static final String CREATE_TABLE_INVENTORY_HOPS = "CREATE TABLE "
             + TABLE_INVENTORY_HOPS + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT," + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER," + INVENTORY_UOFM + " TEXT,"
             + INVENTORY_IBU + " REAL )";
 
     //CREATE_TABLE_INVENTORY_FERMENTABLES
-    private static final String CREATE_TABLE_INVENTORY_FERMENTABLES = "CREATE TABLE "
+    protected static final String CREATE_TABLE_INVENTORY_FERMENTABLES = "CREATE TABLE "
             + TABLE_INVENTORY_FERMENTABLES + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_BILL + " REAL )";
 
     //CREATE_TABLE_INVENTORY_GRAINS
-    private static final String CREATE_TABLE_INVENTORY_GRAINS = "CREATE TABLE "
+    protected static final String CREATE_TABLE_INVENTORY_GRAINS = "CREATE TABLE "
             + TABLE_INVENTORY_GRAINS + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_BILL + " REAL )";
 
     //CREATE_TABLE_INVENTORY_YEAST
-    private static final String CREATE_TABLE_INVENTORY_YEAST = "CREATE TABLE "
+    protected static final String CREATE_TABLE_INVENTORY_YEAST = "CREATE TABLE "
             + TABLE_INVENTORY_YEAST + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_AMOUNT + " REAL," + INVENTORY_FLOCCULATION + " TEXT," + INVENTORY_STARTER + " INTEGER," + INVENTORY_ATTENUATION + " REAL,"
             + INVENTORY_OTL + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_OTH + " REAL )";
 
     //CREATE_TABLE_INVENTORY_EQUIPMENT
-    private static final String CREATE_TABLE_INVENTORY_EQUIPMENT = "CREATE TABLE "
+    protected static final String CREATE_TABLE_INVENTORY_EQUIPMENT = "CREATE TABLE "
             + TABLE_INVENTORY_EQUIPMENT + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_UOFM + " TEXT," + INVENTORY_AMOUNT + " REAL )";
 
     //CREATE_TABLE_INVENTORY_OTHER
-    private static final String CREATE_TABLE_INVENTORY_OTHER = "CREATE TABLE "
+    protected static final String CREATE_TABLE_INVENTORY_OTHER = "CREATE TABLE "
             + TABLE_INVENTORY_OTHER + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_UOFM + " TEXT," + INVENTORY_AMOUNT + " REAL )";
 
+
+    //DatabaseHelpers
+    protected static DataBaseManagerUpdates dataBaseManagerUpdates;
+    protected static DataBasePreLoad dataBasePreLoad;
 
     //Singleton
     private static DataBaseManager mInstance = null;
@@ -212,6 +230,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public static DataBaseManager getInstance(Context aContext) {
         if (mInstance == null) {
             mInstance = new DataBaseManager(aContext.getApplicationContext());
+            dataBaseManagerUpdates = DataBaseManagerUpdates.getInstance(aContext.getApplicationContext());
+            dataBasePreLoad = DataBasePreLoad.getInstance(aContext.getApplicationContext());
         }
         return mInstance;
     }
@@ -240,78 +260,16 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_OTHER);
 
         //Pre Load Data
-        PreLoadAdminUser(aSQLiteDatabase);
-        PreLoadBrewStyles(aSQLiteDatabase);
-        PreLoadCalculations(aSQLiteDatabase);
+        dataBasePreLoad.PreLoadAdminUser(aSQLiteDatabase);
+        dataBasePreLoad.PreLoadBrewStyles(aSQLiteDatabase);
+        dataBasePreLoad.PreLoadCalculations(aSQLiteDatabase);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase aSQLiteDatabase, int aOldVersion, int aNewVersion) {
         // on upgrade drop older tables
         Log.e(LOG, "Entering: onUpgrade OldVersion["+aOldVersion+"] NewVersion["+aNewVersion+"]");
-        updateAllTables(aSQLiteDatabase, aOldVersion);
-    }
-
-    private void updateAllTables(SQLiteDatabase aSQLiteDatabase, int aOldVersion)
-    {
-        // Started maintaining data at DB 35
-        if(aOldVersion < 35)
-            dropAllTables(aSQLiteDatabase);
-
-        if(aOldVersion < 36)
-        {
-            //aSQLiteDatabase.execSQL("ALTER TABLE foo ADD COLUMN new_column INTEGER DEFAULT 0");
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ TABLE_INVENTORY_HOPS +" ADD COLUMN "+ INVENTORY_UOFM +" TEXT DEFAULT '' ");
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ TABLE_INVENTORY_FERMENTABLES +" ADD COLUMN "+ INVENTORY_UOFM +" TEXT DEFAULT '' ");
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ TABLE_INVENTORY_GRAINS +" ADD COLUMN "+ INVENTORY_UOFM +" TEXT DEFAULT '' ");
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ TABLE_INVENTORY_YEAST +" ADD COLUMN "+ INVENTORY_UOFM +" TEXT DEFAULT '' ");
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ TABLE_INVENTORY_EQUIPMENT +" ADD COLUMN "+ INVENTORY_UOFM +" TEXT DEFAULT '' ");
-        }
-
-        if(aOldVersion < 37)
-        {
-            aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_OTHER);
-        }
-
-        if(aOldVersion < 38)
-        {
-            aSQLiteDatabase.execSQL("DELETE FROM "+ TABLE_BREWS_CALCULATIONS +" ");
-            PreLoadCalculations(aSQLiteDatabase);
-        }
-        if(aOldVersion < 39)
-        {
-            String tempBoilAdditions = "CREATE TABLE "
-                    + "TempAdditions" + "(" + BREW_ID + " INTEGER," + USER_ID + " INTEGER," + ADDITION_NAME + " TEXT," + ADDITION_TIME + " INTEGER,"
-                    +  ADDITION_QTY + " REAL," +  ADDITION_UOFM + " TEXT )";
-            aSQLiteDatabase.execSQL(tempBoilAdditions);
-
-            aSQLiteDatabase.execSQL("INSERT INTO TempAdditions ("+BREW_ID+","+USER_ID+","+ADDITION_NAME+","+ADDITION_TIME+","+ADDITION_QTY+","+ADDITION_UOFM+") " +
-                    "SELECT "+BREW_ID+","+USER_ID+","+ADDITION_NAME+","+ADDITION_TIME+","+ADDITION_QTY+","+ADDITION_UOFM+" FROM "+ TABLE_BOIL_ADDITIONS );
-
-            aSQLiteDatabase.execSQL("DROP TABLE "+ TABLE_BOIL_ADDITIONS );
-            aSQLiteDatabase.execSQL("ALTER TABLE TempAdditions RENAME TO "+ TABLE_BOIL_ADDITIONS );
-        }
-    }
-
-    private void dropAllTables(SQLiteDatabase aSQLiteDatabase)
-    {
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_STYLES);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BOIL_ADDITIONS);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_SCHEDULED);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_CALCULATIONS);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_BREWS_NOTES);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_APP_SETTINGS);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_HOPS);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_FERMENTABLES);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_GRAINS);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_YEAST);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_EQUIPMENT);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY_OTHER);
-
-        // create new tables
-        onCreate(aSQLiteDatabase);
+        dataBaseManagerUpdates.updateAllTables(aSQLiteDatabase, aOldVersion);
     }
 
     // closing database
@@ -321,79 +279,10 @@ public class DataBaseManager extends SQLiteOpenHelper {
             db.close();
     }
 
-    private void PreLoadAdminUser(SQLiteDatabase aSQLiteDatabase)
+    public void SyncUser()
     {
-        SQLiteDatabase db = aSQLiteDatabase;
-
-        ContentValues values = new ContentValues();
-        values.put(USER_NAME, "ADMIN");
-        values.put(PASSWORD, "");
-        values.put(CREATED_ON, getDateTime());
-
-        db.insert(TABLE_USERS,null,values);
-
-    }
-    private void PreLoadBrewStyles(SQLiteDatabase aSQLiteDatabase)
-    {
-        SQLiteDatabase db = aSQLiteDatabase;
-
-        String selectQuery = "SELECT "+ROW_ID+", * FROM " + TABLE_USERS + " WHERE "
-                + USER_NAME + " = 'ADMIN'";
-
-        Log.e(LOG, selectQuery);
-
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        if (c != null) {
-            c.moveToFirst();
-
-            UserSchema user = new UserSchema();
-            user.setUserId(c.getInt(c.getColumnIndex(ROW_ID)));
-            user.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
-            user.setPassword((c.getString(c.getColumnIndex(PASSWORD))));
-            user.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
-
-
-            Set mapSet = (Set) APPUTILS.StyleMap.entrySet();
-            //Create iterator on Set
-            Iterator mapIterator = mapSet.iterator();
-
-            while (mapIterator.hasNext()) {
-                Map.Entry mapEntry = (Map.Entry) mapIterator.next();
-                // getKey Method of HashMap access a key of map
-                String keyValue = (String) mapEntry.getKey();
-                //getValue method returns corresponding key's value
-                String value = (String) mapEntry.getValue();
-
-                ContentValues values = new ContentValues();
-                values.put(STYLE_NAME, keyValue);
-                values.put(USER_ID, user.getUserId());
-                values.put(STYLE_COLOR, value);
-
-                db.insert(TABLE_BREWS_STYLES, null, values);
-
-            }
-        }
-    }
-    private void PreLoadCalculations(SQLiteDatabase aSQLiteDatabase)
-    {
-        SQLiteDatabase db = aSQLiteDatabase;
-
-        ContentValues values = new ContentValues();
-        values.put(CALCULATION_ABV, "ABV");
-        values.put(CALCULATION_NAME, "Alcohol by volume");
-        db.insert(TABLE_BREWS_CALCULATIONS,null,values);
-
-        values = new ContentValues();
-        values.put(CALCULATION_ABV, "BRIX->SG");
-        values.put(CALCULATION_NAME, "Brix Calculations");
-        db.insert(TABLE_BREWS_CALCULATIONS,null,values);
-
-        values = new ContentValues();
-        values.put(CALCULATION_ABV, "SG->BRIX");
-        values.put(CALCULATION_NAME, "Specific Gravity Calculations");
-        db.insert(TABLE_BREWS_CALCULATIONS,null,values);
-
+        SQLiteDatabase db = this.getWritableDatabase();
+        dataBaseManagerUpdates.UserSync(db);
     }
 
     //******************************User Table function*********************************
@@ -408,6 +297,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             return false;
 
         ContentValues values = new ContentValues();
+        values.put(USER_ID, aUser.getUserId());
         values.put(USER_NAME, aUser.getUserName());
         values.put(PASSWORD, aUser.getPassword());
         values.put(CREATED_ON, getDateTime());
@@ -420,11 +310,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
     * get single User
     */
-    public UserSchema getUser(String aUserName) {
+    public UserSchema getUser(long aUserId) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String selectQuery = "SELECT "+ROW_ID+", * FROM " + TABLE_USERS + " WHERE "
-                + USER_NAME + " = '" + aUserName+"'";
+        String selectQuery = "SELECT * FROM " + TABLE_USERS + " WHERE "
+                + USER_ID + " = '" + aUserId + "'";
 
         Log.e(LOG, selectQuery);
 
@@ -434,11 +324,12 @@ public class DataBaseManager extends SQLiteOpenHelper {
             c.moveToFirst();
 
         UserSchema user = new UserSchema();
-        user.setUserId(c.getLong(c.getColumnIndex(ROW_ID)));
+        user.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
         user.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
         user.setPassword((c.getString(c.getColumnIndex(PASSWORD))));
         user.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
 
+        Log.e(LOG, "Insert: getUser["+user.getUserName()+"]");
         c.close();
         return user;
     }
@@ -446,11 +337,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
     * Return true if user login exists
     */
-    public boolean DoesUserLoginExist(String aUserName, String aPassword) {
+    public long DoesUserLoginExist(String aUserName, String aPassword) {
         SQLiteDatabase db = this.getReadableDatabase();
-        boolean retVal = false;
+        long retVal = -1;
 
-        String selectQuery = "SELECT  * FROM " + TABLE_USERS + " WHERE "
+        String selectQuery = "SELECT * FROM " + TABLE_USERS + " WHERE "
                 + USER_NAME + " = '" + aUserName + "' AND "
                 + PASSWORD + " = '" + aPassword + "'";
 
@@ -459,8 +350,10 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
 
         // record found return true
-        if (c.getCount() > 0)
-            retVal = true;
+        if (c != null && c.getCount() > 0) {
+            c.moveToFirst();
+            retVal = c.getLong(c.getColumnIndex(USER_ID));
+        }
 
         c.close();
         return retVal;

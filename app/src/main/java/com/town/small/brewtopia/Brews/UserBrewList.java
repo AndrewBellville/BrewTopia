@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
 
-import com.town.small.brewtopia.CustomListAdapter;
+import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.Login;
 import com.town.small.brewtopia.R;
 
@@ -26,9 +26,6 @@ public class UserBrewList extends Fragment {
 
     // Log cat tag
     private static final String LOG = "UserBrews";
-
-    //intent message
-    //public final static String EXTRA_MESSAGE = "com.town.small.brewtopia.Brews";
 
     private long userId;
     private ListView BrewListView;

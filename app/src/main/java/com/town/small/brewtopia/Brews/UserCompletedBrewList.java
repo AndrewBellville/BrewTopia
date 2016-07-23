@@ -8,12 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.town.small.brewtopia.CustomListAdapter;
+import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.Login;
 import com.town.small.brewtopia.R;
 

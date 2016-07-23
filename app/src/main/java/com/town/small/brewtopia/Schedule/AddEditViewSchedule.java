@@ -3,15 +3,12 @@ package com.town.small.brewtopia.Schedule;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.method.KeyListener;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -21,14 +18,11 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.town.small.brewtopia.Brews.BrewActivityData;
 import com.town.small.brewtopia.DataClass.APPUTILS;
-import com.town.small.brewtopia.DataClass.BrewStyleSchema;
 import com.town.small.brewtopia.DataClass.CurrentUser;
-import com.town.small.brewtopia.DataClass.DataBaseManager;
+import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
 import com.town.small.brewtopia.R;
 
@@ -38,7 +32,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class AddEditViewSchedule extends ActionBarActivity {
 

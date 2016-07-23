@@ -3,7 +3,6 @@ package com.town.small.brewtopia.Schedule;
 
 import android.content.Intent;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,22 +11,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
-import com.town.small.brewtopia.CustomListAdapter;
+import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.Login;
 import com.town.small.brewtopia.R;
-import com.town.small.brewtopia.Schedule.AddEditViewSchedule;
-import com.town.small.brewtopia.Schedule.MyCalendar;
 import com.town.small.brewtopia.DataClass.*;
-import com.town.small.brewtopia.Schedule.ScheduleActivityData;
 import com.town.small.brewtopia.Utilites.SlidingUpPaneLayout;
 
 public class UserSchedule extends Fragment {

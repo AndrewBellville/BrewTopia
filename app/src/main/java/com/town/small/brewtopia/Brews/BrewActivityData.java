@@ -3,7 +3,6 @@ package com.town.small.brewtopia.Brews;
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
-import com.town.small.brewtopia.DataClass.DataBaseManager;
 import com.town.small.brewtopia.DataClass.InventorySchema;
 
 import java.util.ArrayList;

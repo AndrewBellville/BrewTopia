@@ -16,6 +16,7 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.R;
 import com.town.small.brewtopia.DataClass.*;
 import com.town.small.brewtopia.Timer.TimerData;

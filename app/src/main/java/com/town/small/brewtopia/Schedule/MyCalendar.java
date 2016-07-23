@@ -19,19 +19,15 @@ package com.town.small.brewtopia.Schedule;
         import android.widget.TextView;
 
         import com.town.small.brewtopia.DataClass.APPUTILS;
-        import com.town.small.brewtopia.DataClass.BrewSchema;
-        import com.town.small.brewtopia.DataClass.DataBaseManager;
         import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
         import com.town.small.brewtopia.R;
 
-        import java.text.ParseException;
         import java.text.SimpleDateFormat;
         import java.util.ArrayList;
         import java.util.Calendar;
         import java.util.Date;
         import java.util.HashSet;
         import java.util.List;
-        import java.util.Locale;
 
 public class MyCalendar extends LinearLayout
 {

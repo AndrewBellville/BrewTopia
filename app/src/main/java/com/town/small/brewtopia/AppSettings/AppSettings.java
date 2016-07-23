@@ -11,10 +11,9 @@ import android.widget.ListView;
 
 import com.town.small.brewtopia.DataClass.AppSettingsSchema;
 import com.town.small.brewtopia.DataClass.CurrentUser;
-import com.town.small.brewtopia.DataClass.DataBaseManager;
+import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AppSettings extends ActionBarActivity {

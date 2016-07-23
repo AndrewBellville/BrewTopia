@@ -119,6 +119,7 @@
         android:id="@+id/textViewNoLogin"
         android:textColor="@android:color/holo_blue_dark"
         android:layout_below="@+id/MessageText"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="onNoUserLogin"/>
 
 </RelativeLayout>

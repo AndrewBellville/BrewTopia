@@ -1,37 +1,24 @@
 package com.town.small.brewtopia.Brews;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
-import com.town.small.brewtopia.DataClass.CurrentUser;
-import com.town.small.brewtopia.DataClass.DataBaseManager;
-import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
+import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.R;
-import com.town.small.brewtopia.Schedule.AddEditViewSchedule;
-import com.town.small.brewtopia.Schedule.CustomSListAdapter;
-import com.town.small.brewtopia.Schedule.ScheduleActivityData;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
