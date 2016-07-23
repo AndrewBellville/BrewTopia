@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.town.small.brewtopia.AppSettings.AppSettings;
 import com.town.small.brewtopia.Brews.UserBrewList;
 import com.town.small.brewtopia.Calculations.UserCalculations;
+import com.town.small.brewtopia.Global.UserGlobal;
 import com.town.small.brewtopia.Inventory.UserInventory;
 import com.town.small.brewtopia.Schedule.UserSchedule;
 import com.town.small.brewtopia.Utilites.SlidingTabLayout;
@@ -110,8 +111,8 @@ public class UserProfile extends ActionBarActivity {
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
-            tabNames = new  String[]{"Brews","Schedule","Inveotry","Calculations"};
-            icons = new  int[]{R.drawable.beer_dark,R.drawable.calendar,R.drawable.document,R.drawable.calculator};
+            tabNames = new  String[]{"Brews","Schedule","Inventory","Calculations","Global"};
+            icons = new  int[]{R.drawable.beer_dark,R.drawable.calendar,R.drawable.document,R.drawable.calculator,R.drawable.global};
         }
 
         @Override
@@ -125,6 +126,8 @@ public class UserProfile extends ActionBarActivity {
                 fragment = new UserInventory();
             else if (position == 3)
                 fragment = new UserCalculations();
+            else if (position == 4)
+                fragment = new UserGlobal();
 
             return fragment;
         }
@@ -144,7 +147,7 @@ public class UserProfile extends ActionBarActivity {
 
         @Override
         public int getCount() {
-            return 4;
+            return 5;
         }
         public void setContext(Context context) {
             this.context = context;

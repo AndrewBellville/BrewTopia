@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.R;
 
@@ -81,26 +82,24 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
 
         //Handle TextView and display string from list
         TextView listItemText = (TextView)view.findViewById(R.id.list_item_string);
-        listItemText.setText(brewSchema.getBrewName());
-
-        String discriptionString;
+        String truncatedString;
         if(brewSchema.getBrewName().length() >= 25)
-            discriptionString = brewSchema.getBrewName().substring(0,25)+"...";
+            truncatedString = brewSchema.getBrewName().substring(0,25)+"...";
         else
-            discriptionString = brewSchema.getBrewName();
+            truncatedString = brewSchema.getBrewName();
 
-        listItemText.setText(discriptionString);
+        listItemText.setText(truncatedString);
 
         TextView listItemText1 = (TextView)view.findViewById(R.id.list_item_string1);
-        listItemText1.setText(brewSchema.getStyle() +" - "+brewSchema.getTargetABV()+"%");
+        listItemText1.setText(brewSchema.getStyle() +" - "+ APPUTILS.GetTruncatedABVPercent(brewSchema.getTargetABV())+"%");
 
         TextView listItemText2 = (TextView)view.findViewById(R.id.list_item_string2);
         if(brewSchema.getDescription().length() >= 25)
-            discriptionString = brewSchema.getDescription().substring(0,25)+"...";
+            truncatedString = brewSchema.getDescription().substring(0,25)+"...";
         else
-            discriptionString = brewSchema.getDescription();
+            truncatedString = brewSchema.getDescription();
 
-        listItemText2.setText(discriptionString);
+        listItemText2.setText(truncatedString);
 
         // Icons
         ImageView favoriteIcon = (ImageView) view.findViewById(R.id.favoriteImage);

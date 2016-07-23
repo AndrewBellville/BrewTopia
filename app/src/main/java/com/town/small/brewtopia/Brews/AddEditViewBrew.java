@@ -218,7 +218,7 @@ public class AddEditViewBrew extends Fragment {
         boilTime.setText(Integer.toString(aBrewSchema.getBoilTime()));
         targetOG.setText(Double.toString(aBrewSchema.getTargetOG()));
         targetFG.setText(Double.toString(aBrewSchema.getTargetFG()));
-        targetABV.setText(Double.toString(aBrewSchema.getTargetABV()));
+        targetABV.setText(Double.toString(APPUTILS.GetTruncatedABVPercent(aBrewSchema.getTargetABV()))+"%");
         method.setText(aBrewSchema.getMethod());
         IBU.setText(Double.toString(aBrewSchema.getIBU()));
         favorite.setChecked(aBrewSchema.getBooleanFavorite());
@@ -364,7 +364,7 @@ public class AddEditViewBrew extends Fragment {
         brew.setBottle(bc);
         brew.setTargetOG(og);
         brew.setTargetFG(fg);
-        brew.setTargetABV(abv);
+        //brew.setTargetABV(abv);
         brew.setDescription(description.getText().toString());
         brew.setBoilTime(bt);
         brew.setStyle(styleSpinner.getSelectedItem().toString());
@@ -564,9 +564,9 @@ public class AddEditViewBrew extends Fragment {
             targetFG.setEnabled(true);
             //targetFG.setFocusable(true);
 
-            targetABV.setKeyListener(targetABVListener);
-            targetABV.setClickable(true);
-            targetABV.setEnabled(true);
+            targetABV.setKeyListener(null);
+            targetABV.setClickable(false);
+            targetABV.setEnabled(false);
             //targetABV.setFocusable(true);
 
             method.setKeyListener(methodListener);

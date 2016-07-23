@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.R;
 
 import java.math.BigDecimal;
@@ -58,20 +59,14 @@ public class AlcoholByVolume extends ActionBarActivity {
 
         double og = Double.parseDouble(OG.getText().toString());
         double fg = Double.parseDouble(FG.getText().toString());
-        double abv = (og - fg)/.75;
+        double abv = APPUTILS.GetABV(og,fg);
 
         //Calculation
-        Double truncatedDouble = new BigDecimal(Double.toString(abv))
-                .setScale(4, BigDecimal.ROUND_HALF_UP)
-                .doubleValue();
-
+        Double truncatedDouble = APPUTILS.GetTruncatedABV(abv);
         CalcABV.setText(truncatedDouble.toString());
 
         //Percent
-        truncatedDouble = new BigDecimal(Double.toString(abv*100))
-                .setScale(1, BigDecimal.ROUND_HALF_UP)
-                .doubleValue();
-
+        truncatedDouble = APPUTILS.GetTruncatedABVPercent(abv);
         ABV.setText(truncatedDouble.toString() + " %");
     }
 

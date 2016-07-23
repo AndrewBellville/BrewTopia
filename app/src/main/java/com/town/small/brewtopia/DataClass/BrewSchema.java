@@ -64,6 +64,14 @@ public class BrewSchema {
         }
     }
 
+    private void CalculateABV()
+    {
+        if(targetFG != 0)
+            setTargetABV( APPUTILS.GetTruncatedABV(APPUTILS.GetABV(targetOG,targetFG)) );
+        else
+            setTargetABV(0.0);
+    }
+
     //getters
     public long getBrewId() {
         return brewId;
@@ -205,6 +213,7 @@ public class BrewSchema {
     }
     public void setTargetFG(Double targetFG) {
         this.targetFG = targetFG;
+        CalculateABV();
     }
     public void setTargetABV(Double targetABV) {
         this.targetABV = targetABV;

@@ -71,6 +71,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
     private EditText Notes;
     private EditText OriginalGravity;
     private EditText FinalGravity;
+    private EditText ABV;
 
     private Button editScheduleButton;
     private Spinner colorSpinner;
@@ -115,7 +116,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         Notes = (EditText)findViewById(R.id.ScheduleNoteseditText);
         OriginalGravity = (EditText)findViewById(R.id.ScheduleOGeditText);
         FinalGravity = (EditText)findViewById(R.id.ScheduleFGeditText);
-
+        ABV = (EditText)findViewById(R.id.ScheduleABVeditText);
 
         colorSpinner = (Spinner) findViewById(R.id.Colorspinner);
         dateRollUpCheckBox = (CheckBox)findViewById(R.id.DateRollUpCheckBox);
@@ -191,6 +192,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         Notes.setText(aScheduleSchema.getNotes());
         OriginalGravity.setText(Double.toString(aScheduleSchema.getOG()));
         FinalGravity.setText(Double.toString(aScheduleSchema.getFG()));
+        ABV.setText(Double.toString(APPUTILS.GetTruncatedABVPercent(aScheduleSchema.getABV())) +"%" );
     }
 
     private void setColorSpinner()
@@ -425,12 +427,19 @@ public class AddEditViewSchedule extends ActionBarActivity {
             FinalGravity.setEnabled(false);
             //FinalGravity.setFocusable(false);
 
+            ABV.setKeyListener(null);
+            ABV.setClickable(false);
+            ABV.setEnabled(false);
+            //ABV.setFocusable(false);
+
             Notes.setKeyListener(null);
             Notes.setClickable(false);
             Notes.setEnabled(false);
             //Notes.setFocusable(false);
 
             colorSpinner.setClickable(false);
+            colorSpinner.setEnabled(false);
+
             dateRollUpCheckBox.setClickable(false);
         }
         else
@@ -466,12 +475,19 @@ public class AddEditViewSchedule extends ActionBarActivity {
             FinalGravity.setEnabled(true);
             FinalGravity.setFocusable(true);
 
+            ABV.setKeyListener(null);
+            ABV.setClickable(false);
+            ABV.setEnabled(false);
+            ABV.setFocusable(false);
+
             Notes.setKeyListener(NotesListener);
             Notes.setClickable(true);
             Notes.setEnabled(true);
             Notes.setFocusable(true);
 
             colorSpinner.setClickable(true);
+            colorSpinner.setEnabled(true);
+
             dateRollUpCheckBox.setClickable(true);
         }
     }

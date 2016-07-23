@@ -1,5 +1,6 @@
 package com.town.small.brewtopia.DataClass;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -151,7 +152,10 @@ public class ScheduledBrewSchema {
 
     private void CalculateABV()
     {
-        setABV( ( (OG - FG)/.75 ) );
+        if(FG != 0)
+            setABV( APPUTILS.GetTruncatedABV(APPUTILS.GetABV(OG,FG)) );
+        else
+            setABV(0.0);
     }
 
     //Getters

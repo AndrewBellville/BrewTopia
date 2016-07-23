@@ -1,5 +1,6 @@
 package com.town.small.brewtopia.DataClass;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,11 +50,35 @@ public class APPUTILS {
     //********************Unit Of Measure List**********************
     public static final List<String> UofM = new ArrayList<String>(){
         {
-            add("lb");
+            add("unit");
             add("oz");
+            add("g");
+            add("cups");
+            add("lb");
         }
     };
 
+    //********************Calculations**********************
+    public static Double GetABV(Double aOG, Double aFG)
+    {
+        return ((aOG - aFG)/.75);
+    }
+    public static Double GetTruncatedABV(Double aABV)
+    {
+        Double truncatedDouble = new BigDecimal(Double.toString(aABV))
+                .setScale(4, BigDecimal.ROUND_HALF_UP)
+                .doubleValue();
+
+        return truncatedDouble;
+    }
+    public static Double GetTruncatedABVPercent(Double aABV)
+    {
+        Double truncatedDouble = new BigDecimal(Double.toString(aABV*100))
+                .setScale(2, BigDecimal.ROUND_HALF_UP)
+                .doubleValue();
+
+        return truncatedDouble;
+    }
 
 
 }

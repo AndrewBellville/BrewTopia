@@ -8,15 +8,19 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
 import com.town.small.brewtopia.AppSettings.AppSettingsHelper;
 import com.town.small.brewtopia.DataClass.*;
+import com.town.small.brewtopia.WebAPI.LoginRequest;
 
 
 public class Login extends ActionBarActivity {
 
     // Log cat tag
     private static final String LOG = "Login";
-    private static final String VERSION = "v0.1.0.0";
+    private static final String VERSION = "v0.1.0.1";
 
     private EditText userName;
     private EditText password;
@@ -43,13 +47,30 @@ public class Login extends ActionBarActivity {
         version.setText(VERSION);
     }
 
-    private boolean validateUserLogin()
+    private void validateUserLogin()
     {
         Log.e(LOG, "Entering: validateUserLogin");
 
         //TODO better verification
         //verify user record exists
-        return dbManager.DoesUserLoginExist(userName.getText().toString(),password.getText().toString());
+        Response.Listener<String> ResponseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.e(LOG, response);
+                if (response.equals("Error"))// no match for user password
+                {
+                    perfromLogin(false);
+                } else {
+                    perfromLogin(true);
+                }
+            }
+        };
+
+        LoginRequest loginRequest = new LoginRequest(userName.getText().toString(),password.getText().toString(),ResponseListener,null);
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(loginRequest);
+        //return dbManager.DoesUserLoginExist(userName.getText().toString(),password.getText().toString());
+        //return WebAPI.getInstance().DoesUserLoginExist(userName.getText().toString(),password.getText().toString());
     }
 
     private boolean validateUserCreate()
@@ -72,8 +93,14 @@ public class Login extends ActionBarActivity {
     public void onLoginClick(View aView)
     {
         Log.e(LOG, "Entering: onLoginClick");
+        validateUserLogin();
+    }
 
-        if (validateUserLogin())
+    private void perfromLogin(boolean isSuccess)
+    {
+        Log.e(LOG, "Entering: perfromLogin");
+
+        if (isSuccess)
         {
             //Create and intent which will open next activity UserProfile
             Intent intent = new Intent(this, UserProfile.class);

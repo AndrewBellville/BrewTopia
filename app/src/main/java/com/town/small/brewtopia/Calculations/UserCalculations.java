@@ -30,9 +30,6 @@ public class UserCalculations extends Fragment {
     // Log cat tag
     private static final String LOG = "UserCalculations";
 
-    //intent message
-    public final static String EXTRA_MESSAGE = "com.town.small.brewtopia.Brews";
-
     private List<CalculationsSchema> Calculations;
 
     private String userName;
@@ -109,11 +106,11 @@ public class UserCalculations extends Fragment {
             intent = new Intent(getActivity(), AlcoholByVolume.class);
             startActivity(intent);
         }
-        else if(selectedRow.get("text1").equals("BRIX")){
+        else if(selectedRow.get("text1").equals("BRIX->SG")){
             intent = new Intent(getActivity(), BrixCalculations.class);
             startActivity(intent);
         }
-        else if(selectedRow.get("text1").equals("SG")){
+        else if(selectedRow.get("text1").equals("SG->BRIX")){
             intent = new Intent(getActivity(), SpecificGravity.class);
             startActivity(intent);
         }

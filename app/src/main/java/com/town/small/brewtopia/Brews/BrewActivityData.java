@@ -27,6 +27,7 @@ public class BrewActivityData {
     };
     private DisplayMode AddEditViewState = DisplayMode.ADD; // STATES: Add, Edit, View
     private BrewSchema AddEditViewBrew;
+    private long ScheduleId; //Used for Displaying Completed brews
 
     //Singleton
     private static BrewActivityData mInstance = null;
@@ -80,6 +81,9 @@ public class BrewActivityData {
     public List<InventorySchema> getBrewInventorySchemaList() {
         return brewInventorySchemaList;
     }
+    public long getScheduleId() {
+        return ScheduleId;
+    }
 
 
     //setters
@@ -100,5 +104,8 @@ public class BrewActivityData {
     }
     public void setBrewInventorySchemaList(List<InventorySchema> brewInventorySchemaList) {
         this.brewInventorySchemaList = brewInventorySchemaList;
+    }
+    public void setScheduleId(long scheduleId) {
+        ScheduleId = scheduleId;
     }
 }
