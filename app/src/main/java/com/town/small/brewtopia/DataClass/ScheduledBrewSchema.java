@@ -30,6 +30,7 @@ public class ScheduledBrewSchema {
     private int Active;
     private int displayLevel = 0;
     private String color;
+    private int hasStarter=0; //0 = no 1 = yes
 
     //visual
     private boolean showAsAlert = false;
@@ -216,7 +217,15 @@ public class ScheduledBrewSchema {
     public String getBrewName() {
         return brewName;
     }
-
+    public int getHasStarter() {
+        return hasStarter;
+    }
+    public boolean getBooleanHasStarter() {
+        if(this.hasStarter ==  1)
+            return true;
+        else
+            return false;
+    }
 
     //Setters
     public void setUserId(long userId) {
@@ -277,5 +286,13 @@ public class ScheduledBrewSchema {
     public void setBrewName(String brewName) {
         this.brewName = brewName;
     }
-
+    public void setHasStarter(int hasStarter) {
+        this.hasStarter = hasStarter;
+    }
+    public void setBooleanHasStarter(boolean hasStarter) {
+        if(hasStarter)
+            this.hasStarter = 1;
+        else
+            this.hasStarter = 0;
+    }
 }

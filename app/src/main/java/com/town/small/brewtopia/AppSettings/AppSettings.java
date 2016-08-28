@@ -14,6 +14,7 @@ import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AppSettings extends ActionBarActivity {
@@ -23,9 +24,12 @@ public class AppSettings extends ActionBarActivity {
 
     private Toolbar toolbar;
     private ListView settingsListView;
+    private ListView otherSettingsListView;
     private List<AppSettingsSchema> settingsList;
+    private List<AppSettingsSchema> otherSettingsList;
     private DataBaseManager dbManager;
     private long userId;
+    private AppSettingsHelper appSettingsHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +43,10 @@ public class AppSettings extends ActionBarActivity {
         setTitle("Settings");
 
         dbManager = DataBaseManager.getInstance(this);
+        appSettingsHelper = AppSettingsHelper.getInstance(this);
         userId = CurrentUser.getInstance().getUser().getUserId();
 
+        settingsList = new ArrayList<>();
         settingsListView = (ListView) findViewById(R.id.appSettingsListView);
         settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -51,6 +57,17 @@ public class AppSettings extends ActionBarActivity {
             }
         });
 
+        otherSettingsList = new ArrayList<>();
+        otherSettingsListView = (ListView) findViewById(R.id.OtherSettingsListView);
+        otherSettingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                AppSettingsSchema selectedRow = otherSettingsList.get(position);
+                //SettingSelected(selectedRow);
+            }
+        });
+
         LoadSettings();
 
     }
@@ -58,13 +75,30 @@ public class AppSettings extends ActionBarActivity {
     private void LoadSettings() {
         Log.e(LOG, "Entering: LoadSettings");
 
-        settingsList = dbManager.getAllAppSettingsByUserId(userId);
+        for (AppSettingsSchema appSettingsSchema : dbManager.getAllAppSettingsByUserId(userId))
+        {
+            if(appSettingsSchema.getSettingScreen().equals(appSettingsHelper.SCHEDULER))
+            {
+                settingsList.add(appSettingsSchema);
+            }
+            else if(appSettingsSchema.getSettingScreen().equals(appSettingsHelper.OTHER))
+            {
+                otherSettingsList.add(appSettingsSchema);
+            }
+        }
 
         if (settingsList.size() > 0) {
             //instantiate custom adapter
             CustomASListAdapter adapter = new CustomASListAdapter(settingsList, this);
             adapter.setEditable(true);
             settingsListView.setAdapter(adapter);
+        }
+
+        if (otherSettingsList.size() > 0) {
+            //instantiate custom adapter
+            CustomASListAdapter adapter = new CustomASListAdapter(otherSettingsList, this);
+            adapter.setEditable(false);
+            otherSettingsListView.setAdapter(adapter);
         }
     }
 

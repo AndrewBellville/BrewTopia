@@ -44,6 +44,7 @@ public class CompletedBrew extends ActionBarActivity {
 
     private Spinner colorSpinner;
     private CheckBox dateRollUpCheckBox;
+    private CheckBox usingStater;
 
     private DataBaseManager dbManager;
     ScheduledBrewSchema aScheduleSchema;
@@ -75,6 +76,7 @@ public class CompletedBrew extends ActionBarActivity {
 
         colorSpinner = (Spinner) findViewById(R.id.Colorspinner);
         dateRollUpCheckBox = (CheckBox)findViewById(R.id.DateRollUpCheckBox);
+        usingStater = (CheckBox)findViewById(R.id.HasStaterCheckBox);
 
         RelativeLayout buttonlayout = (RelativeLayout)findViewById(R.id.ButtonRow);
         buttonlayout.setVisibility(View.GONE);
@@ -116,6 +118,7 @@ public class CompletedBrew extends ActionBarActivity {
         OriginalGravity.setText(Double.toString(aScheduleSchema.getOG()));
         FinalGravity.setText(Double.toString(aScheduleSchema.getFG()));
         ABV.setText(Double.toString(APPUTILS.GetTruncatedABVPercent(aScheduleSchema.getABV())) +"%" );
+        usingStater.setChecked(aScheduleSchema.getBooleanHasStarter());
     }
 
     private void setColorSpinner()
@@ -185,6 +188,7 @@ public class CompletedBrew extends ActionBarActivity {
         colorSpinner.setEnabled(false);
 
         dateRollUpCheckBox.setClickable(false);
+        usingStater.setClickable(false);
     }
 
     @Override

@@ -23,10 +23,13 @@ public class AppSettingsHelper {
 
     //What Screen they are for
     public static final String SCHEDULER = "Scheduler";
+    public static final String OTHER = "Other";
 
     //Setting Names
     public static final String SCHEDULER_CALENDAR_PUSH = "Push Calendar Scheduler";
     public static final String SCHEDULER_AUTO_CREATE = "Auto Create Schedule";
+    public static final String OTHER_CHANGE_USER_INFO = "Change User Info";
+    public static final String OTHER_DELETE_USER = "Delete User";
 
     //Setting Values
     public static final String OFF = "0";
@@ -62,12 +65,21 @@ public class AppSettingsHelper {
         List<AppSettingsSchema> settingsList = new ArrayList<AppSettingsSchema>();
         settingsList.add(buildSettingsSchema(aUserId,SCHEDULER_CALENDAR_PUSH,SCHEDULER, OFF));
         settingsList.add(buildSettingsSchema(aUserId,SCHEDULER_AUTO_CREATE,SCHEDULER, ON));
+        settingsList.add(buildSettingsSchema(aUserId,OTHER_CHANGE_USER_INFO,OTHER, OFF));
+        settingsList.add(buildSettingsSchema(aUserId,OTHER_DELETE_USER,OTHER, OFF));
 
         //Add all setting to DB
         dbManager.addAllAppSettings(settingsList);
     }
 
-    public void UpdateAppSettings(AppSettingsSchema aAppSettingsSchema, boolean isSet)
+    // Delete and  reload all app setting for user
+    public void UpdateAppSettings(long aUserId)
+    {
+        dbManager.deleteUserSettingById(aUserId);
+        CreateAppSettings(aUserId);
+    }
+
+    public void UpdateAppSetting(AppSettingsSchema aAppSettingsSchema, boolean isSet)
     {
         if(isSet)
             aAppSettingsSchema.setSettingValue(ON);

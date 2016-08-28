@@ -38,14 +38,22 @@ public class DataBasePreLoad {
     private DataBasePreLoad(Context aContext) {
     }
 
-    protected void PreLoadAdminUser(SQLiteDatabase aSQLiteDatabase)
+    protected void PreLoadData(SQLiteDatabase aSQLiteDatabase)
+    {
+        PreLoadAdminUser(aSQLiteDatabase);
+        PreLoadBrewStyles(aSQLiteDatabase);
+        PreLoadCalculations(aSQLiteDatabase);
+    }
+
+
+    private void PreLoadAdminUser(SQLiteDatabase aSQLiteDatabase)
     {
         SQLiteDatabase db = aSQLiteDatabase;
 
         ContentValues values = new ContentValues();
         values.put(dbm.USER_ID, 1);
         values.put(dbm.USER_NAME, "ADMIN");
-        values.put(dbm.PASSWORD, "");
+        values.put(dbm.PASSWORD, "BrewTopiaAdmin123");
         values.put(dbm.CREATED_ON, APPUTILS.dateFormat.format(new Date()));
 
         db.insert(dbm.TABLE_USERS,null,values);
@@ -54,6 +62,9 @@ public class DataBasePreLoad {
     protected void PreLoadBrewStyles(SQLiteDatabase aSQLiteDatabase)
     {
         SQLiteDatabase db = aSQLiteDatabase;
+
+        // DELETE ALL BREW STYLES ADDED BY ADMIN
+        aSQLiteDatabase.execSQL("DELETE FROM"+ dbm.TABLE_BREWS_STYLES + " WHERE " + dbm.USER_ID + " = 1");
 
         String selectQuery = "SELECT * FROM " + dbm.TABLE_USERS + " WHERE "
                 + dbm.USER_NAME + " = 'ADMIN'";

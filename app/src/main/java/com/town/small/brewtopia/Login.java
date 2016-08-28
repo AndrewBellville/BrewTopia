@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.town.small.brewtopia.AppSettings.AppSettingsHelper;
 import com.town.small.brewtopia.DataBase.DataBaseManager;
@@ -23,7 +24,7 @@ public class Login extends ActionBarActivity {
 
     // Log cat tag
     private static final String LOG = "Login";
-    private static final String VERSION = "v0.1.0.1";
+    private static final String VERSION = "v0.1.0.2";
 
     private EditText userName;
     private EditText password;
@@ -78,7 +79,16 @@ public class Login extends ActionBarActivity {
             }
         };
 
-        LoginRequest loginRequest = new LoginRequest(userName.getText().toString(),password.getText().toString(),ResponseListener,null);
+        //If error we will try to login on local DB
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(LOG, error.toString());
+                performLogIn(false,-1); // try to login from local DB
+            }
+        };
+
+        LoginRequest loginRequest = new LoginRequest(userName.getText().toString(),password.getText().toString(),ResponseListener,errorListener);
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(loginRequest);
     }

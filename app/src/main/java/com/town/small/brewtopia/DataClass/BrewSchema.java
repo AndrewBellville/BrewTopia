@@ -38,6 +38,7 @@ public class BrewSchema {
     private List <InventorySchema> brewInventorySchemaList = new ArrayList<InventorySchema>();
     private String Style;
     private BrewStyleSchema StyleSchema;
+    private int totalBrewed=0;
 
     // constructors
     public BrewSchema() {
@@ -167,8 +168,9 @@ public class BrewSchema {
     public List<InventorySchema> getBrewInventorySchemaList() {
         return brewInventorySchemaList;
     }
-
-
+    public int getTotalBrewed() {
+        return totalBrewed;
+    }
 
 
     //setters
@@ -263,5 +265,7 @@ public class BrewSchema {
     public void setBrewInventorySchemaList(List<InventorySchema> brewInventorySchemaList) {
         this.brewInventorySchemaList = brewInventorySchemaList;
     }
-
+    public void setTotalBrewed(int totalBrewed) {
+        this.totalBrewed = totalBrewed;
+    }
 }

@@ -43,6 +43,7 @@ public class APPUTILS {
             put("Pilsner","#ffff00");
             put("Pale","#ffff00");
             put("Light","#ffff00");
+            put("Hefeweizen","#DAA520");
         }
     };
 

@@ -83,7 +83,7 @@ public class CustomASListAdapter extends BaseAdapter implements ListAdapter  {
                 public void onClick(View v) {
                     Switch editSwitch = (Switch)v.findViewById(R.id.edit_switch);
                     AppSettingsSchema appSettingsSchema = list.get(position);
-                    appSettingsHelper.UpdateAppSettings(appSettingsSchema,editSwitch.isChecked());
+                    appSettingsHelper.UpdateAppSetting(appSettingsSchema,editSwitch.isChecked());
                     notifyDataSetChanged();
                 }
             });

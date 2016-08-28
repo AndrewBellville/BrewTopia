@@ -129,8 +129,7 @@
             android:layout_below="@+id/ScheduleEndDateeditText"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:checked="true"
-            android:onClick="onChecked"/>
+            android:checked="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -195,12 +194,22 @@
             android:layout_alignRight="@+id/SchduleBottleAlerteditText"
             android:layout_alignEnd="@+id/SchduleBottleAlerteditText"/>
 
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Using Starter"
+            android:id="@+id/HasStaterCheckBox"
+            android:layout_below="@+id/ScheduleABVeditText"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:checked="false" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Color:"
             android:id="@+id/textView"
-            android:layout_below="@+id/ScheduleABVeditText"
+            android:layout_below="@+id/HasStaterCheckBox"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 

@@ -79,6 +79,11 @@ public class DataBaseManagerUpdates {
             aSQLiteDatabase.execSQL("DROP TABLE "+ dbm.TABLE_USERS );
             aSQLiteDatabase.execSQL("ALTER TABLE TempUser RENAME TO "+ dbm.TABLE_USERS );
         }
+        if(aOldVersion < 41)
+        {
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.TOTAL_BREWED +" INTEGER DEFAULT 0 ");
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS_SCHEDULED +" ADD COLUMN "+ dbm.USING_STARTER +" INTEGER DEFAULT 0 ");
+        }
     }
 
     private void dropAllTables(SQLiteDatabase aSQLiteDatabase)

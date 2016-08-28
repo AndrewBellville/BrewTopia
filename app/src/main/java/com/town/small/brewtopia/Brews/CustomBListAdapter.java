@@ -94,12 +94,13 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
         listItemText1.setText(brewSchema.getStyle() +" - "+ APPUTILS.GetTruncatedABVPercent(brewSchema.getTargetABV())+"%");
 
         TextView listItemText2 = (TextView)view.findViewById(R.id.list_item_string2);
-        if(brewSchema.getDescription().length() >= 25)
+        /*if(brewSchema.getDescription().length() >= 25)
             truncatedString = brewSchema.getDescription().substring(0,25)+"...";
         else
             truncatedString = brewSchema.getDescription();
 
-        listItemText2.setText(truncatedString);
+        listItemText2.setText(truncatedString);*/
+        listItemText2.setText("Times Brewed:  "+  brewSchema.getTotalBrewed());
 
         // Icons
         ImageView favoriteIcon = (ImageView) view.findViewById(R.id.favoriteImage);

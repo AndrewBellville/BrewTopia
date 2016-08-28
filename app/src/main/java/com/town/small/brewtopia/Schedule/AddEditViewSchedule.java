@@ -52,7 +52,6 @@ public class AddEditViewSchedule extends ActionBarActivity {
     private int dialogYear;
     private EditText DateToEdit;
     private EditText[] datesList;
-    private boolean isDateRollUp = true;
     static final int DIALOG_ID = 0;
 
 
@@ -69,6 +68,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
     private Button editScheduleButton;
     private Spinner colorSpinner;
     private CheckBox dateRollUpCheckBox;
+    private CheckBox usingStater;
 
     private KeyListener brewNameListener;
     private KeyListener NotesListener;
@@ -113,7 +113,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
         colorSpinner = (Spinner) findViewById(R.id.Colorspinner);
         dateRollUpCheckBox = (CheckBox)findViewById(R.id.DateRollUpCheckBox);
-
+        usingStater = (CheckBox)findViewById(R.id.HasStaterCheckBox);
 
         editScheduleButton = (Button)findViewById(R.id.EditScheduleButton);
 
@@ -186,6 +186,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         OriginalGravity.setText(Double.toString(aScheduleSchema.getOG()));
         FinalGravity.setText(Double.toString(aScheduleSchema.getFG()));
         ABV.setText(Double.toString(APPUTILS.GetTruncatedABVPercent(aScheduleSchema.getABV())) +"%" );
+        usingStater.setChecked(aScheduleSchema.getBooleanHasStarter());
     }
 
     private void setColorSpinner()
@@ -225,7 +226,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         String originalTime = DateToEdit.getText().toString();
         DateToEdit.setText( Integer.toString(dialogYear)+"-"+month+"-"+day+" 12:00:00" );
 
-        if(isDateRollUp)
+        if(dateRollUpCheckBox.isChecked())
         {
             long daysInBetween=0;
             try
@@ -291,6 +292,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         sbrew.setScheduleId(aScheduleSchema.getScheduleId());
         sbrew.setBrewName(brewName.getText().toString());
         sbrew.setUserId(userId);
+        sbrew.setBooleanHasStarter(usingStater.isChecked());
 
         double og=0.0;
         double fg=0.0;
@@ -434,6 +436,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
             colorSpinner.setEnabled(false);
 
             dateRollUpCheckBox.setClickable(false);
+            usingStater.setClickable(false);
         }
         else
         {
@@ -482,12 +485,8 @@ public class AddEditViewSchedule extends ActionBarActivity {
             colorSpinner.setEnabled(true);
 
             dateRollUpCheckBox.setClickable(true);
+            usingStater.setClickable(true);
         }
-    }
-
-    public void onChecked(View view) {
-        // Is checked?
-        isDateRollUp = ((CheckBox) view).isChecked();
     }
 
     @Override
