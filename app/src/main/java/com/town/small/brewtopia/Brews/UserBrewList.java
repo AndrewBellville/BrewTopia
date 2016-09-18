@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.Login;
@@ -32,6 +33,7 @@ public class UserBrewList extends Fragment {
     private DataBaseManager dbManager;
     private boolean isDelete = false;
     List<BrewSchema> brewList;
+    private TextView noData;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,7 +55,7 @@ public class UserBrewList extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 BrewSchema selectedRow = brewList.get(position);
-                BrewSelect(selectedRow.getBrewId());
+                BrewSelect(selectedRow);
             }
         });
         dbManager = DataBaseManager.getInstance(getActivity());
@@ -74,6 +76,15 @@ public class UserBrewList extends Fragment {
             }
         });
 
+        noData = (TextView) view.findViewById(R.id.GlobalBrewsNoData);
+
+        //If temp user hide buttons
+        if(CurrentUser.getInstance().getUser().isTemp())
+        {
+            createButton.setVisibility(View.INVISIBLE);
+            deleteButon.setVisibility(View.INVISIBLE);
+        }
+
         LoadBrews();
 
         return view;
@@ -93,6 +104,8 @@ public class UserBrewList extends Fragment {
 
         if (brewList.size() > 0) {
 
+            noData.setVisibility(View.GONE);
+
             //instantiate custom adapter
             CustomBListAdapter adapter = new CustomBListAdapter(brewList, getActivity());
             adapter.setDeleteView(isDelete);
@@ -105,14 +118,18 @@ public class UserBrewList extends Fragment {
             });
             BrewListView.setAdapter(adapter);
         }
+        else
+        {
+            noData.setVisibility(View.VISIBLE);
+        }
     }
 
-    private void BrewSelect(long aBrewId)
+    private void BrewSelect(BrewSchema aBrew)
     {
             Intent intent = new Intent(getActivity(), UserBrew.class);
 
             // Set the state of display if View brew cannot be null
-            BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.VIEW,dbManager.getBrew(aBrewId,userId));
+            BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.VIEW,aBrew);
 
             //start next activity
             startActivity(intent);
@@ -129,12 +146,6 @@ public class UserBrewList extends Fragment {
 
         //start next activity
         startActivity(intent);
-    }
-
-    private String GetStyleColor(String styleName)
-    {
-        BrewStyleSchema brewStyleSchema = dbManager.getBrewsStylesByName(styleName);
-        return brewStyleSchema.getBrewStyleColor();
     }
 
     public void onRadioButtonClicked(View view) {

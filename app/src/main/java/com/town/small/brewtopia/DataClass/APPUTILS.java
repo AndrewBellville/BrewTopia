@@ -55,7 +55,7 @@ public class APPUTILS {
             add("oz");
             add("g");
             add("cups");
-            add("lb");
+            add("lbs");
         }
     };
 

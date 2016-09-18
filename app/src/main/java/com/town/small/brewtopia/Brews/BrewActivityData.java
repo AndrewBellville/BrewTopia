@@ -1,8 +1,11 @@
 package com.town.small.brewtopia.Brews;
 
+import android.util.Log;
+
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
+import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataClass.InventorySchema;
 
 import java.util.ArrayList;
@@ -62,6 +65,16 @@ public class BrewActivityData {
         List<InventorySchema> clone = new ArrayList<InventorySchema>(list.size());
         for(InventorySchema item: list) clone.add(item);
         return clone;
+    }
+
+    //If the Current User owns the current brew allow edit
+    public boolean CanEdit()
+    {
+        Log.e(LOG, "Entering: CanEdit " + AddEditViewBrew.getUserId() + " " +CurrentUser.getInstance().getUser().getUserId());
+        if(AddEditViewBrew.getUserId() == CurrentUser.getInstance().getUser().getUserId())
+            return true;
+
+        return false;
     }
 
 //getters

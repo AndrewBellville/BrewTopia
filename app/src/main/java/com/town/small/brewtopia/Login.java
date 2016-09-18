@@ -18,13 +18,14 @@ import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.DataClass.*;
 import com.town.small.brewtopia.WebAPI.CreateUserRequest;
 import com.town.small.brewtopia.WebAPI.LoginRequest;
+import com.town.small.brewtopia.WebAPI.WebController;
 
 
 public class Login extends ActionBarActivity {
 
     // Log cat tag
     private static final String LOG = "Login";
-    private static final String VERSION = "v0.1.0.2";
+    private static final String VERSION = "v0.1.0.3";
 
     private EditText userName;
     private EditText password;
@@ -89,8 +90,7 @@ public class Login extends ActionBarActivity {
         };
 
         LoginRequest loginRequest = new LoginRequest(userName.getText().toString(),password.getText().toString(),ResponseListener,errorListener);
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(loginRequest);
+        WebController.getInstance().addToRequestQueue(loginRequest);
     }
 
     private void performLogIn(boolean isSuccess, long aUserId)
@@ -116,6 +116,7 @@ public class Login extends ActionBarActivity {
             long userId =  dbManager.DoesUserLoginExist(userName.getText().toString(),password.getText().toString());
             if(userId > 0){
                 performLogIn(true, userId);
+                Toast.makeText(this, "Local Login", Toast.LENGTH_SHORT).show();
             }
             else
                 message.setText("Failed Login");
@@ -147,7 +148,7 @@ public class Login extends ActionBarActivity {
                 } else {
                     UserSchema user = new UserSchema(userName.getText().toString(),password.getText().toString());
                     try {
-                        user.setUserId(Long.parseLong(response));
+                        user.setUserId(Long.parseLong(response.trim()));
                         performCreate(true,user);
                     }catch (Exception e) {
                         performCreate(false, null);
@@ -157,8 +158,7 @@ public class Login extends ActionBarActivity {
         };
 
         CreateUserRequest createUserRequest = new CreateUserRequest(userName.getText().toString(),password.getText().toString(),ResponseListener,null);
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(createUserRequest);
+        WebController.getInstance().addToRequestQueue(createUserRequest);
     }
 
     private boolean CreateLocalUser(UserSchema aUserSchema)
@@ -195,17 +195,19 @@ public class Login extends ActionBarActivity {
     public void onNoUserLogin(View aView)
     {
         Log.e(LOG, "Entering: onNoUserLogin");
-        //TODO: Need to create dummy user acount for no login
+
         //Create and intent which will open next activity UserProfile
-       // Intent intent = new Intent(this, UserProfile.class);
-        //set active user
-        //dbManager.SyncUser();
-        //currentUser.getUser().setUserId(-1);
+        Intent intent = new Intent(this, UserProfile.class);
+        //set Temp user
+        UserSchema userSchema = new UserSchema();
+        userSchema.setUserId(-2);
+        userSchema.setTemp(true);
+        currentUser.setUser(userSchema);
         //load all app setting for user
         //appSettingsHelper.LoadMap();
         //start next activity
-        //startActivity(intent);
-        //message.setText("");
+        startActivity(intent);
+        message.setText("");
     }
 
 }

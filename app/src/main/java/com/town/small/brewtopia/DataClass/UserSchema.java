@@ -14,6 +14,7 @@ public class UserSchema {
     String UserName;
     private String Password;
     private String CreatedOn;
+    private boolean isTemp = false;
 
     // constructors
     public UserSchema() {
@@ -39,6 +40,9 @@ public class UserSchema {
     public long getUserId() {
         return userId;
     }
+    public boolean isTemp() {
+        return isTemp;
+    }
 
     // getters
     public String getUserName() {
@@ -50,5 +54,8 @@ public class UserSchema {
     public String getCreatedOn() { return this.CreatedOn; }
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+    public void setTemp(boolean temp) {
+        isTemp = temp;
     }
 }

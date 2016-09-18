@@ -1,5 +1,6 @@
 package com.town.small.brewtopia.Global;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,7 +13,9 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.town.small.brewtopia.Brews.BrewActivityData;
 import com.town.small.brewtopia.Brews.CustomBListAdapter;
+import com.town.small.brewtopia.Brews.UserBrew;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.R;
 import com.town.small.brewtopia.WebAPI.GlobalBrewsRequest;
@@ -44,8 +47,8 @@ public class UserGlobal extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                //BrewSchema selectedRow = brewList.get(position);
-                //BrewSelect(selectedRow.getBrewId());
+                BrewSchema selectedRow = GlobalBrewList.get(position);
+                BrewSelect(selectedRow);
             }
         });
 
@@ -69,7 +72,7 @@ public class UserGlobal extends Fragment {
             }
         };
 
-        //If error we will try to login on local DB
+        //If error
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -100,6 +103,17 @@ public class UserGlobal extends Fragment {
         {
             noData.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void BrewSelect(BrewSchema aBrew)
+    {
+        Intent intent = new Intent(getActivity(), UserBrew.class);
+
+        // Set the state of display if View brew cannot be null
+        BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.VIEW,aBrew);
+
+        //start next activity
+        startActivity(intent);
     }
 
     @Override

@@ -19,6 +19,7 @@ import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.DataBase.DataBaseManager;
+import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.R;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class AddEditViewBoilAdditions extends Fragment {
     private static final String LOG = "AddEditBoilAdditions";
 
     private BrewActivityData brewData;
+    private boolean CanEdit = false;
     private ListView BrewAdditionsListView;
     private TextView NoAdditions;
 
@@ -63,8 +65,11 @@ public class AddEditViewBoilAdditions extends Fragment {
         });
 
         brewData = BrewActivityData.getInstance();
+        CanEdit = brewData.CanEdit();
 
-        addButton.setVisibility(View.VISIBLE);
+        //Hide Button if We cant edit
+        if(!CanEdit)
+            addButton.setVisibility(View.INVISIBLE);
 
         setUofMAdapter();
         loadAll();
@@ -99,6 +104,9 @@ public class AddEditViewBoilAdditions extends Fragment {
                 AdditionSelected(aBoilAdditionsSchema);
             }
         });
+
+        if(!CanEdit || CurrentUser.getInstance().getUser().isTemp())
+            adapter.setEditable(false);
 
         BrewAdditionsListView.setAdapter(adapter);
     }

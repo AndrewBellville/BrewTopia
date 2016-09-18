@@ -7,6 +7,8 @@ import org.json.JSONArray;
 
 /**
  * Created by Andrew on 8/27/2016.
+ *
+ * Class used to call for all Brews saved to global DB
  */
 public class GlobalBrewsRequest extends JsonArrayRequest {
 

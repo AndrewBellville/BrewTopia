@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:text="No Global Data Available"
         android:id="@+id/GlobalBrewsNoData"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
     <ListView

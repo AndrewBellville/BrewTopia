@@ -39,7 +39,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 41;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 43;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -83,6 +83,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String PASSWORD = "Password";
 
     // BREWS column names
+    protected static final String GLOBAL_BREW_ID = "GlobalBrewId";
     protected static final String BREW_NAME = "BrewName";
     protected static final String BOIL_TIME = "BoilTime";
     protected static final String PRIMARY = "PrimaryFermentation";
@@ -104,6 +105,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String STYLE_COLOR = "StyleColor";
 
     // BOIL_ADDITIONS column names
+    protected static final String GLOBAL_ADDITION_ID = "GlobalAdditionId";
     protected static final String ADDITION_NAME = "AdditionName";
     protected static final String ADDITION_TIME = "AdditionTime";
     protected static final String ADDITION_QTY = "AdditionQty";
@@ -160,7 +162,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             + TABLE_BREWS + "(" + BREW_NAME + " TEXT," + USER_ID + " INTEGER," + BOIL_TIME + " INTEGER," + PRIMARY + " INTEGER," + SECONDARY + " INTEGER," + BOTTLE + " INTEGER,"
             + DESCRIPTION + " TEXT," + STYLE + " TEXT," + CREATED_ON + " DATETIME," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL," + FAVORITE + " INTEGER,"
             + SCHEDULED + " INTEGER," + ON_TAP + " INTEGER,"+ IBU + " REAL,"+ METHOD + " TEXT,"+ BATCH_SIZE + " REAL,"+ EFFICIENCY + " REAL," + TOTAL_BREWED + " INTEGER,"
-            + " PRIMARY KEY ("+ BREW_NAME +", "+ USER_ID +" ) )";
+            + GLOBAL_BREW_ID + " INTEGER," + " PRIMARY KEY ("+ BREW_NAME +", "+ USER_ID +" ) )";
 
     //CREATE_TABLE_BREWS_STYLES
     protected static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
@@ -169,7 +171,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_BOIL_ADDITIONS
     protected static final String CREATE_TABLE_BOIL_ADDITIONS = "CREATE TABLE "
             + TABLE_BOIL_ADDITIONS + "(" + BREW_ID + " INTEGER," + USER_ID + " INTEGER," + ADDITION_NAME + " TEXT," + ADDITION_TIME + " INTEGER,"
-            +  ADDITION_QTY + " REAL," +  ADDITION_UOFM + " TEXT )";
+            + GLOBAL_ADDITION_ID + " INTEGER,"+  ADDITION_QTY + " REAL," +  ADDITION_UOFM + " TEXT )";
 
     //CREATE_TABLE_BREWS_SCHEDULED
     protected static final String CREATE_TABLE_BREWS_SCHEDULED = "CREATE TABLE "
@@ -392,6 +394,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Log.e(LOG, "Insert: Brew["+aBrew.getBrewName()+"]");
 
         ContentValues values = new ContentValues();
+        values.put(GLOBAL_BREW_ID, -1); // ON CREATE IT WILL NOT BE GLOBAL
         values.put(BREW_NAME, aBrew.getBrewName());
         values.put(USER_ID, aBrew.getUserId());
         values.put(BOIL_TIME, aBrew.getBoilTime());
@@ -463,6 +466,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             c.moveToFirst();
 
             brew.setBrewId(c.getLong(c.getColumnIndex(ROW_ID)));
+            brew.setGlobalBrewId(c.getLong(c.getColumnIndex(GLOBAL_BREW_ID)));
             brew.setBrewName((c.getString(c.getColumnIndex(BREW_NAME))));
             brew.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
             brew.setBoilTime(c.getInt(c.getColumnIndex(BOIL_TIME)));
@@ -540,6 +544,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Log.e(LOG, "updateABrew Name["+aBrew.getBrewName()+"]");
 
         ContentValues values = new ContentValues();
+        values.put(GLOBAL_BREW_ID, aBrew.getGlobalBrewId());
         values.put(BREW_NAME, aBrew.getBrewName());
         values.put(USER_ID, aBrew.getUserId());
         values.put(BOIL_TIME, aBrew.getBoilTime());
@@ -727,16 +732,14 @@ public class DataBaseManager extends SQLiteOpenHelper {
         if(aBrewNoteList.size() < 1)
             return true;
 
-        //TODO: TRY TO FIND A WAY TO NOT DELETE BUT LOOK FOR UPDATE/ADD ONLY
-        //Delete all additions for this brew name
-        deleteAllBrewNotes(aBrewNoteList.get(0).getBrewId(),aBrewNoteList.get(0).getUserId());
-
         // for each brew note try to add it to the DB
         for(Iterator<BrewNoteSchema> i = aBrewNoteList.iterator(); i.hasNext(); )
         {
             BrewNoteSchema brewNoteSchema = i.next();
-            if(!addBrewNote(brewNoteSchema))
-                return false;
+            //Try  to update if that fails try to add
+            if(!updateBrewNotes(brewNoteSchema))
+                if(!addBrewNote(brewNoteSchema))
+                    return false;
         }
 
         return true;
@@ -833,6 +836,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(GLOBAL_ADDITION_ID, aBoilAddition.getGlobalAdditionId());
         values.put(BREW_ID, aBoilAddition.getBrewId());
         values.put(USER_ID, aBoilAddition.getUserId());
         values.put(ADDITION_NAME, aBoilAddition.getAdditionName());
@@ -853,16 +857,15 @@ public class DataBaseManager extends SQLiteOpenHelper {
         if(aBoilAdditionList.size() < 1)
             return  true;
 
-      //TODO: TRY TO FIND A WAY TO NOT DELETE BUT LOOK FOR UPDATE/ADD ONLY
-      //Delete all additions for this brew name
-      delete_all_boil_additions_by_brew_name(aBoilAdditionList.get(0).getBrewId(),aBoilAdditionList.get(0).getUserId());
-
       // for each boil addition try to add it to the DB
       for(Iterator<BoilAdditionsSchema> i = aBoilAdditionList.iterator(); i.hasNext(); )
       {
           BoilAdditionsSchema baSchema = i.next();
-          if(!add_boil_additions(baSchema))
-              return false;
+
+          //Try  to update if that fails try to add
+          if(!update_boil_addition(baSchema))
+              if(!add_boil_additions(baSchema))
+                  return false;
       }
 
        return true;
@@ -876,6 +879,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Log.e(LOG, "update_boil_addition Name["+aBoilAddition.getBrewId()+"]");
 
         ContentValues values = new ContentValues();
+        values.put(GLOBAL_ADDITION_ID, aBoilAddition.getGlobalAdditionId());
         values.put(BREW_ID, aBoilAddition.getBrewId());
         values.put(USER_ID, aBoilAddition.getUserId());
         values.put(ADDITION_NAME, aBoilAddition.getAdditionName());
@@ -913,6 +917,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             do {
                 BoilAdditionsSchema baSchema = new BoilAdditionsSchema();
                 baSchema.setAdditionId(c.getLong(c.getColumnIndex(ROW_ID)));
+                baSchema.setGlobalAdditionId(c.getLong(c.getColumnIndex(GLOBAL_ADDITION_ID)));
                 baSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
                 baSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
                 baSchema.setAdditionName(c.getString(c.getColumnIndex(ADDITION_NAME)));

@@ -16,11 +16,18 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.volley.Response;
 import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.R;
 import com.town.small.brewtopia.DataClass.*;
 import com.town.small.brewtopia.Timer.TimerData;
 import com.town.small.brewtopia.Timer.TimerPager;
+import com.town.small.brewtopia.WebAPI.CreateBrewRequest;
+import com.town.small.brewtopia.WebAPI.JSONParser;
+import com.town.small.brewtopia.WebAPI.WebController;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.List;
 
@@ -31,6 +38,7 @@ public class AddEditViewBrew extends Fragment {
 
     private Button startButton;
     private Button editBrewButton;
+    private Button uploadButton;
     private EditText brewName;
     private EditText primary;
     private EditText secondary;
@@ -71,6 +79,7 @@ public class AddEditViewBrew extends Fragment {
     private DataBaseManager dbManager;
     private BrewActivityData brewActivityData;
     private BrewSchema brewSchema;
+    private boolean CanEdit = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -115,6 +124,14 @@ public class AddEditViewBrew extends Fragment {
             }
         });
 
+        uploadButton = (Button)returnView.findViewById(R.id.UploadButton);
+        uploadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PushToGlobal();
+            }
+        });
+
         favorite = (CheckBox)mainView.findViewById(R.id.favoriteCheckBox);
         onTap = (CheckBox)mainView.findViewById(R.id.onTapCheckBox);
         scheduled = (CheckBox)mainView.findViewById(R.id.scheduledCheckBox);
@@ -138,6 +155,7 @@ public class AddEditViewBrew extends Fragment {
         UserId = CurrentUser.getInstance().getUser().getUserId();
 
         brewActivityData = BrewActivityData.getInstance();
+        CanEdit = brewActivityData.CanEdit();
 
         setBrewStyleSpinner();
 
@@ -152,6 +170,14 @@ public class AddEditViewBrew extends Fragment {
             brewSchema = brewActivityData.getAddEditViewBrew();
             ifView();
         }
+
+        //Hide Button if We cant edit
+        if(!CanEdit) {
+            startButton.setVisibility(View.INVISIBLE);
+            editBrewButton.setVisibility(View.INVISIBLE);
+            uploadButton.setVisibility(View.INVISIBLE);
+        }
+
         return returnView;
     }
 
@@ -159,6 +185,7 @@ public class AddEditViewBrew extends Fragment {
     {
         ClearFields();
         startButton.setVisibility(View.INVISIBLE);
+        uploadButton.setVisibility(View.INVISIBLE);
         editBrewButton.setText("Submit");
         brewActivityData.setAddEditViewState(BrewActivityData.DisplayMode.ADD);
         ToggleFieldEditable(true);
@@ -167,6 +194,7 @@ public class AddEditViewBrew extends Fragment {
     public void ifEdit()
     {
         startButton.setVisibility(View.INVISIBLE);
+        uploadButton.setVisibility(View.INVISIBLE);
 
         //get brew and display
         DisplayBrew(brewSchema);
@@ -184,6 +212,7 @@ public class AddEditViewBrew extends Fragment {
         editBrewButton.setText("Edit Brew");
         startButton.setText("Start Brew");
         startButton.setVisibility(View.VISIBLE);
+        uploadButton.setVisibility(View.VISIBLE);
         //Set EditText to not editable and hide button
         brewActivityData.setAddEditViewState(BrewActivityData.DisplayMode.VIEW);
         ToggleFieldEditable(false);
@@ -597,5 +626,44 @@ public class AddEditViewBrew extends Fragment {
             onTap.setClickable(true);
             scheduled.setClickable(true);
         }
+    }
+
+    private void PushToGlobal()
+    {
+        Response.Listener<String> ResponseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.e(LOG, response);
+                if (response.equals("Error"))// no match for user exists
+                {
+                    Toast.makeText(getActivity(), brewSchema.getBrewName() +" Upload Failed", Toast.LENGTH_SHORT).show();
+                } else {
+                    //Pase response
+                    try {
+
+                        //Parse response into BrewShcema list
+                        JSONArray jsonArray = new JSONArray(response);
+                        JSONParser jsonParser = new JSONParser(getActivity());
+                        List<BrewSchema> brewSchemaList = jsonParser.ParseGlobalBrews(jsonArray);
+
+                        //For each brew schema up it SHOULD ONLY BE 1
+                        if (!(brewSchemaList.size() > 1))
+                        {
+                            for (BrewSchema bs : brewSchemaList) {
+                                brewSchema.setGlobalBrewId(bs.getGlobalBrewId());
+                                brewSchema.setBoilAdditionlist(bs.getBoilAdditionlist());
+                            }
+
+                            dbManager.updateABrew(brewSchema);
+                            Toast.makeText(getActivity(), brewSchema.getBrewName() + " Uploaded", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    catch (JSONException e) {}
+                }
+            }
+        };
+
+        CreateBrewRequest loginRequest = new CreateBrewRequest(brewSchema, ResponseListener,null);
+        WebController.getInstance().addToRequestQueue(loginRequest);
     }
 }

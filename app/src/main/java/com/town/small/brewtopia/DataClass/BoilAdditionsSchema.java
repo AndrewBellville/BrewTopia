@@ -12,6 +12,7 @@ import com.town.small.brewtopia.R;
  */
 public class BoilAdditionsSchema {
 
+    private long globalAdditionId=-1;
     private long additionId=-1;
     private long brewId=-1;
     private long userId=-1;
@@ -25,6 +26,9 @@ public class BoilAdditionsSchema {
 
     //getters
 
+    public long getGlobalAdditionId() {
+        return globalAdditionId;
+    }
     public String getAdditionName() {
         return additionName;
     }
@@ -49,6 +53,9 @@ public class BoilAdditionsSchema {
 
 
     //setters
+    public void setGlobalAdditionId(long globalAdditionId) {
+        this.globalAdditionId = globalAdditionId;
+    }
     public void setAdditionName(String additionName) {
         this.additionName = additionName;
     }

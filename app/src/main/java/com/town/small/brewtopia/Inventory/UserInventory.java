@@ -71,8 +71,7 @@ public class UserInventory extends Fragment {
         dbManager = DataBaseManager.getInstance(getActivity());
         userId = CurrentUser.getInstance().getUser().getUserId();
 
-        // If this is being displayed by the brew class we want to perform brew specific functionality
-        if( getActivity().getLocalClassName().equals("Brews.UserBrew") ) isBrewDisplay = true;
+        CheckForBrewDisplay();
 
         SetUpInventoryList();
 
@@ -83,9 +82,15 @@ public class UserInventory extends Fragment {
     public void onResume()
     {
         super.onResume();
-        if( getActivity().getLocalClassName().equals("Brews.UserBrew") ) isBrewDisplay = true;
+        CheckForBrewDisplay();
         SetUpInventoryList();
 
+    }
+
+    private void CheckForBrewDisplay()
+    {
+        // If this is being displayed by the brew class we want to perform brew specific functionality
+        if( getActivity().getLocalClassName().equals("Brews.UserBrew") || getActivity().getLocalClassName().equals("Global.UserGlobal")) isBrewDisplay = true;
     }
 
     private void SetUpInventoryList()
@@ -101,6 +106,10 @@ public class UserInventory extends Fragment {
                 addClickInventory(aHeaderTitle);
             }
         });
+
+        //If this is a brew type display and we cant edit then we want to set editable false
+        if((isBrewDisplay && !BrewActivityData.getInstance().CanEdit()) || CurrentUser.getInstance().getUser().isTemp())
+            InventoryListAdapter.setEditable(false);
 
         // setting list adapter
         expInventoryListView.setAdapter(InventoryListAdapter);

@@ -14,6 +14,7 @@ public class BrewSchema {
     // Log cat tag
     private static final String LOG = "BrewSchema";
 
+    private long GlobalBrewId =-1;
     private long brewId =-1;
     private String BrewName;
     private long UserId = -1;
@@ -74,6 +75,9 @@ public class BrewSchema {
     }
 
     //getters
+    public long getGlobalBrewId() {
+        return GlobalBrewId;
+    }
     public long getBrewId() {
         return brewId;
     }
@@ -174,6 +178,9 @@ public class BrewSchema {
 
 
     //setters
+    public void setGlobalBrewId(long globalBrewId) {
+        GlobalBrewId = globalBrewId;
+    }
     public void setBrewId(long id) {
         this.brewId = id;
     }

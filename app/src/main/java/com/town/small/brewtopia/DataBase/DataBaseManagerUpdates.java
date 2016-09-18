@@ -84,6 +84,14 @@ public class DataBaseManagerUpdates {
             aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.TOTAL_BREWED +" INTEGER DEFAULT 0 ");
             aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS_SCHEDULED +" ADD COLUMN "+ dbm.USING_STARTER +" INTEGER DEFAULT 0 ");
         }
+        if(aOldVersion < 42)
+        {
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.GLOBAL_BREW_ID +" INTEGER DEFAULT -1 ");
+        }
+        if(aOldVersion < 43)
+        {
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BOIL_ADDITIONS +" ADD COLUMN "+ dbm.GLOBAL_ADDITION_ID +" INTEGER DEFAULT -1 ");
+        }
     }
 
     private void dropAllTables(SQLiteDatabase aSQLiteDatabase)

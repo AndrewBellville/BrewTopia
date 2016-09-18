@@ -33,6 +33,9 @@ public class AddEditViewBrewNotes extends Fragment {
     private TextView NoNotes;
     private DataBaseManager dbManager;
 
+    private BrewActivityData brewData;
+    private boolean CanEdit = false;
+
     //edit dialog
     private BrewNoteSchema editBrewNoteSchema;
     private EditText noteText;
@@ -57,6 +60,13 @@ public class AddEditViewBrewNotes extends Fragment {
             }
         });
 
+        brewData = BrewActivityData.getInstance();
+        CanEdit = brewData.CanEdit();
+
+        //Hide Button if We cant edit
+        if(!CanEdit)
+            addButton.setVisibility(View.INVISIBLE);
+
         LoadBrewNoteView();
 
         init  = true;
@@ -75,7 +85,7 @@ public class AddEditViewBrewNotes extends Fragment {
 
         List<BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();
 
-        brewNoteSchemaList.addAll(BrewActivityData.getInstance().getBrewNoteSchemaList());
+        brewNoteSchemaList.addAll(brewData.getBrewNoteSchemaList());
 
         if(brewNoteSchemaList.size() == 0)
             NoNotes.setVisibility(View.VISIBLE);
@@ -148,9 +158,9 @@ public class AddEditViewBrewNotes extends Fragment {
 
     private void validateSave(BrewNoteSchema aBrewNoteSchema)
     {
-        BrewSchema brewSchema  = BrewActivityData.getInstance().getAddEditViewBrew();
+        BrewSchema brewSchema  = brewData.getAddEditViewBrew();
         aBrewNoteSchema.setBrewNote(noteText.getText().toString());
-        if(BrewActivityData.getInstance().getAddEditViewState() != BrewActivityData.DisplayMode.ADD)
+        if(brewData.getAddEditViewState() != BrewActivityData.DisplayMode.ADD)
         {
             if(aBrewNoteSchema.getNoteId() == -1)
             {
@@ -178,7 +188,7 @@ public class AddEditViewBrewNotes extends Fragment {
 
     private void resetBrewData(long aBrewId, long aUserId)
     {
-        BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(aBrewId,aUserId));
+        brewData.setAddEditViewBrew(dbManager.getBrew(aBrewId,aUserId));
         LoadBrewNoteView();
     }
 
@@ -190,7 +200,7 @@ public class AddEditViewBrewNotes extends Fragment {
     private void createBoilAddition()
     {
         BrewNoteSchema bn = new BrewNoteSchema();
-        BrewActivityData.getInstance().getBrewNoteSchemaList().add(bn);
+        brewData.getBrewNoteSchemaList().add(bn);
         LoadBrewNoteView();
     }
 }
