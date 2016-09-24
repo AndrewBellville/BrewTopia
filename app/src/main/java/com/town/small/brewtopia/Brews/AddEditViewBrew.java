@@ -23,7 +23,8 @@ import com.town.small.brewtopia.DataClass.*;
 import com.town.small.brewtopia.Timer.TimerData;
 import com.town.small.brewtopia.Timer.TimerPager;
 import com.town.small.brewtopia.WebAPI.CreateBrewRequest;
-import com.town.small.brewtopia.WebAPI.JSONParser;
+import com.town.small.brewtopia.WebAPI.GetBrewRequest;
+import com.town.small.brewtopia.WebAPI.JSONBrewParser;
 import com.town.small.brewtopia.WebAPI.WebController;
 
 import org.json.JSONArray;
@@ -128,7 +129,10 @@ public class AddEditViewBrew extends Fragment {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PushToGlobal();
+                if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.GLOBAL)
+                    PullFromGlobal();
+                else
+                    PushToGlobal();
             }
         });
 
@@ -170,12 +174,15 @@ public class AddEditViewBrew extends Fragment {
             brewSchema = brewActivityData.getAddEditViewBrew();
             ifView();
         }
+        else if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.GLOBAL) {
+            brewSchema = brewActivityData.getAddEditViewBrew();
+            ifGlobal();
+        }
 
         //Hide Button if We cant edit
         if(!CanEdit) {
             startButton.setVisibility(View.INVISIBLE);
             editBrewButton.setVisibility(View.INVISIBLE);
-            uploadButton.setVisibility(View.INVISIBLE);
         }
 
         return returnView;
@@ -215,6 +222,19 @@ public class AddEditViewBrew extends Fragment {
         uploadButton.setVisibility(View.VISIBLE);
         //Set EditText to not editable and hide button
         brewActivityData.setAddEditViewState(BrewActivityData.DisplayMode.VIEW);
+        ToggleFieldEditable(false);
+
+    }
+
+    public void ifGlobal()
+    {
+        //get brew and display
+        DisplayBrew(brewSchema);
+        startButton.setVisibility(View.INVISIBLE);
+        uploadButton.setText("DownLoad");
+        uploadButton.setVisibility(View.VISIBLE);
+        //Set EditText to not editable and hide button
+        brewActivityData.setAddEditViewState(BrewActivityData.DisplayMode.GLOBAL);
         ToggleFieldEditable(false);
 
     }
@@ -643,7 +663,7 @@ public class AddEditViewBrew extends Fragment {
 
                         //Parse response into BrewShcema list
                         JSONArray jsonArray = new JSONArray(response);
-                        JSONParser jsonParser = new JSONParser(getActivity());
+                        JSONBrewParser jsonParser = new JSONBrewParser(getActivity(), JSONBrewParser.ParseType.PUSH);
                         List<BrewSchema> brewSchemaList = jsonParser.ParseGlobalBrews(jsonArray);
 
                         //For each brew schema up it SHOULD ONLY BE 1
@@ -652,6 +672,7 @@ public class AddEditViewBrew extends Fragment {
                             for (BrewSchema bs : brewSchemaList) {
                                 brewSchema.setGlobalBrewId(bs.getGlobalBrewId());
                                 brewSchema.setBoilAdditionlist(bs.getBoilAdditionlist());
+                                brewSchema.setBrewNoteSchemaList(bs.getBrewNoteSchemaList());
                             }
 
                             dbManager.updateABrew(brewSchema);
@@ -663,7 +684,48 @@ public class AddEditViewBrew extends Fragment {
             }
         };
 
-        CreateBrewRequest loginRequest = new CreateBrewRequest(brewSchema, ResponseListener,null);
-        WebController.getInstance().addToRequestQueue(loginRequest);
+        CreateBrewRequest createBrewRequest = new CreateBrewRequest(brewSchema, ResponseListener,null);
+        WebController.getInstance().addToRequestQueue(createBrewRequest);
+    }
+
+    private void PullFromGlobal()
+    {
+        Response.Listener<String> ResponseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.e(LOG, response);
+                if (response.equals("Error"))// no match for user exists
+                {
+                    Toast.makeText(getActivity(), brewSchema.getBrewName() +" Upload Failed", Toast.LENGTH_SHORT).show();
+                } else {
+                    //Pase response
+                    try {
+
+                        //Parse response into BrewShcema list
+                        JSONArray jsonArray = new JSONArray(response);
+                        JSONBrewParser jsonParser = new JSONBrewParser(getActivity(),JSONBrewParser.ParseType.PULL);
+                        List<BrewSchema> brewSchemaList = jsonParser.ParseGlobalBrews(jsonArray);
+
+                        //For each brew schema up it SHOULD ONLY BE 1
+                        if (!(brewSchemaList.size() > 1))
+                        {
+                            for (BrewSchema bs : brewSchemaList) {
+                                //TODO: Need to remove UserId field from all  brew child tables
+                                bs.setUserId(UserId);
+                                bs.setListUserId();
+                                dbManager.CreateABrew(bs);
+                            }
+
+
+                            Toast.makeText(getActivity(), brewSchema.getBrewName() + " Downloaded", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    catch (JSONException e) {}
+                }
+            }
+        };
+
+        GetBrewRequest getBrewRequest = new GetBrewRequest(Long.toString(brewSchema.getGlobalBrewId()), ResponseListener,null);
+        WebController.getInstance().addToRequestQueue(getBrewRequest);
     }
 }

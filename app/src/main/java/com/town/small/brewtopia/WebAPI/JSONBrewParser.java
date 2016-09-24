@@ -8,6 +8,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
+import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 
 import org.json.JSONArray;
@@ -20,14 +21,20 @@ import java.util.List;
 /**
  * Created by Andrew on 8/27/2016.
  */
-public class JSONParser {
+public class JSONBrewParser {
 
     private static final String LOG = "JSONParser";
     DataBaseManager dataBaseManager;
 
-    public JSONParser(Context aContext)
+    public enum ParseType {
+        PUSH, PULL
+    };
+    private ParseType parseType;
+
+    public JSONBrewParser(Context aContext, ParseType aParseType)
     {
         dataBaseManager = DataBaseManager.getInstance(aContext);
+        parseType = aParseType;
     }
 
     /**
@@ -65,9 +72,13 @@ public class JSONParser {
         BrewSchema brewSchema = new BrewSchema();
 
         try {
-            brewSchema.setGlobalBrewId(Long.parseLong(aBrew.getString("GlobalBrewId")));
+            if(parseType == ParseType.PUSH)
+            {
+                brewSchema.setGlobalBrewId(Long.parseLong(aBrew.getString("GlobalBrewId")));
+                brewSchema.setUserId(Long.parseLong(aBrew.getString("UserId")));
+            }
+
             brewSchema.setBrewName(aBrew.getString("BrewName"));
-            brewSchema.setUserId(Long.parseLong(aBrew.getString("UserId")));
             brewSchema.setBoilTime(Integer.parseInt(aBrew.getString("BoilTime")));
             brewSchema.setPrimary(Integer.parseInt(aBrew.getString("Primary")));
             brewSchema.setSecondary(Integer.parseInt(aBrew.getString("Secondary")));
@@ -87,6 +98,9 @@ public class JSONParser {
             JSONArray boilAdditions = aBrew.getJSONArray("BoilAdditions");
             brewSchema.setBoilAdditionlist(ParseGlobalBrewAdditions(boilAdditions));
 
+            //Build Brew Notes
+            JSONArray brewNotes = aBrew.getJSONArray("BrewNotes");
+            brewSchema.setBrewNoteSchemaList(ParseGlobalBrewNotes(brewNotes));
 
             brewSchema.setStyleSchema(dataBaseManager.getBrewsStylesByName(brewSchema.getStyle()));
 
@@ -130,10 +144,14 @@ public class JSONParser {
         BoilAdditionsSchema boilAdditionsSchema = new BoilAdditionsSchema();
 
         try {
-            boilAdditionsSchema.setGlobalAdditionId(Long.parseLong(aBrew.getString("GlobalAdditionId")));
-            boilAdditionsSchema.setAdditionId(Long.parseLong(aBrew.getString("AdditionId")));
-            boilAdditionsSchema.setUserId(Long.parseLong(aBrew.getString("UserId")));
-            boilAdditionsSchema.setBrewId(Long.parseLong(aBrew.getString("BrewId")));
+            if(parseType == ParseType.PUSH)
+            {
+                boilAdditionsSchema.setGlobalAdditionId(Long.parseLong(aBrew.getString("GlobalAdditionId")));
+                boilAdditionsSchema.setAdditionId(Long.parseLong(aBrew.getString("AdditionId")));
+                boilAdditionsSchema.setUserId(Long.parseLong(aBrew.getString("UserId")));
+                boilAdditionsSchema.setBrewId(Long.parseLong(aBrew.getString("BrewId")));
+            }
+
             boilAdditionsSchema.setAdditionName(aBrew.getString("AdditionName"));
             boilAdditionsSchema.setAdditionTime(Integer.parseInt(aBrew.getString("AdditionTime")));
             boilAdditionsSchema.setAdditionQty(Double.parseDouble(aBrew.getString("AdditionQty")));
@@ -145,5 +163,57 @@ public class JSONParser {
         }
 
         return boilAdditionsSchema;
+    }
+
+
+    /**
+     * Method to Parse All BrewNotes
+     * */
+    private List<BrewNoteSchema> ParseGlobalBrewNotes (JSONArray aNotes) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewNotes");
+        List<BrewNoteSchema> brewNoteSchemaList = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aNotes.length(); i++) {
+
+                JSONObject note = (JSONObject) aNotes.get(i);
+                brewNoteSchemaList.add(ParseGlobalBrewNote(note));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return brewNoteSchemaList;
+    }
+
+    /**
+     * Method to Parse one Brew Note
+     * */
+    private BrewNoteSchema ParseGlobalBrewNote (JSONObject aBrewNote) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewNote");
+        BrewNoteSchema brewNoteSchema = new BrewNoteSchema();
+
+        try {
+            if(parseType == ParseType.PUSH)
+            {
+                brewNoteSchema.setGlobalNoteId(Long.parseLong(aBrewNote.getString("GlobalBrewNoteId")));
+                brewNoteSchema.setNoteId(Long.parseLong(aBrewNote.getString("BrewNoteId")));
+                brewNoteSchema.setUserId(Long.parseLong(aBrewNote.getString("UserId")));
+                brewNoteSchema.setBrewId(Long.parseLong(aBrewNote.getString("BrewId")));
+            }
+
+            brewNoteSchema.setBrewNote(aBrewNote.getString("Note"));
+            brewNoteSchema.setCreatedOn(aBrewNote.getString("CreatedOn"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return brewNoteSchema;
     }
 }

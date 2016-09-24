@@ -1,5 +1,6 @@
 package com.town.small.brewtopia.AppSettings;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -8,11 +9,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.android.volley.Response;
 import com.town.small.brewtopia.DataClass.AppSettingsSchema;
 import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataBase.DataBaseManager;
+import com.town.small.brewtopia.Login;
 import com.town.small.brewtopia.R;
+import com.town.small.brewtopia.WebAPI.DeleteUserRequest;
+import com.town.small.brewtopia.WebAPI.WebController;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +73,7 @@ public class AppSettings extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 AppSettingsSchema selectedRow = otherSettingsList.get(position);
-                //SettingSelected(selectedRow);
+                SettingSelected(selectedRow);
             }
         });
 
@@ -104,7 +113,38 @@ public class AppSettings extends ActionBarActivity {
 
     private void SettingSelected(AppSettingsSchema selectedRow)
     {
+        Log.e(LOG, "Entering: SettingSelected " + selectedRow.getSettingName());
+        if(selectedRow.getSettingName().equals(AppSettingsHelper.OTHER_DELETE_USER ))
+            DeleteUser();
+    }
 
+
+    private void DeleteUser()
+    {
+        Log.i(LOG, "Entering: DeleteUser");
+
+        Response.Listener<String> ResponseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.e(LOG, response);
+                if (!response.equals("Error"))// no match for user exists
+                {
+                    dbManager.deleteUserById(CurrentUser.getInstance().getUser().getUserId());
+                    Toast.makeText(getApplication(),"Delete Successful", Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(getApplication(), Login.class);
+                    //start next activity
+                    startActivity(intent);
+                }
+                else
+                {
+                    Toast.makeText(getApplication(),"Delete Failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+        DeleteUserRequest deleteUserRequest = new DeleteUserRequest(Long.toString(CurrentUser.getInstance().getUser().getUserId()), ResponseListener,null);
+        WebController.getInstance().addToRequestQueue(deleteUserRequest);
     }
 
 

@@ -39,7 +39,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 43;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 44;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -104,14 +104,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String STYLE_NAME = "StyleName";
     protected static final String STYLE_COLOR = "StyleColor";
 
-    // BOIL_ADDITIONS column names
+    // TABLE_BOIL_ADDITIONS column names
     protected static final String GLOBAL_ADDITION_ID = "GlobalAdditionId";
     protected static final String ADDITION_NAME = "AdditionName";
     protected static final String ADDITION_TIME = "AdditionTime";
     protected static final String ADDITION_QTY = "AdditionQty";
     protected static final String ADDITION_UOFM = "AdditionUofM";
 
-    // BREWS_SCHEDULED column names
+    // TABLE_BREWS_NOTES column names
+    protected static final String GLOBAL_BREW_NOTE_ID = "GlobalBrewNoteId";
+
+    // TABLE_BREWS_SCHEDULED column names
     protected static final String SECONDARY_ALERT_DATE = "SecondaryAlertDate";
     protected static final String BOTTLE_ALERT_DATE = "BottleAlertDate";
     protected static final String END_BREW_DATE = "EndBrewDate";
@@ -186,7 +189,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     //CREATE_TABLE_BREWS_NOTES
     protected static final String CREATE_TABLE_BREWS_NOTES = "CREATE TABLE "
-            + TABLE_BREWS_NOTES + "(" + BREW_ID + " INTEGER," + USER_ID + " INTEGER," + NOTE + " TEXT," + CREATED_ON + " DATETIME )";
+            + TABLE_BREWS_NOTES + "(" + BREW_ID + " INTEGER," + USER_ID + " INTEGER," + GLOBAL_BREW_NOTE_ID + " INTEGER," + NOTE + " TEXT," + CREATED_ON + " DATETIME )";
 
     //CREATE_TABLE_APP_SETTINGS
     protected static final String CREATE_TABLE_APP_SETTINGS = "CREATE TABLE "
@@ -384,6 +387,20 @@ public class DataBaseManager extends SQLiteOpenHelper {
         return retVal;
     }
 
+    /*
+* delete User by id
+*/
+    public void deleteUserById(long aUserId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteUserById User Id["+Long.toString(aUserId) +"]");
+
+        DeleteAllBrew(aUserId);
+
+        db.delete(TABLE_USERS, USER_ID + " = ?",
+                new String[] { Long.toString(aUserId) });
+    }
+
     //******************************Brews Table function*********************************
     /*
     * Creating a Brew
@@ -498,7 +515,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
             brew.setBrewNoteSchemaList(getAllBrewNotes(aBrewId, aUserId));
         }
 
-
         c.close();
         return brew;
     }
@@ -581,6 +597,31 @@ public class DataBaseManager extends SQLiteOpenHelper {
             return false;
 
         return true;
+    }
+
+    /*
+* getting all Brews for User
+*/
+    private void DeleteAllBrew(long aUserId) {
+        List<BrewSchema> brewList = new ArrayList<BrewSchema>();
+        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_BREWS + " WHERE "
+                + USER_ID + " = " + aUserId+" ";
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "DeleteAllBrew Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+
+                DeleteBrew(c.getLong(c.getColumnIndex(ROW_ID)),aUserId);
+
+            } while (c.moveToNext());
+        }
+        c.close();
     }
 
     /*
@@ -713,6 +754,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(GLOBAL_BREW_NOTE_ID, aBrewNote.getGlobalNoteId());
         values.put(BREW_ID, aBrewNote.getBrewId());
         values.put(USER_ID, aBrewNote.getUserId());
         values.put(CREATED_ON, getDateTime());
@@ -765,6 +807,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             do {
                 BrewNoteSchema brewNoteSchema = new BrewNoteSchema();
                 brewNoteSchema.setNoteId(c.getLong(c.getColumnIndex(ROW_ID)));
+                brewNoteSchema.setGlobalNoteId(c.getLong(c.getColumnIndex(GLOBAL_BREW_NOTE_ID)));
                 brewNoteSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
                 brewNoteSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
                 brewNoteSchema.setBrewNote(c.getString(c.getColumnIndex(NOTE)));
@@ -787,6 +830,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Log.e(LOG, "updateBrewNotes Name["+aBrewNoteSchema.getBrewId()+"]");
 
         ContentValues values = new ContentValues();
+        values.put(GLOBAL_BREW_NOTE_ID, aBrewNoteSchema.getGlobalNoteId());
         values.put(BREW_ID, aBrewNoteSchema.getBrewId());
         values.put(USER_ID, aBrewNoteSchema.getUserId());
         values.put(CREATED_ON, getDateTime());

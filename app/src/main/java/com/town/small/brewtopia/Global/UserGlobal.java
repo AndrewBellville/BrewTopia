@@ -19,7 +19,7 @@ import com.town.small.brewtopia.Brews.UserBrew;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.R;
 import com.town.small.brewtopia.WebAPI.GlobalBrewsRequest;
-import com.town.small.brewtopia.WebAPI.JSONParser;
+import com.town.small.brewtopia.WebAPI.JSONBrewParser;
 import com.town.small.brewtopia.WebAPI.WebController;
 
 import org.json.JSONArray;
@@ -68,7 +68,7 @@ public class UserGlobal extends Fragment {
             public void onResponse(JSONArray response) {
                 Log.d(LOG, response.toString());
                 //Get respose and  parse JSON into BrewSchema
-                LoadGlobalBrews(new JSONParser(getActivity()).ParseGlobalBrews(response));
+                LoadGlobalBrews(new JSONBrewParser(getActivity(), JSONBrewParser.ParseType.PUSH).ParseGlobalBrews(response));
             }
         };
 
@@ -110,7 +110,7 @@ public class UserGlobal extends Fragment {
         Intent intent = new Intent(getActivity(), UserBrew.class);
 
         // Set the state of display if View brew cannot be null
-        BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.VIEW,aBrew);
+        BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.GLOBAL,aBrew);
 
         //start next activity
         startActivity(intent);

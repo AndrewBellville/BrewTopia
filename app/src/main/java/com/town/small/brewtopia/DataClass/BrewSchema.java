@@ -64,6 +64,12 @@ public class BrewSchema {
             BrewNoteSchema nSchema = i.next();
             nSchema.setUserId(getUserId());
         }
+
+        for(Iterator<InventorySchema> i = brewInventorySchemaList.iterator(); i.hasNext();)
+        {
+            InventorySchema iSchema = i.next();
+            iSchema.setUserId(getUserId());
+        }
     }
 
     private void CalculateABV()

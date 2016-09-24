@@ -94,6 +94,7 @@ public class AddEditViewBrewNotes extends Fragment {
 
         //instantiate custom adapter
         CustomNListAdapter adapter = new CustomNListAdapter(brewNoteSchemaList, getActivity());
+        adapter.setEditable(CanEdit);
         adapter.setEventHandler(new CustomNListAdapter.EventHandler() {
             @Override
             public void OnEditClick(BrewNoteSchema aBrewNoteSchema) {
@@ -194,10 +195,10 @@ public class AddEditViewBrewNotes extends Fragment {
 
     public void onAddClick(View aView) {
         Log.e(LOG, "Entering: onAddClick");
-        createBoilAddition();
+        createBrewNote();
     }
 
-    private void createBoilAddition()
+    private void createBrewNote()
     {
         BrewNoteSchema bn = new BrewNoteSchema();
         brewData.getBrewNoteSchemaList().add(bn);

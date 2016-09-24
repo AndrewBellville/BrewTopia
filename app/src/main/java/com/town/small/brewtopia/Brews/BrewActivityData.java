@@ -25,7 +25,7 @@ public class BrewActivityData {
 
     //State for AddEditView Brew and Brew Name if Edit/View
     public enum DisplayMode {
-        ADD, EDIT, VIEW
+        ADD, EDIT, VIEW, GLOBAL
     };
     private DisplayMode AddEditViewState = DisplayMode.ADD; // STATES: Add, Edit, View
     private BrewSchema AddEditViewBrew;
@@ -71,7 +71,7 @@ public class BrewActivityData {
     public boolean CanEdit()
     {
         Log.e(LOG, "Entering: CanEdit " + AddEditViewBrew.getUserId() + " " +CurrentUser.getInstance().getUser().getUserId());
-        if(AddEditViewBrew.getUserId() == CurrentUser.getInstance().getUser().getUserId())
+        if(AddEditViewBrew.getUserId() == CurrentUser.getInstance().getUser().getUserId() && getAddEditViewState() != DisplayMode.GLOBAL)
             return true;
 
         return false;

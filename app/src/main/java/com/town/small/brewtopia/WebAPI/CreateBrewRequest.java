@@ -4,6 +4,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
+import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 
 import org.apache.commons.logging.Log;
@@ -46,7 +47,7 @@ public class CreateBrewRequest extends StringRequest {
         params.put("Efficiency", Double.toString(aBrewSchema.getEfficiency()));
         params.put("CreatedOn", APPUTILS.dateFormat.format(new Date()));
 
-        ArrayList<String> test = new ArrayList<>();
+        ArrayList<String> additions = new ArrayList<>();
         for (BoilAdditionsSchema ba: aBrewSchema.getBoilAdditionlist()) {
             HashMap<String,String> tempMap  = new HashMap<>();
             tempMap.put("GlobalAdditionId",Long.toString(ba.getGlobalAdditionId()));
@@ -57,11 +58,26 @@ public class CreateBrewRequest extends StringRequest {
             tempMap.put("AdditionTime",Integer.toString(ba.getAdditionTime()));
             tempMap.put("AdditionQty",Double.toString(ba.getAdditionQty()));
             tempMap.put("AdditionUofM",ba.getUOfM());
-            JSONObject jo = new JSONObject(tempMap);
-            test.add( jo.toString());
+            JSONObject jsonObject = new JSONObject(tempMap);
+            additions.add( jsonObject.toString());
 
         }
-        params.put("BoilAdditions", test.toString());
+        params.put("BoilAdditions", additions.toString());
+
+        ArrayList<String> notes = new ArrayList<>();
+        for (BrewNoteSchema bn: aBrewSchema.getBrewNoteSchemaList()) {
+            HashMap<String,String> tempMap  = new HashMap<>();
+            tempMap.put("GlobalBrewNoteId",Long.toString(bn.getGlobalNoteId()));
+            tempMap.put("BrewNoteId",Long.toString(bn.getNoteId()));
+            tempMap.put("BrewId",Long.toString(bn.getBrewId()));
+            tempMap.put("UserId",Long.toString(bn.getUserId()));
+            tempMap.put("Note",bn.getBrewNote());
+            tempMap.put("CreatedOn",bn.getCreatedOn());
+            JSONObject jsonObject = new JSONObject(tempMap);
+            notes.add( jsonObject.toString());
+
+        }
+        params.put("BrewNotes", notes.toString());
 
         System.out.println(params.toString());
     }

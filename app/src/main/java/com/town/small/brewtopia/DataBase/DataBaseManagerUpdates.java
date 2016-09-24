@@ -92,6 +92,10 @@ public class DataBaseManagerUpdates {
         {
             aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BOIL_ADDITIONS +" ADD COLUMN "+ dbm.GLOBAL_ADDITION_ID +" INTEGER DEFAULT -1 ");
         }
+        if(aOldVersion < 44)
+        {
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS_NOTES +" ADD COLUMN "+ dbm.GLOBAL_BREW_NOTE_ID +" INTEGER DEFAULT -1 ");
+        }
     }
 
     private void dropAllTables(SQLiteDatabase aSQLiteDatabase)

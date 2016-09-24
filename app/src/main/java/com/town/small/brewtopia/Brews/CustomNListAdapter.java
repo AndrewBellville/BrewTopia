@@ -30,6 +30,7 @@ public class CustomNListAdapter extends BaseAdapter implements ListAdapter  {
 
     //event handling
     private EventHandler eventHandler = null;
+    private boolean isEditable = true;
 
     public CustomNListAdapter(List<BrewNoteSchema> list, Context context) {
         this.list = list;
@@ -73,9 +74,10 @@ public class CustomNListAdapter extends BaseAdapter implements ListAdapter  {
         EditText listItemText1 = (EditText) view.findViewById(R.id.NoteEditText);
         listItemText1.setText(text2);
 
-        Button editbutton = (Button)view.findViewById(R.id.EditButton);
+        Button editButton = (Button)view.findViewById(R.id.EditButton);
+        if(!isEditable) editButton.setVisibility(View.INVISIBLE);
 
-        editbutton.setOnClickListener(new View.OnClickListener(){
+        editButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 //do something
@@ -109,6 +111,9 @@ public class CustomNListAdapter extends BaseAdapter implements ListAdapter  {
         this.eventHandler = eventHandler;
     }
 
+    public void setEditable(boolean editable) {
+        isEditable = editable;
+    }
     /**
      * This interface defines what events to be reported to
      * the outside world
