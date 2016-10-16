@@ -4,6 +4,7 @@ package com.town.small.brewtopia;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
@@ -99,7 +100,8 @@ public class UserProfile extends ActionBarActivity {
 
     private void showHelp()
     {
-        Toast.makeText(this, "No Help for you Sucka", Toast.LENGTH_LONG).show();
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://smalltowndev.com/index.php/brewtopia/releaseNotes"));
+        startActivity(browserIntent);
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {

@@ -1,5 +1,7 @@
 package com.town.small.brewtopia.AppSettings;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -115,7 +117,7 @@ public class AppSettings extends ActionBarActivity {
     {
         Log.e(LOG, "Entering: SettingSelected " + selectedRow.getSettingName());
         if(selectedRow.getSettingName().equals(AppSettingsHelper.OTHER_DELETE_USER ))
-            DeleteUser();
+            Verify();
     }
 
 
@@ -143,8 +145,32 @@ public class AppSettings extends ActionBarActivity {
             }
         };
 
+
         DeleteUserRequest deleteUserRequest = new DeleteUserRequest(Long.toString(CurrentUser.getInstance().getUser().getUserId()), ResponseListener,null);
         WebController.getInstance().addToRequestQueue(deleteUserRequest);
+    }
+
+    private void Verify()
+    {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        DeleteUser();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+
     }
 
 

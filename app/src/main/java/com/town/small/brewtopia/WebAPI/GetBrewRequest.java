@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GetBrewRequest extends StringRequest {
-    private static String URL = "http://blackatombrewery.com/index.php/mobileAPI/getBrew";
+    private static String URL = "http://smalltowndev.com/index.php/mobileAPI/getBrew";
     private Map<String, String>params;
 
     public GetBrewRequest(String aGlobalBrewId, Response.Listener<String> listener, Response.ErrorListener errorListener) {

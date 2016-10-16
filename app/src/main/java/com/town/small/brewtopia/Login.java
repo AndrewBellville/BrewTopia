@@ -1,6 +1,7 @@
 package com.town.small.brewtopia;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -208,6 +209,15 @@ public class Login extends ActionBarActivity {
         //start next activity
         startActivity(intent);
         message.setText("");
+    }
+
+    //****************Version Click********************
+    public void onVersionClick(View aView)
+    {
+        Log.e(LOG, "Entering: onVersionClick");
+
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://smalltowndev.com/index.php/brewtopia/releaseNotes"));
+        startActivity(browserIntent);
     }
 
 }

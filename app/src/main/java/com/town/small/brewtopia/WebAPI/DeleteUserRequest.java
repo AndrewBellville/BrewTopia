@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DeleteUserRequest extends StringRequest {
-    private static String URL = "http://blackatombrewery.com/index.php/mobileAPI/deleteUser";
+    private static String URL = "http://smalltowndev.com/index.php/mobileAPI/deleteUser";
     private Map<String, String>params;
 
     public DeleteUserRequest(String aGlobalUserId, Response.Listener<String> listener, Response.ErrorListener errorListener) {

@@ -231,8 +231,12 @@ public class AddEditViewBrew extends Fragment {
         //get brew and display
         DisplayBrew(brewSchema);
         startButton.setVisibility(View.INVISIBLE);
-        uploadButton.setText("DownLoad");
-        uploadButton.setVisibility(View.VISIBLE);
+        if(UserId > 0) {
+            uploadButton.setText("DownLoad");
+            uploadButton.setVisibility(View.VISIBLE);
+        }
+        else
+            uploadButton.setVisibility(View.INVISIBLE);
         //Set EditText to not editable and hide button
         brewActivityData.setAddEditViewState(BrewActivityData.DisplayMode.GLOBAL);
         ToggleFieldEditable(false);

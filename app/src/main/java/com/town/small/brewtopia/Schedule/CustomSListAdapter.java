@@ -100,11 +100,11 @@ public class CustomSListAdapter extends BaseAdapter implements ListAdapter  {
         TextView NextEventDate = (TextView)view.findViewById(R.id.NextEventTextView);
         NextEventDate.setText("");
 
-        if(sBrew.isShowAsAlert()) {
-            ImageView AlertImage = (ImageView)view.findViewById(R.id.ActionImageView);
+        ImageView AlertImage = (ImageView)view.findViewById(R.id.ActionImageView);
+        if(sBrew.isShowAsAlert())
             AlertImage.setVisibility(View.VISIBLE);
-        }
-
+        else
+            AlertImage.setVisibility(View.INVISIBLE);
 
         return view;
     }
