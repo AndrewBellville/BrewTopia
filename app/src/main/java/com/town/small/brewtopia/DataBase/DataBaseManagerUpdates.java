@@ -96,6 +96,10 @@ public class DataBaseManagerUpdates {
         {
             aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS_NOTES +" ADD COLUMN "+ dbm.GLOBAL_BREW_NOTE_ID +" INTEGER DEFAULT -1 ");
         }
+        if(aOldVersion < 45)
+        {
+            aSQLiteDatabase.execSQL(dbm.CREATE_TABLE_BREW_IMAGES);
+        }
     }
 
     private void dropAllTables(SQLiteDatabase aSQLiteDatabase)

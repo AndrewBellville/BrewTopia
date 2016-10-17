@@ -81,5 +81,6 @@ public class APPUTILS {
         return truncatedDouble;
     }
 
-
+    //********************WebAPI**********************
+    public static String WEBAPIRURL = "http://smalltowndev.com/index.php/BrewTopiaMobileAPI";
 }

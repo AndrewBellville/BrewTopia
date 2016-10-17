@@ -6,12 +6,13 @@ package com.town.small.brewtopia.WebAPI;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
+import com.town.small.brewtopia.DataClass.APPUTILS;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class LoginRequest extends StringRequest {
-    private static String URL = "http://smalltowndev.com/index.php/mobileAPI/login";
+    private static String URL = APPUTILS.WEBAPIRURL+"/login";
     private Map<String, String>params;
 
     public LoginRequest(String aUserName, String aPassword, Response.Listener<String> listener, Response.ErrorListener errorListener) {

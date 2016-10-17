@@ -13,7 +13,7 @@ import java.util.Map;
  * Created by Andrew on 7/23/2016.
  */
 public class CreateUserRequest extends StringRequest {
-    private static String URL = "http://smalltowndev.com/index.php/mobileAPI/createUser";
+    private static String URL = APPUTILS.WEBAPIRURL+"/createUser";
     private Map<String, String> params;
 
     public CreateUserRequest(String aUserName, String aPassword, Response.Listener<String> listener, Response.ErrorListener errorListener) {

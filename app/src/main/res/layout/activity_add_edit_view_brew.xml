@@ -15,7 +15,6 @@
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:id="@+id/AddEditViewLayout">
 
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -72,8 +71,8 @@
             android:layout_below="@+id/textViewBoilTime"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/editTextBrewName"
-            android:layout_alignEnd="@+id/editTextBrewName"/>
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -91,10 +90,10 @@
             android:ems="10"
             android:id="@+id/editTextPrimary"
             android:layout_below="@+id/textViewPrimary"
-            android:layout_alignRight="@+id/editTextBrewName"
-            android:layout_alignEnd="@+id/editTextBrewName"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -112,10 +111,10 @@
             android:ems="10"
             android:id="@+id/editTextSecondary"
             android:layout_below="@+id/textViewSecondary"
-            android:layout_alignRight="@+id/editTextPrimary"
-            android:layout_alignEnd="@+id/editTextPrimary"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
         <TextView
             android:layout_width="wrap_content"

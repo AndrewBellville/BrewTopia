@@ -11,6 +11,20 @@
     android:id="@+id/UserLogin"
     android:background="@drawable/brew_background">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/LoginImage"
+        android:maxHeight="100dp"
+        android:maxWidth="100dp"
+        android:minHeight="100dp"
+        android:minWidth="100dp"
+        android:clickable="false"
+        android:background="@drawable/beer_light"
+        android:focusable="false"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"/>
+
     <TextView
         android:text="@string/app_name"
         android:layout_width="wrap_content"
@@ -18,9 +32,9 @@
         android:textSize="30sp"
         android:typeface="normal"
         android:id="@+id/LoginTitle"
+        android:textColor="#B3A7A7"
         android:layout_below="@+id/LoginImage"
-        android:layout_centerHorizontal="true"
-        android:textColor="#B3A7A7"/>
+        android:layout_centerHorizontal="true" />
 
     <EditText
         android:layout_width="match_parent"
@@ -30,10 +44,11 @@
         android:hint="User Name"
         android:background="@drawable/edit_text1"
         android:textCursorDrawable="@drawable/edit_text_curser"
-        android:layout_marginTop="65dp"
+        android:layout_centerVertical="true"
         android:layout_below="@+id/LoginTitle"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"/>
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="50dp"/>
 
     <EditText
         android:layout_width="match_parent"
@@ -45,8 +60,11 @@
         android:background="@drawable/edit_text1"
         android:textCursorDrawable="@drawable/edit_text_curser"
         android:layout_below="@+id/UserNameTextBox"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"/>
+        android:layout_alignLeft="@+id/UserNameTextBox"
+        android:layout_alignStart="@+id/UserNameTextBox"
+        android:layout_marginBottom="34dp"
+        android:layout_alignRight="@+id/UserNameTextBox"
+        android:layout_alignEnd="@+id/UserNameTextBox" />
 
 
     <Button
@@ -59,25 +77,12 @@
         android:textColor="#ffffff"
         android:background="@drawable/button1"
         android:layout_below="@+id/PasswordTextBox"
-        android:layout_marginTop="33dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"/>
+        android:layout_alignLeft="@+id/PasswordTextBox"
+        android:layout_alignStart="@+id/PasswordTextBox"
+        android:layout_alignRight="@+id/PasswordTextBox"
+        android:layout_alignEnd="@+id/PasswordTextBox" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/LoginImage"
-        android:maxHeight="100dp"
-        android:maxWidth="100dp"
-        android:minHeight="100dp"
-        android:minWidth="100dp"
-        android:clickable="false"
-        android:background="@drawable/beer_light"
-        android:baselineAlignBottom="false"
-        android:cropToPadding="false"
-        android:focusable="false"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+
 
     <Button
         android:layout_width="wrap_content"
@@ -89,10 +94,10 @@
         android:textColor="#ffffff"
         android:background="@drawable/button1"
         android:layout_below="@+id/LoginButton"
-        android:layout_alignRight="@+id/LoginButton"
-        android:layout_alignEnd="@+id/LoginButton"
         android:layout_alignLeft="@+id/LoginButton"
-        android:layout_alignStart="@+id/LoginButton" />
+        android:layout_alignStart="@+id/LoginButton"
+        android:layout_alignRight="@+id/LoginButton"
+        android:layout_alignEnd="@+id/LoginButton" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -105,6 +110,35 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Continue without login"
+        android:id="@+id/textViewNoLogin"
+        android:textColor="@android:color/holo_blue_dark"
+        android:onClick="onNoUserLogin"
+        android:layout_below="@+id/MessageText"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sponsored By"
+        android:id="@+id/sponsordText"
+        android:textColor="#FFFFFF"
+        android:layout_below="@+id/textViewNoLogin"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"/>
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/imageView"
+        android:scaleType="fitXY"
+        android:background="@drawable/witheredtreebrewerysmall"
+        android:layout_below="@+id/sponsordText"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="v0.0.0.0"
         android:id="@+id/verionNumber"
@@ -112,15 +146,5 @@
         android:layout_centerHorizontal="true"
         android:textColor="#B3A7A7"
         android:onClick="onVersionClick"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Continue without login"
-        android:id="@+id/textViewNoLogin"
-        android:textColor="@android:color/holo_blue_dark"
-        android:layout_below="@+id/MessageText"
-        android:layout_centerHorizontal="true"
-        android:onClick="onNoUserLogin"/>
 
 </RelativeLayout>

@@ -6,11 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.AppSettingsSchema;
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
+import com.town.small.brewtopia.DataClass.BrewImageSchema;
 import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.DataClass.BrewStyleSchema;
@@ -39,7 +41,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 44;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 45;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -60,6 +62,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String TABLE_INVENTORY_YEAST = "Yeast";
     protected static final String TABLE_INVENTORY_EQUIPMENT = "Equipment";
     protected static final String TABLE_INVENTORY_OTHER = "Other";
+    protected static final String TABLE_BREW_IMAGES = "BrewImages";
 
 
     // Common column names across Mulit tables
@@ -153,6 +156,10 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String INVENTORY_OTH = "OptimumTempHigh";
     protected static final String INVENTORY_STARTER = "Starter";
 
+    // TABLE_BREW_IMAGES column names
+    protected static final String GLOBAL_IMAGE_ID = "GlobalImageId";
+    protected static final String IMAGE_ID = "ImageId";
+    protected static final String IMAGE = "Image";
 
     // Table Create Statements
     //CREATE_TABLE_USERS
@@ -227,6 +234,10 @@ public class DataBaseManager extends SQLiteOpenHelper {
             + TABLE_INVENTORY_OTHER + "(" + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_UOFM + " TEXT," + INVENTORY_AMOUNT + " REAL )";
 
+    //CREATE_TABLE_BREW_IMAGES
+    protected static final String CREATE_TABLE_BREW_IMAGES = "CREATE TABLE "
+            + TABLE_BREW_IMAGES + "(" + GLOBAL_IMAGE_ID + " INTEGER,"+ USER_ID + " INTEGER," + BREW_ID + " INTEGER," + IMAGE + " BLOB," + CREATED_ON + " DATETIME )";
+
 
     //DatabaseHelpers
     protected static DataBaseManagerUpdates dataBaseManagerUpdates;
@@ -266,6 +277,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_YEAST);
         aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_EQUIPMENT);
         aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_OTHER);
+        aSQLiteDatabase.execSQL(CREATE_TABLE_BREW_IMAGES);
 
         //Pre Load Data
         dataBasePreLoad.PreLoadData(aSQLiteDatabase);
@@ -650,6 +662,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         deleteYeastByBrewIdUserId(aBrewId,aUserId);
         deleteEquipmentByBrewIdUserId(aBrewId,aUserId);
         deleteOtherByBrewIdUserId(aBrewId,aUserId);
+
+        //delete brew images
+        deleteAllBrewImages(aBrewId,aUserId);
     }
 
     //******************************Brews Style Table function*********************************
@@ -2543,6 +2558,88 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 new String[] { Long.toString(aOtherId) });
     }
 
+    //******************************Brew Images Table function*********************************
+    /*
+    * add Image
+    */
+    public long CreateBrewImage(BrewImageSchema aBrewImageSchema) {
+        Log.e(LOG, "Insert: CreateBrewImage["+aBrewImageSchema.getUserId()+", "+ aBrewImageSchema.getBrewId() +"]");
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(GLOBAL_IMAGE_ID, -1);// WILL NOT BE GLOBAL ON CREATE
+        values.put(USER_ID, aBrewImageSchema.getUserId());
+        values.put(BREW_ID, aBrewImageSchema.getBrewId());
+        values.put(IMAGE, GetBitmapByteArray(aBrewImageSchema.getImage()));
+        values.put(CREATED_ON, getDateTime());
+
+        // insert row
+        return db.insert(TABLE_BREW_IMAGES,null,values);
+    }
+
+    /*
+    * getting all Images for brew
+    */
+    public List<BrewImageSchema> getAllImagesForBrew(long aBrewId) {
+        List<BrewImageSchema> imageList = new ArrayList<BrewImageSchema>();
+        String selectQuery = "SELECT "+ROW_ID+", * FROM " + TABLE_BREW_IMAGES
+                + " WHERE " + BREW_ID + " = " + aBrewId;
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllImagesForBrew Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            if (c.moveToFirst())
+            {
+                do {
+                    BrewImageSchema imageSchema = new BrewImageSchema();
+                    imageSchema.setGlobalImageId(c.getInt(c.getColumnIndex(GLOBAL_IMAGE_ID)));
+                    imageSchema.setImageId(c.getInt(c.getColumnIndex(ROW_ID)));
+                    imageSchema.setBrewId(c.getInt(c.getColumnIndex(BREW_ID)));
+                    imageSchema.setUserId(c.getInt(c.getColumnIndex(USER_ID)));
+
+                    //convert BLOB to image
+                    byte[] byteArray = c.getBlob((c.getColumnIndex(IMAGE)));
+                    Bitmap bitmapImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                    imageSchema.setImage(bitmapImage);
+
+                    imageSchema.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
+
+                    imageList.add(imageSchema);
+                } while (c.moveToNext());
+            }
+        }
+
+        c.close();
+        return imageList;
+    }
+
+    /*
+    * Delete All brew images by Brew Id / user Id
+    */
+    public void deleteAllBrewImages(long aBrewId, long aUserId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteAllBrewImages Name["+aBrewId+"]");
+
+        db.delete(TABLE_BREW_IMAGES, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
+                new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
+    }
+
+    /*
+    * delete brew image by id
+    */
+    public void deleteBrewImageById(long brewImageId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteBrewImageById Note Id["+Long.toString(brewImageId) +"]");
+
+        db.delete(TABLE_BREW_IMAGES, ROW_ID + " = ?",
+                new String[] { Long.toString(brewImageId) });
+    }
 
     //************************************Helper functions***************
     /*

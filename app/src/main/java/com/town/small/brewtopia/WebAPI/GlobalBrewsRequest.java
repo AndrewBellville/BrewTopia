@@ -2,6 +2,8 @@ package com.town.small.brewtopia.WebAPI;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.town.small.brewtopia.DataClass.APPUTILS;
+
 import org.json.JSONArray;
 
 
@@ -14,7 +16,7 @@ public class GlobalBrewsRequest extends JsonArrayRequest {
 
     // Log cat tag
     private static final String LOG = "GlobalBrewsRequest";
-    private static String URL = "http://smalltowndev.com/index.php/mobileAPI/globalBrews";
+    private static String URL = APPUTILS.WEBAPIRURL+"/globalBrews";
 
     public GlobalBrewsRequest(Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
         super(URL,listener,errorListener);

@@ -6,12 +6,13 @@ package com.town.small.brewtopia.WebAPI;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
+import com.town.small.brewtopia.DataClass.APPUTILS;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class DeleteUserRequest extends StringRequest {
-    private static String URL = "http://smalltowndev.com/index.php/mobileAPI/deleteUser";
+    private static String URL = APPUTILS.WEBAPIRURL+"/deleteUser";
     private Map<String, String>params;
 
     public DeleteUserRequest(String aGlobalUserId, Response.Listener<String> listener, Response.ErrorListener errorListener) {

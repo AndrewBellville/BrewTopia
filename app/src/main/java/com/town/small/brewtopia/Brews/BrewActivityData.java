@@ -1,5 +1,6 @@
 package com.town.small.brewtopia.Brews;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
@@ -30,6 +31,7 @@ public class BrewActivityData {
     private DisplayMode AddEditViewState = DisplayMode.ADD; // STATES: Add, Edit, View
     private BrewSchema AddEditViewBrew;
     private long ScheduleId; //Used for Displaying Completed brews
+    private Bitmap ImageDisplyBitmap;//Used to dispaly full screen brew image
 
     //Singleton
     private static BrewActivityData mInstance = null;
@@ -96,6 +98,9 @@ public class BrewActivityData {
     public long getScheduleId() {
         return ScheduleId;
     }
+    public Bitmap getImageDisplyBitmap() {
+        return ImageDisplyBitmap;
+    }
 
 
     //setters
@@ -119,5 +124,8 @@ public class BrewActivityData {
     }
     public void setScheduleId(long scheduleId) {
         ScheduleId = scheduleId;
+    }
+    public void setImageDisplyBitmap(Bitmap imageDisplyBitmap) {
+        ImageDisplyBitmap = imageDisplyBitmap;
     }
 }

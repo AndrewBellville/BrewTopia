@@ -22,7 +22,7 @@ import java.util.Map;
  * Created by Andrew on 7/23/2016.
  */
 public class CreateBrewRequest extends StringRequest {
-    private static String URL = "http://smalltowndev.com/index.php/mobileAPI/createBrew";
+    private static String URL = APPUTILS.WEBAPIRURL+"/createBrew";
     private Map<String, String> params;
 
     public CreateBrewRequest(BrewSchema aBrewSchema, Response.Listener<String> listener, Response.ErrorListener errorListener) {
