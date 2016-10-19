@@ -158,7 +158,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     // TABLE_BREW_IMAGES column names
     protected static final String GLOBAL_IMAGE_ID = "GlobalImageId";
-    protected static final String IMAGE_ID = "ImageId";
     protected static final String IMAGE = "Image";
 
     // Table Create Statements
@@ -525,6 +524,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
             //set notes
             brew.setBrewNoteSchemaList(getAllBrewNotes(aBrewId, aUserId));
+
+            //set images
+            brew.setBrewImageSchemaList(getAllImagesForBrew(aBrewId));
         }
 
         c.close();
@@ -607,12 +609,15 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Update Brew notes
         if(!(addAllBrewNotes(aBrew.getBrewNoteSchemaList())))
             return false;
+        //Update Brew Images
+        if(!(addAllBrewImages(aBrew.getBrewImageSchemaList())))
+            return false;
 
         return true;
     }
 
     /*
-* getting all Brews for User
+* delete all Brews for User
 */
     private void DeleteAllBrew(long aUserId) {
         List<BrewSchema> brewList = new ArrayList<BrewSchema>();
@@ -2562,7 +2567,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
     * add Image
     */
-    public long CreateBrewImage(BrewImageSchema aBrewImageSchema) {
+    public boolean CreateBrewImage(BrewImageSchema aBrewImageSchema) {
         Log.e(LOG, "Insert: CreateBrewImage["+aBrewImageSchema.getUserId()+", "+ aBrewImageSchema.getBrewId() +"]");
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -2571,11 +2576,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(GLOBAL_IMAGE_ID, -1);// WILL NOT BE GLOBAL ON CREATE
         values.put(USER_ID, aBrewImageSchema.getUserId());
         values.put(BREW_ID, aBrewImageSchema.getBrewId());
-        values.put(IMAGE, GetBitmapByteArray(aBrewImageSchema.getImage()));
+        values.put(IMAGE, APPUTILS.GetBitmapByteArray(aBrewImageSchema.getImage()));
         values.put(CREATED_ON, getDateTime());
 
         // insert row
-        return db.insert(TABLE_BREW_IMAGES,null,values);
+        return db.insert(TABLE_BREW_IMAGES,null,values) > 0;
     }
 
     /*
@@ -2587,6 +2592,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 + " WHERE " + BREW_ID + " = " + aBrewId;
 
         Log.e(LOG, selectQuery);
+
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -2601,12 +2607,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                     imageSchema.setImageId(c.getInt(c.getColumnIndex(ROW_ID)));
                     imageSchema.setBrewId(c.getInt(c.getColumnIndex(BREW_ID)));
                     imageSchema.setUserId(c.getInt(c.getColumnIndex(USER_ID)));
-
-                    //convert BLOB to image
-                    byte[] byteArray = c.getBlob((c.getColumnIndex(IMAGE)));
-                    Bitmap bitmapImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                    imageSchema.setImage(bitmapImage);
-
+                    imageSchema.setImage(APPUTILS.GetBitmapFromByteArr(c.getBlob((c.getColumnIndex(IMAGE)))));
                     imageSchema.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
 
                     imageList.add(imageSchema);
@@ -2616,6 +2617,52 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         c.close();
         return imageList;
+    }
+
+    /*
+    * add All brew Images
+    */
+    public boolean addAllBrewImages(List <BrewImageSchema> aBrewImageList) {
+        Log.e(LOG, "Insert: addAllBrewImages");
+
+        if(aBrewImageList.size() < 1)
+            return true;
+
+        // for each brew note try to add it to the DB
+        for(Iterator<BrewImageSchema> i = aBrewImageList.iterator(); i.hasNext(); )
+        {
+            BrewImageSchema brewImageSchema = i.next();
+            //Try  to update if that fails try to add
+            if(!updateBrewImage(brewImageSchema))
+                if(!CreateBrewImage(brewImageSchema))
+                    return false;
+        }
+
+        return true;
+    }
+
+    /*
+    * Update Brew image
+    */
+    public boolean updateBrewImage(BrewImageSchema aBrewImageSchema) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "updateBrewImage Name["+aBrewImageSchema.getBrewId()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(GLOBAL_IMAGE_ID, aBrewImageSchema.getGlobalImageId());
+        values.put(BREW_ID, aBrewImageSchema.getBrewId());
+        values.put(USER_ID, aBrewImageSchema.getUserId());
+        //values.put(CREATED_ON, getDateTime());
+        values.put(IMAGE,  APPUTILS.GetBitmapByteArray(aBrewImageSchema.getImage()));
+
+        // updating row
+        int retVal = db.update(TABLE_BREW_IMAGES, values, ROW_ID + " = ?",
+                new String[] { Long.toString(aBrewImageSchema.getImageId()) });
+
+        if(!(retVal > 0) )
+            return false;
+
+        return true;
     }
 
     /*
@@ -2642,18 +2689,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
     }
 
     //************************************Helper functions***************
-    /*
-    * Convert Bitmap to BLOB storage byte array
-     */
-    private byte[] GetBitmapByteArray(Bitmap aBitmap)
-    {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        aBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-        byte[] bArray = bos.toByteArray();
-        return bArray;
-    }
-
-
     /**
      * get datetime
      * */

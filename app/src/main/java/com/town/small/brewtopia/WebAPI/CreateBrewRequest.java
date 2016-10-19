@@ -1,9 +1,13 @@
 package com.town.small.brewtopia.WebAPI;
 
+import android.graphics.Bitmap;
+import android.util.Base64;
+
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
+import com.town.small.brewtopia.DataClass.BrewImageSchema;
 import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 
@@ -11,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -78,6 +83,21 @@ public class CreateBrewRequest extends StringRequest {
 
         }
         params.put("BrewNotes", notes.toString());
+
+        ArrayList<String> images = new ArrayList<>();
+        for (BrewImageSchema bi: aBrewSchema.getBrewImageSchemaList()) {
+            HashMap<String,String> tempMap  = new HashMap<>();
+            tempMap.put("GlobalImageId",Long.toString(bi.getGlobalImageId()));
+            tempMap.put("ImageId",Long.toString(bi.getImageId()));
+            tempMap.put("BrewId",Long.toString(bi.getBrewId()));
+            tempMap.put("UserId",Long.toString(bi.getUserId()));
+            tempMap.put("Image", Base64.encodeToString(APPUTILS.GetBitmapByteArray(bi.getImage()), Base64.DEFAULT));
+            tempMap.put("CreatedOn",bi.getCreatedOn());
+            JSONObject jsonObject = new JSONObject(tempMap);
+            images.add( jsonObject.toString());
+
+        }
+        params.put("BrewImages", images.toString());
 
         System.out.println(params.toString());
     }

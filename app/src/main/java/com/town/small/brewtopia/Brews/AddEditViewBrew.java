@@ -677,6 +677,7 @@ public class AddEditViewBrew extends Fragment {
                                 brewSchema.setGlobalBrewId(bs.getGlobalBrewId());
                                 brewSchema.setBoilAdditionlist(bs.getBoilAdditionlist());
                                 brewSchema.setBrewNoteSchemaList(bs.getBrewNoteSchemaList());
+                                brewSchema.setBrewImageSchemaList(bs.getBrewImageSchemaList());
                             }
 
                             dbManager.updateABrew(brewSchema);

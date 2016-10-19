@@ -87,22 +87,22 @@ public class AddEditViewBrewImages extends Fragment {
 
         brewSchema = BrewActivityData.getInstance().getAddEditViewBrew();
 
-        //Hide Button if We cant edit
-        if(!BrewActivityData.getInstance().CanEdit()) {
+        //Hide Button if We cant edit / if we are adding a new brew
+        if(!BrewActivityData.getInstance().CanEdit() || BrewActivityData.getInstance().getAddEditViewState() == BrewActivityData.DisplayMode.ADD) {
             importImageButton.setVisibility(View.INVISIBLE);
             openCameraButton.setVisibility(View.INVISIBLE);
             deleteImage.setVisibility(View.INVISIBLE);
         }
 
-        LoadUserImages();
+        LoadBrewImages();
 
         return view;
     }
 
     //TODO Optimize
     //TODO Load only new images based on creation date
-    private void LoadUserImages() {
-        Log.e(LOG, "Entering: LoadUserImages");
+    private void LoadBrewImages() {
+        Log.e(LOG, "Entering: LoadBrewImages");
 
         //set all sizing
         Display display =  getActivity().getWindowManager().getDefaultDisplay();
@@ -112,7 +112,7 @@ public class AddEditViewBrewImages extends Fragment {
         int totalImagesPerRow = width / (imageSize + imagePadding);
         int imagesInRowCount = 0;
 
-        List<BrewImageSchema> imageList = dbManager.getAllImagesForBrew(brewSchema.getBrewId());
+        List<BrewImageSchema> imageList = BrewActivityData.getInstance().getAddEditViewBrew().getBrewImageSchemaList();
         imageTable.removeAllViews();
         // just for testing
         if (imageList.size() > 0) {
@@ -186,7 +186,7 @@ public class AddEditViewBrewImages extends Fragment {
         if (isDelete) {
             dbManager.deleteBrewImageById(temp.getSchema().getImageId());
             //call to reload images
-            LoadUserImages();
+            resetBrewData(brewSchema.getBrewId(),brewSchema.getUserId());
 
         } else {
             //Create and intent which will open ImageDisplay for image clicked
@@ -204,7 +204,7 @@ public class AddEditViewBrewImages extends Fragment {
         Log.e(LOG, "Entering: onActivityResult requestCode [" + aRequestCode + "] resultCode[" + aResultCode + "]");
         super.onActivityResult(aRequestCode, aResultCode, aData);
 
-        if(aRequestCode == RESULT_LOAD_IMAGE)
+        if(aRequestCode == RESULT_LOAD_IMAGE || aRequestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE)
         {
             if (aResultCode == Activity.RESULT_OK) {
 
@@ -214,20 +214,7 @@ public class AddEditViewBrewImages extends Fragment {
                 imageSchema.setImage(GetImageFromData(aData));
                 dbManager.CreateBrewImage(imageSchema);
             }
-        }
-        else if(aRequestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE)
-        {
-            if (aResultCode == Activity.RESULT_OK) {
-
-                // Image captured and saved
-                //Bundle extras = data.getExtras();
-                //Bitmap imageBitmap = (Bitmap) extras.get("data");
-                BrewImageSchema imageSchema = new BrewImageSchema();
-                imageSchema.setBrewId(brewSchema.getBrewId());
-                imageSchema.setUserId(brewSchema.getUserId());
-                imageSchema.setImage(GetImageFromData(aData));
-                dbManager.CreateBrewImage(imageSchema);
-            } else if (aResultCode == Activity.RESULT_CANCELED) {
+            else if (aResultCode == Activity.RESULT_CANCELED) {
                 // User cancelled the image capture
             } else {
                 // Image capture failed, advise user
@@ -235,7 +222,7 @@ public class AddEditViewBrewImages extends Fragment {
         }
 
         //call to reload images
-        LoadUserImages();
+        resetBrewData(brewSchema.getBrewId(),brewSchema.getUserId());
     }
 
     private Bitmap GetImageFromData(Intent aData) {
@@ -273,6 +260,12 @@ public class AddEditViewBrewImages extends Fragment {
         // Is the button now checked?
         if(isDelete) ((RadioButton) view).setChecked(false);
         isDelete = ((RadioButton) view).isChecked();
+    }
+
+    private void resetBrewData(long aBrewId, long aUserId)
+    {
+        BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(aBrewId,aUserId));
+        LoadBrewImages();
     }
 
 }

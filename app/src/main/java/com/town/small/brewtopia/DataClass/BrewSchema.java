@@ -37,6 +37,7 @@ public class BrewSchema {
     private List <BoilAdditionsSchema> boilAdditionlist = new ArrayList<BoilAdditionsSchema>();
     private List <BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();
     private List <InventorySchema> brewInventorySchemaList = new ArrayList<InventorySchema>();
+    private List<BrewImageSchema> brewImageSchemaList = new ArrayList<BrewImageSchema>();
     private String Style;
     private BrewStyleSchema StyleSchema;
     private int totalBrewed=0;
@@ -181,6 +182,9 @@ public class BrewSchema {
     public int getTotalBrewed() {
         return totalBrewed;
     }
+    public List<BrewImageSchema> getBrewImageSchemaList() {
+        return brewImageSchemaList;
+    }
 
 
     //setters
@@ -280,5 +284,8 @@ public class BrewSchema {
     }
     public void setTotalBrewed(int totalBrewed) {
         this.totalBrewed = totalBrewed;
+    }
+    public void setBrewImageSchemaList(List<BrewImageSchema> brewImageSchemaList) {
+        this.brewImageSchemaList = brewImageSchemaList;
     }
 }

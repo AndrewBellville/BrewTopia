@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
+import com.town.small.brewtopia.DataClass.BrewImageSchema;
 import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.DataClass.CurrentUser;
@@ -23,6 +24,7 @@ public class BrewActivityData {
     private List<BoilAdditionsSchema> baArray = new ArrayList<BoilAdditionsSchema>();
     private List<BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();
     private List<InventorySchema> brewInventorySchemaList = new ArrayList<InventorySchema>();
+    private List<BrewImageSchema> brewImageSchemaList = new ArrayList<BrewImageSchema>();
 
     //State for AddEditView Brew and Brew Name if Edit/View
     public enum DisplayMode {
@@ -101,7 +103,9 @@ public class BrewActivityData {
     public Bitmap getImageDisplyBitmap() {
         return ImageDisplyBitmap;
     }
-
+    public List<BrewImageSchema> getBrewImageSchemaList() {
+        return brewImageSchemaList;
+    }
 
     //setters
     public void setBaArray(List<BoilAdditionsSchema> baArray) {
@@ -127,5 +131,8 @@ public class BrewActivityData {
     }
     public void setImageDisplyBitmap(Bitmap imageDisplyBitmap) {
         ImageDisplyBitmap = imageDisplyBitmap;
+    }
+    public void setBrewImageSchemaList(List<BrewImageSchema> brewImageSchemaList) {
+        this.brewImageSchemaList = brewImageSchemaList;
     }
 }

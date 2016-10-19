@@ -1,5 +1,9 @@
 package com.town.small.brewtopia.DataClass;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -83,4 +87,21 @@ public class APPUTILS {
 
     //********************WebAPI**********************
     public static String WEBAPIRURL = "http://smalltowndev.com/index.php/BrewTopiaMobileAPI";
+
+    ///********************Image Conversion**********************
+    public static Bitmap GetBitmapFromByteArr(byte[] byteArray) {
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+    }
+    public static byte[] GetBitmapByteArray(Bitmap aBitmap)
+    {
+        byte[] bArray =new byte[1];
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            aBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+            bArray = bos.toByteArray();
+
+        }
+        catch (Exception e){}
+        return bArray;
+    }
 }

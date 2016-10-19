@@ -3,6 +3,7 @@ package com.town.small.brewtopia.Global;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ public class UserGlobal extends Fragment {
     private ListView GlobalbrewListView;
     private TextView noData;
     List<BrewSchema> GlobalBrewList;
+    private SwipeRefreshLayout swipeContainer;
 
 
     @Override
@@ -52,11 +54,31 @@ public class UserGlobal extends Fragment {
             }
         });
 
+        // Lookup the swipe container view
+        swipeContainer = (SwipeRefreshLayout)view.findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                RefreshBrews();
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+
         noData = (TextView) view.findViewById(R.id.GlobalBrewsNoData);
 
         GetGlobalBrews();
 
         return view;
+    }
+
+    private void RefreshBrews(){
+        GetGlobalBrews();
     }
 
     private void GetGlobalBrews()
@@ -69,6 +91,8 @@ public class UserGlobal extends Fragment {
                 Log.d(LOG, response.toString());
                 //Get respose and  parse JSON into BrewSchema
                 LoadGlobalBrews(new JSONBrewParser(getActivity(), JSONBrewParser.ParseType.PUSH).ParseGlobalBrews(response));
+                // Now we call setRefreshing(false) to signal refresh has finished
+                swipeContainer.setRefreshing(false);
             }
         };
 

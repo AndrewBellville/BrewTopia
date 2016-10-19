@@ -1,13 +1,17 @@
 package com.town.small.brewtopia.WebAPI;
 
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.town.small.brewtopia.Brews.BrewImageView;
 import com.town.small.brewtopia.DataBase.DataBaseManager;
+import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.BoilAdditionsSchema;
+import com.town.small.brewtopia.DataClass.BrewImageSchema;
 import com.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.town.small.brewtopia.DataClass.BrewSchema;
 
@@ -15,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,6 +106,10 @@ public class JSONBrewParser {
             //Build Brew Notes
             JSONArray brewNotes = aBrew.getJSONArray("BrewNotes");
             brewSchema.setBrewNoteSchemaList(ParseGlobalBrewNotes(brewNotes));
+
+            //Build Brew Notes
+            JSONArray brewImages = aBrew.getJSONArray("BrewImages");
+            brewSchema.setBrewImageSchemaList(ParseGlobalBrewImages(brewImages));
 
             brewSchema.setStyleSchema(dataBaseManager.getBrewsStylesByName(brewSchema.getStyle()));
 
@@ -215,5 +224,56 @@ public class JSONBrewParser {
         }
 
         return brewNoteSchema;
+    }
+
+    /**
+     * Method to Parse All Brew Images
+     * */
+    private List<BrewImageSchema> ParseGlobalBrewImages (JSONArray aImage) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewImages");
+        List<BrewImageSchema> brewImageSchemaList = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aImage.length(); i++) {
+
+                JSONObject image = (JSONObject) aImage.get(i);
+                brewImageSchemaList.add(ParseGlobalBrewImage(image));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return brewImageSchemaList;
+    }
+
+    /**
+     * Method to Parse one Brew Image
+     * */
+    private BrewImageSchema ParseGlobalBrewImage (JSONObject aBrewImage) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewImage");
+        BrewImageSchema brewImageSchema = new BrewImageSchema();
+
+        try {
+            if(parseType == ParseType.PUSH)
+            {
+                brewImageSchema.setGlobalImageId(Long.parseLong(aBrewImage.getString("GlobalImageId")));
+                brewImageSchema.setImageId(Long.parseLong(aBrewImage.getString("ImageId")));
+                brewImageSchema.setUserId(Long.parseLong(aBrewImage.getString("UserId")));
+                brewImageSchema.setBrewId(Long.parseLong(aBrewImage.getString("BrewId")));
+            }
+
+            brewImageSchema.setImage(APPUTILS.GetBitmapFromByteArr(Base64.decode(aBrewImage.getString("Image"), Base64.DEFAULT)));
+            brewImageSchema.setCreatedOn(aBrewImage.getString("CreatedOn"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return brewImageSchema;
     }
 }
