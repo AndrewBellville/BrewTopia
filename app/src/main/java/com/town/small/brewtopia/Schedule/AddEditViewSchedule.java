@@ -1,5 +1,6 @@
 package com.town.small.brewtopia.Schedule;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -11,11 +12,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -24,6 +28,7 @@ import com.town.small.brewtopia.DataClass.APPUTILS;
 import com.town.small.brewtopia.DataClass.CurrentUser;
 import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
+import com.town.small.brewtopia.DataClass.ScheduledEventSchema;
 import com.town.small.brewtopia.R;
 
 import java.text.ParseException;
@@ -65,10 +70,17 @@ public class AddEditViewSchedule extends ActionBarActivity {
     private EditText FinalGravity;
     private EditText ABV;
 
+    //schedule events
+    private ScheduledEventSchema editScheduledEventSchema;
+    private EditText eventText;
+    private EditText eventDate;
+
+    private Button addScheduleEventButton;
     private Button editScheduleButton;
     private Spinner colorSpinner;
     private CheckBox dateRollUpCheckBox;
     private CheckBox usingStater;
+    private ListView ScheduleEventsListView;
 
     private KeyListener brewNameListener;
     private KeyListener NotesListener;
@@ -77,7 +89,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
     private DataBaseManager dbManager;
     private ScheduleActivityData scheduleActivityData;
-    ScheduledBrewSchema aScheduleSchema;
+    ScheduledBrewSchema gScheduleSchema;
     ArrayAdapter<String> colorAdapter;
     private Toolbar toolbar;
     private SchedulerHelper schedulerHelper;
@@ -116,7 +128,21 @@ public class AddEditViewSchedule extends ActionBarActivity {
         usingStater = (CheckBox)findViewById(R.id.HasStaterCheckBox);
 
         editScheduleButton = (Button)findViewById(R.id.EditScheduleButton);
-
+        addScheduleEventButton = (Button)findViewById(R.id.AddEventButton);
+        addScheduleEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AddScheduleEvent();
+            }
+        });
+        ScheduleEventsListView = (ListView)findViewById(R.id.ScheduleEvents);
+        ScheduleEventsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                ScheduleEventDialog(gScheduleSchema.getScheduledEventSchemaList().get(position));
+            }
+        });
 
         brewNameListener = brewName.getKeyListener();
         NotesListener = Notes.getKeyListener();
@@ -134,7 +160,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         userId = CurrentUser.getInstance().getUser().getUserId();
 
         scheduleActivityData = ScheduleActivityData.getInstance();
-        aScheduleSchema = scheduleActivityData.getScheduledBrewSchema();
+        gScheduleSchema = scheduleActivityData.getScheduledBrewSchema();
         schedulerHelper = new SchedulerHelper(this);
 
         ToggleFieldEditable(false);
@@ -165,7 +191,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
     public void ifView()
     {
         //get brew and display
-        DisplaySchedule(aScheduleSchema);
+        DisplaySchedule(gScheduleSchema);
         editScheduleButton.setText("Edit Schedule");
         //Set EditText to not editable and hide button
         AddEditViewState = DisplayMode.VIEW;
@@ -187,6 +213,10 @@ public class AddEditViewSchedule extends ActionBarActivity {
         FinalGravity.setText(Double.toString(aScheduleSchema.getFG()));
         ABV.setText(Double.toString(APPUTILS.GetTruncatedABVPercent(aScheduleSchema.getABV())) +"%" );
         usingStater.setChecked(aScheduleSchema.getBooleanHasStarter());
+
+        CustomSEListAdapter adapter = new CustomSEListAdapter(aScheduleSchema.getScheduledEventSchemaList(), getApplicationContext());
+        ScheduleEventsListView.setAdapter(adapter);
+        APPUTILS.setListViewHeightBasedOnChildren(ScheduleEventsListView);
     }
 
     private void setColorSpinner()
@@ -226,7 +256,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         String originalTime = DateToEdit.getText().toString();
         DateToEdit.setText( Integer.toString(dialogYear)+"-"+month+"-"+day+" 12:00:00" );
 
-        if(dateRollUpCheckBox.isChecked())
+        if(dateRollUpCheckBox.isChecked() && DateToEdit != eventDate)
         {
             long daysInBetween=0;
             try
@@ -258,7 +288,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
             try
             {
                 Date parsedDate = APPUTILS.dateFormat.parse(datesList[i].getText().toString());
-                datesList[i].setText(aScheduleSchema.addDateTime(daysToAdd,parsedDate));
+                datesList[i].setText(gScheduleSchema.addDateTime(daysToAdd,parsedDate));
             }
             catch (Exception e){}
         }
@@ -288,8 +318,8 @@ public class AddEditViewSchedule extends ActionBarActivity {
         Log.e(LOG, "Entering: validateSubmit");
 
         //Create Brew schedule
-        ScheduledBrewSchema sbrew = aScheduleSchema;
-        sbrew.setScheduleId(aScheduleSchema.getScheduleId());
+        ScheduledBrewSchema sbrew = gScheduleSchema;
+        sbrew.setScheduleId(gScheduleSchema.getScheduleId());
         sbrew.setBrewName(brewName.getText().toString());
         sbrew.setUserId(userId);
         sbrew.setBooleanHasStarter(usingStater.isChecked());
@@ -332,6 +362,14 @@ public class AddEditViewSchedule extends ActionBarActivity {
             Toast.makeText(getApplicationContext(), "Invalid Date", Toast.LENGTH_LONG).show();
         }
 
+        List<ScheduledEventSchema> templist = new ArrayList<>();
+        for(ScheduledEventSchema scheduledEventSchema : gScheduleSchema.getScheduledEventSchemaList())
+        {
+            if(validateScheduleDate(scheduledEventSchema.getEventDate()))
+                templist.add(scheduledEventSchema);
+        }
+        gScheduleSchema.setScheduledEventSchemaList(templist);
+
         if(colorSpinner.getSelectedItem().toString() == "Blue")
             sbrew.setColor("#0000FF");
 
@@ -340,9 +378,9 @@ public class AddEditViewSchedule extends ActionBarActivity {
         sbrew.setActive(1);
 
 
-        aScheduleSchema = sbrew;
+        gScheduleSchema = sbrew;
 
-        dbManager.updateScheduledBrew(aScheduleSchema);
+        dbManager.updateScheduledBrew(gScheduleSchema);
 
         ifView();
     }
@@ -352,12 +390,18 @@ public class AddEditViewSchedule extends ActionBarActivity {
     public void onDeleteClick(View aView)
     {
         //delete each event from user Calendar
-        schedulerHelper.deleteCalendarEvent(aScheduleSchema.getAlertSecondaryCalendarId());
-        schedulerHelper.deleteCalendarEvent(aScheduleSchema.getAlertBottleCalendarId());
-        schedulerHelper.deleteCalendarEvent(aScheduleSchema.getEndBrewCalendarId());
+        schedulerHelper.deleteCalendarEvent(gScheduleSchema.getAlertSecondaryCalendarId());
+        schedulerHelper.deleteCalendarEvent(gScheduleSchema.getAlertBottleCalendarId());
+        schedulerHelper.deleteCalendarEvent(gScheduleSchema.getEndBrewCalendarId());
+
+        for(ScheduledEventSchema  scheduledEventSchema: gScheduleSchema.getScheduledEventSchemaList())
+        {
+            if(!(scheduledEventSchema.getEventCalendarId()==-1))
+                schedulerHelper.deleteCalendarEvent(scheduledEventSchema.getScheduledEventId());
+        }
 
         // then delete brew
-        dbManager.deleteBrewScheduledById(aScheduleSchema.getScheduleId());
+        dbManager.deleteBrewScheduledById(gScheduleSchema.getScheduleId());
         this.finish();
     }
 
@@ -379,6 +423,132 @@ public class AddEditViewSchedule extends ActionBarActivity {
         schedulerHelper.updateCalendarEvent(date,sbrew.getAlertSecondaryCalendarId());
         schedulerHelper.updateCalendarEvent(date1,sbrew.getAlertBottleCalendarId());
         schedulerHelper.updateCalendarEvent(date2,sbrew.getEndBrewCalendarId());
+
+        //loop over all schedule events and add / update
+        for(ScheduledEventSchema scheduledEventSchema : gScheduleSchema.getScheduledEventSchemaList())
+        {
+            Date date3 = new Date();
+            try {
+                date3 = APPUTILS.dateFormat.parse(scheduledEventSchema.getEventDate());
+
+                if(!(scheduledEventSchema.getEventCalendarId() == -1))
+                    schedulerHelper.updateCalendarEvent(date3,scheduledEventSchema.getEventCalendarId());
+                else
+                {
+                    long eventID = schedulerHelper.createCalendarEvent(date3, scheduledEventSchema.getEventText());
+                    scheduledEventSchema.setEventCalendarId(eventID);
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+    }
+
+    private void AddScheduleEvent()
+    {
+        ScheduledEventSchema se = new ScheduledEventSchema();
+        se.setEventText("");
+        se.setBrewId(gScheduleSchema.getBrewId());
+        se.setScheduleId(gScheduleSchema.getScheduleId());
+        se.setEventDate(APPUTILS.dateFormat.format(new Date()));
+        ScheduleEventDialog(se);
+
+    }
+
+    private void ScheduleEventDialog(ScheduledEventSchema aScheduledEventSchema)
+    {
+        editScheduledEventSchema = aScheduledEventSchema;
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Schedule Event");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.custom_schedule_event_dialog, null);
+        alertDialogBuilder.setView(dialogView);
+
+
+        eventText = (EditText) dialogView.findViewById(R.id.eventTextView);
+        eventText.setText(aScheduledEventSchema.getEventText());
+
+        eventDate = (EditText) dialogView.findViewById(R.id.eventDate);
+        eventDate.setText(aScheduledEventSchema.getEventDate());
+        eventDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePickerDialog(view);
+            }
+        });
+
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+
+        Button deleteButton = (Button) dialogView.findViewById(R.id.deleteButton);
+        if(aScheduledEventSchema.getScheduledEventId() == -1) deleteButton.setVisibility(View.INVISIBLE);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                validateDelete(editScheduledEventSchema);
+                alertDialog.cancel();
+            }
+        });
+        Button SaveButton = (Button) dialogView.findViewById(R.id.saveButton);
+        SaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                validateSave(editScheduledEventSchema);
+                alertDialog.cancel();
+            }
+        });
+        Button cancelButon = (Button) dialogView.findViewById(R.id.cancelButton);
+        cancelButon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.cancel();
+            }
+        });
+
+
+        alertDialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        alertDialog.show();
+
+    }
+
+    private void validateSave(ScheduledEventSchema aScheduledEventSchema)
+    {
+        aScheduledEventSchema.setEventText(eventText.getText().toString());
+        aScheduledEventSchema.setEventDate(eventDate.getText().toString());
+        //if getScheduledEventId == -1 then its and update and we dont want to add it to the list
+        if(validateScheduleDate(aScheduledEventSchema.getEventDate()) && aScheduledEventSchema.getScheduledEventId() == -1)
+        {
+            gScheduleSchema.getScheduledEventSchemaList().add(aScheduledEventSchema);
+            DisplaySchedule(gScheduleSchema);
+        }
+    }
+
+    private void validateDelete(ScheduledEventSchema aScheduledEventSchema)
+    {
+        dbManager.deleteScheduleEventById(aScheduledEventSchema.getScheduledEventId());
+        gScheduleSchema = dbManager.getScheduledScheduleId(gScheduleSchema.getScheduleId());
+
+        //delete from calendar if exists
+        if(!(aScheduledEventSchema.getEventCalendarId()==-1))
+            schedulerHelper.deleteCalendarEvent(aScheduledEventSchema.getEventCalendarId());
+
+        DisplaySchedule(gScheduleSchema);
+    }
+
+    private boolean validateScheduleDate(String aEventDate)
+    {
+        if(StartDate.getText().toString().compareTo(aEventDate) <= 0 &&
+                EndDate.getText().toString().compareTo(aEventDate) >= 0)
+            return true;
+        else
+            Toast.makeText(getApplicationContext(), "Invalid Date", Toast.LENGTH_LONG).show();
+
+        return false;
     }
 
     private void ToggleFieldEditable(boolean aEditable)
@@ -437,6 +607,12 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
             dateRollUpCheckBox.setClickable(false);
             usingStater.setClickable(false);
+
+            addScheduleEventButton.setClickable(false);
+            addScheduleEventButton.setEnabled(false);
+
+            ScheduleEventsListView.setClickable(false);
+            ScheduleEventsListView.setEnabled(false);
         }
         else
         {
@@ -486,6 +662,12 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
             dateRollUpCheckBox.setClickable(true);
             usingStater.setClickable(true);
+
+            addScheduleEventButton.setClickable(true);
+            addScheduleEventButton.setEnabled(true);
+
+            ScheduleEventsListView.setEnabled(true);
+            ScheduleEventsListView.setClickable(true);
         }
     }
 

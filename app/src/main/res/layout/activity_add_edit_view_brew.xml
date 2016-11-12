@@ -201,13 +201,13 @@
             android:layout_alignEnd="@+id/editTextSecondary" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="IBU"
-            android:id="@+id/textViewIBU"
-            android:layout_below="@+id/editTextTargetABV"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="IBU"
+        android:id="@+id/textViewIBU"
+        android:layout_below="@+id/editTextTargetABV"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -224,9 +224,30 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="SRM"
+            android:id="@+id/textViewSRM"
+            android:layout_below="@+id/editTextIBU"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/editTextSRM"
+            android:layout_below="@+id/textViewSRM"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignRight="@+id/editTextSecondary"
+            android:layout_alignEnd="@+id/editTextSecondary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Batch Size (Gallons)"
             android:id="@+id/textViewBatchSize"
-            android:layout_below="@+id/editTextIBU"
+            android:layout_below="@+id/editTextSRM"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 

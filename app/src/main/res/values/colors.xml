@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="today">#4b82ff</color>
-    <color name="greyed_out">#c7c7c7</color>
+    <color name="greyed_out">#b2b2b2</color>
 
     <color name="summer">#44eebd82</color>
     <color name="fall">#44d8d27e</color>
@@ -9,8 +9,6 @@
     <color name="spring">#448da64b</color>
 
     <color name="Red">#FF0000</color>
-
-
 
     <color name="borderColor">#B1BCBE</color>
     <color name="transparent_gray">#99000000</color>
@@ -22,5 +20,7 @@
     <color name="ColorToneD2">#4C4343</color>
     <color name="ColorToneM2">#A69B9B</color>
     <color name="ColorToneL2">#D6CBCB</color>
+
+    <color name="AccentColor">#80ff80</color>
 
 </resources>

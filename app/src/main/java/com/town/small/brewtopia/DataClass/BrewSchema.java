@@ -41,6 +41,7 @@ public class BrewSchema {
     private String Style;
     private BrewStyleSchema StyleSchema;
     private int totalBrewed=0;
+    private int SRM=0;
 
     // constructors
     public BrewSchema() {
@@ -185,6 +186,9 @@ public class BrewSchema {
     public List<BrewImageSchema> getBrewImageSchemaList() {
         return brewImageSchemaList;
     }
+    public int getSRM() {
+        return SRM;
+    }
 
 
     //setters
@@ -287,5 +291,8 @@ public class BrewSchema {
     }
     public void setBrewImageSchemaList(List<BrewImageSchema> brewImageSchemaList) {
         this.brewImageSchemaList = brewImageSchemaList;
+    }
+    public void setSRM(int SRM) {
+        this.SRM = SRM;
     }
 }

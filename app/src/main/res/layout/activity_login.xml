@@ -120,7 +120,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sponsored By"
+        android:text="Supported By"
         android:id="@+id/sponsordText"
         android:textColor="#FFFFFF"
         android:layout_below="@+id/textViewNoLogin"

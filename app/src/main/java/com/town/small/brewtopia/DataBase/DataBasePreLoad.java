@@ -64,7 +64,7 @@ public class DataBasePreLoad {
         SQLiteDatabase db = aSQLiteDatabase;
 
         // DELETE ALL BREW STYLES ADDED BY ADMIN
-        aSQLiteDatabase.execSQL("DELETE FROM"+ dbm.TABLE_BREWS_STYLES + " WHERE " + dbm.USER_ID + " = 1");
+        aSQLiteDatabase.execSQL("DELETE FROM "+ dbm.TABLE_BREWS_STYLES );
 
         String selectQuery = "SELECT * FROM " + dbm.TABLE_USERS + " WHERE "
                 + dbm.USER_NAME + " = 'ADMIN'";

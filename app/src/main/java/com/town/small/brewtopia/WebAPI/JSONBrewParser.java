@@ -97,6 +97,7 @@ public class JSONBrewParser {
             brewSchema.setMethod(aBrew.getString("Method"));
             brewSchema.setBatchSize(Double.parseDouble(aBrew.getString("BatchSize")));
             brewSchema.setEfficiency(Double.parseDouble(aBrew.getString("Efficiency")));
+            brewSchema.setSRM(Integer.parseInt(aBrew.getString("SRM")));
             brewSchema.setCreatedOn(aBrew.getString("CreatedOn"));
 
             //Build Boil Additions

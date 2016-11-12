@@ -3,9 +3,12 @@ package com.town.small.brewtopia.DataClass;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Andrew on 1/2/2016.
@@ -31,6 +34,7 @@ public class ScheduledBrewSchema {
     private int displayLevel = 0;
     private String color;
     private int hasStarter=0; //0 = no 1 = yes
+    private List<ScheduledEventSchema> scheduledEventSchemaList = new ArrayList<>();
 
     //visual
     private boolean showAsAlert = false;
@@ -62,14 +66,38 @@ public class ScheduledBrewSchema {
         String d = APPUTILS.dateFormatCompare.format(date);
 
         if(d.compareTo(APPUTILS.StringDateCompare(getStartDate())) >= 0 &&
-                d.compareTo(APPUTILS.StringDateCompare(getAlertSecondaryDate())) < 0)
-            return "Primary "+ d.compareTo(APPUTILS.StringDateCompare(getStartDate()))+ " Days";
+                d.compareTo(APPUTILS.StringDateCompare(getAlertSecondaryDate())) < 0) {
+            Date parsedDate = new Date();
+            try {
+                parsedDate = APPUTILS.dateFormatCompare.parse(getAlertSecondaryDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            long diff = date.getTime() - parsedDate.getTime();
+            return "Primary " + TimeUnit.MILLISECONDS.toDays(diff) + " Days";
+        }
         else if(d.compareTo(APPUTILS.StringDateCompare(getAlertSecondaryDate())) >= 0 &&
-                d.compareTo(APPUTILS.StringDateCompare(getAlertBottleDate())) < 0)
-            return "Secondary "+ d.compareTo(APPUTILS.StringDateCompare(getAlertSecondaryDate()))+ " Days";
+                d.compareTo(APPUTILS.StringDateCompare(getAlertBottleDate())) < 0) {
+            Date parsedDate = new Date();
+            try {
+                parsedDate = APPUTILS.dateFormatCompare.parse(getAlertSecondaryDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            long diff = date.getTime() - parsedDate.getTime();
+            return "Secondary " + TimeUnit.MILLISECONDS.toDays(diff) + " Days";
+        }
         else if(d.compareTo(APPUTILS.StringDateCompare(getAlertBottleDate())) >= 0 &&
-                d.compareTo(APPUTILS.StringDateCompare(getEndBrewDate())) <= 0)
-            return "Bottles "+ d.compareTo(APPUTILS.StringDateCompare(getAlertBottleDate()))+ " Days";
+                d.compareTo(APPUTILS.StringDateCompare(getEndBrewDate())) <= 0) {
+            Date parsedDate = new Date();
+            try {
+                parsedDate = APPUTILS.dateFormatCompare.parse(getAlertSecondaryDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            long diff = date.getTime() - parsedDate.getTime();
+            return "Bottles " + TimeUnit.MILLISECONDS.toDays(diff) + " Days";
+        }
         else
             return "Out Of Range";
     }
@@ -148,6 +176,26 @@ public class ScheduledBrewSchema {
         {
             return true;
         }
+
+        for(ScheduledEventSchema scheduledEventSchema : getScheduledEventSchemaList())
+        {
+            Date date1 = new Date();
+
+            try {
+                date1 = formatter.parse(scheduledEventSchema.getEventDate());
+                String dateString = formatter.format(date1);
+                int DateCompare = date.compareTo(dateString);
+                if(DateCompare == 0)
+                    return true;
+
+            }
+            catch (ParseException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+
         return false;
     }
 
@@ -226,6 +274,9 @@ public class ScheduledBrewSchema {
         else
             return false;
     }
+    public List<ScheduledEventSchema> getScheduledEventSchemaList() {
+        return scheduledEventSchemaList;
+    }
 
     //Setters
     public void setUserId(long userId) {
@@ -294,5 +345,8 @@ public class ScheduledBrewSchema {
             this.hasStarter = 1;
         else
             this.hasStarter = 0;
+    }
+    public void setScheduledEventSchemaList(List<ScheduledEventSchema> scheduledEventSchemaList) {
+        this.scheduledEventSchemaList = scheduledEventSchemaList;
     }
 }

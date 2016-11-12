@@ -2,6 +2,7 @@ package com.town.small.brewtopia.Brews;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,9 @@ import com.town.small.brewtopia.DataClass.BrewSchema;
 import com.town.small.brewtopia.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Andrew on 2/20/2016.
@@ -79,6 +81,25 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
                 colorLayout.setBackgroundColor(Color.TRANSPARENT);
             }
         }
+
+        //Set SRM color Gradient
+        int[] colors = new int[2];
+        colors[0] = Color.TRANSPARENT;
+        Iterator it = APPUTILS.SRMMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            if(brewSchema.getSRM() == 0 ) {
+                colors[1] = Color.TRANSPARENT;
+                break;
+            }
+            else if(brewSchema.getSRM() >= (int) pair.getKey() )
+                colors[1] = Color.parseColor(pair.getValue().toString());
+            else
+                break;
+        }
+        //create a new gradient color
+        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
+        view.setBackground(gd);
 
         //Handle TextView and display string from list
         TextView listItemText = (TextView)view.findViewById(R.id.list_item_string);

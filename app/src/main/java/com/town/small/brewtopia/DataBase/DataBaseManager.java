@@ -24,6 +24,7 @@ import com.town.small.brewtopia.DataClass.HopsSchema;
 import com.town.small.brewtopia.DataClass.InventorySchema;
 import com.town.small.brewtopia.DataClass.OtherSchema;
 import com.town.small.brewtopia.DataClass.ScheduledBrewSchema;
+import com.town.small.brewtopia.DataClass.ScheduledEventSchema;
 import com.town.small.brewtopia.DataClass.UserSchema;
 import com.town.small.brewtopia.DataClass.YeastSchema;
 
@@ -41,7 +42,7 @@ import java.util.Set;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 45;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 49;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -63,6 +64,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String TABLE_INVENTORY_EQUIPMENT = "Equipment";
     protected static final String TABLE_INVENTORY_OTHER = "Other";
     protected static final String TABLE_BREW_IMAGES = "BrewImages";
+    protected static final String TABLE_SCHEDULED_EVENT = "ScheduledEvent";
 
 
     // Common column names across Mulit tables
@@ -102,6 +104,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String BATCH_SIZE = "BatchSize";
     protected static final String EFFICIENCY = "Efficiency";
     protected static final String TOTAL_BREWED = "TotalBrewed";
+    protected static final String SRM = "SRM";
 
     // TABLE_BREWS_STYLES column names
     protected static final String STYLE_NAME = "StyleName";
@@ -160,6 +163,12 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String GLOBAL_IMAGE_ID = "GlobalImageId";
     protected static final String IMAGE = "Image";
 
+    // TABLE_SCHEDULED_EVENT column names
+    protected static final String SCHEDULE_ID = "ScheduleId";
+    protected static final String EVENT_DATE = "EventDate";
+    protected static final String EVENT_CALENDAR_ID = "EventCalendarId";
+    protected static final String EVENT_TEXT = "EventText";
+
     // Table Create Statements
     //CREATE_TABLE_USERS
     protected static final String CREATE_TABLE_USERS = "CREATE TABLE "
@@ -171,7 +180,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             + TABLE_BREWS + "(" + BREW_NAME + " TEXT," + USER_ID + " INTEGER," + BOIL_TIME + " INTEGER," + PRIMARY + " INTEGER," + SECONDARY + " INTEGER," + BOTTLE + " INTEGER,"
             + DESCRIPTION + " TEXT," + STYLE + " TEXT," + CREATED_ON + " DATETIME," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL," + FAVORITE + " INTEGER,"
             + SCHEDULED + " INTEGER," + ON_TAP + " INTEGER,"+ IBU + " REAL,"+ METHOD + " TEXT,"+ BATCH_SIZE + " REAL,"+ EFFICIENCY + " REAL," + TOTAL_BREWED + " INTEGER,"
-            + GLOBAL_BREW_ID + " INTEGER," + " PRIMARY KEY ("+ BREW_NAME +", "+ USER_ID +" ) )";
+            + GLOBAL_BREW_ID + " INTEGER," + SRM + " INTEGER," + " PRIMARY KEY ("+ BREW_NAME +", "+ USER_ID +" ) )";
 
     //CREATE_TABLE_BREWS_STYLES
     protected static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
@@ -237,6 +246,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String CREATE_TABLE_BREW_IMAGES = "CREATE TABLE "
             + TABLE_BREW_IMAGES + "(" + GLOBAL_IMAGE_ID + " INTEGER,"+ USER_ID + " INTEGER," + BREW_ID + " INTEGER," + IMAGE + " BLOB," + CREATED_ON + " DATETIME )";
 
+    //CREATE_TABLE_SCHEDULED_EVENT
+    protected static final String CREATE_TABLE_SCHEDULED_EVENT = "CREATE TABLE "
+            + TABLE_SCHEDULED_EVENT + "(" + SCHEDULE_ID + " INTEGER," + BREW_ID + " INTEGER," + EVENT_DATE + " DATETIME," + EVENT_CALENDAR_ID + " INTEGER,"
+            + EVENT_TEXT + " TEXT )";
+
 
     //DatabaseHelpers
     protected static DataBaseManagerUpdates dataBaseManagerUpdates;
@@ -277,6 +291,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_EQUIPMENT);
         aSQLiteDatabase.execSQL(CREATE_TABLE_INVENTORY_OTHER);
         aSQLiteDatabase.execSQL(CREATE_TABLE_BREW_IMAGES);
+        aSQLiteDatabase.execSQL(CREATE_TABLE_SCHEDULED_EVENT);
 
         //Pre Load Data
         dataBasePreLoad.PreLoadData(aSQLiteDatabase);
@@ -443,6 +458,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(BATCH_SIZE, aBrew.getBatchSize());
         values.put(EFFICIENCY, aBrew.getEfficiency());
         values.put(TOTAL_BREWED, aBrew.getTotalBrewed());
+        values.put(SRM, aBrew.getSRM());
 
         //Add brew
         long row_id = db.insert(TABLE_BREWS,null,values);
@@ -515,6 +531,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             brew.setBatchSize((c.getDouble(c.getColumnIndex(BATCH_SIZE))));
             brew.setEfficiency((c.getDouble(c.getColumnIndex(EFFICIENCY))));
             brew.setTotalBrewed(getAllNonActiveScheduledBrewsCount(aUserId,aBrewId));
+            brew.setSRM(c.getInt(c.getColumnIndex(SRM)));
 
             //set boil additions
             brew.setBoilAdditionlist(get_all_boil_additions_by_brew_name(aBrewId, aUserId));
@@ -594,6 +611,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(BATCH_SIZE, aBrew.getBatchSize());
         values.put(EFFICIENCY, aBrew.getEfficiency());
         values.put(TOTAL_BREWED, aBrew.getTotalBrewed());
+        values.put(SRM, aBrew.getSRM());
         //values.put(CREATED_ON, getDateTime());
 
         // updating row
@@ -1049,22 +1067,24 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(END_BREW_CALENDAR_ID, aSBrew.getEndBrewCalendarId());
         values.put(USING_STARTER, aSBrew.getHasStarter());
 
+        //Add schedule events
+        for(ScheduledEventSchema scheduledEventSchema: aSBrew.getScheduledEventSchemaList())
+            CreateScheduleEvent(scheduledEventSchema);
+
         //Add ScheduledBrew
         if(!(db.insert(TABLE_BREWS_SCHEDULED,null,values) > 0) )
             return false;
 
         return true;
     }
+
     /*
-* Get Active Scheduled Brew by name and date
-*/
-    public ScheduledBrewSchema getActiveScheduledBrewByNameDate(long aBrewId, long aUserId, String aStartDate) {
+    * Get Active Scheduled Brew by Schedule Id
+    */
+    public ScheduledBrewSchema getScheduledScheduleId(long ScheduleId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
-                + ACTIVE + " = 1 "
-                + "AND " + BREW_ID + " = " + aBrewId +" "
-                + "AND " + USER_ID + " = " + aUserId +" "
-                + "AND " + CREATED_ON + " = '" + aStartDate +"'";
+                + ROW_ID + " = '" + Long.toString(ScheduleId) +"'";
 
         Log.e(LOG, selectQuery);
 
@@ -1091,45 +1111,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
             sBrew.setAlertBottleCalendarId((c.getLong(c.getColumnIndex(BOTTLE_ALERT_CALENDAR_ID))));
             sBrew.setEndBrewCalendarId((c.getLong(c.getColumnIndex(END_BREW_CALENDAR_ID))));
             sBrew.setHasStarter((c.getInt(c.getColumnIndex(USING_STARTER))));
-        }
-        c.close();
-        return sBrew;
-    }
 
-    /*
-* Get Active Scheduled Brew by Schedule Id
-*/
-    public ScheduledBrewSchema getActiveScheduledScheduleId(long ScheduleId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
-                + ACTIVE + " = 1 "
-                + "AND " + ROW_ID + " = '" + Long.toString(ScheduleId) +"'";
-
-        Log.e(LOG, selectQuery);
-
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        ScheduledBrewSchema sBrew = new ScheduledBrewSchema();
-        if (c != null) {
-            c.moveToFirst();
-            sBrew.setScheduleId(c.getLong(c.getColumnIndex(ROW_ID)));
-            sBrew.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
-            sBrew.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
-            sBrew.setBrewName(c.getString(c.getColumnIndex(BREW_NAME)));
-            sBrew.setStartDate(c.getString(c.getColumnIndex(CREATED_ON)));
-            sBrew.setAlertSecondaryDate(c.getString(c.getColumnIndex(SECONDARY_ALERT_DATE)));
-            sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
-            sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
-            sBrew.setOG(c.getDouble(c.getColumnIndex(ORIGINAL_GRAVITY)));
-            sBrew.setFG((c.getDouble(c.getColumnIndex(FINAL_GRAVITY))));
-            sBrew.setABV((c.getDouble(c.getColumnIndex(ABV))));
-            sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
-            sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
-            sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
-            sBrew.setAlertSecondaryCalendarId((c.getLong(c.getColumnIndex(SECONDARY_ALERT_CALENDAR_ID))));
-            sBrew.setAlertBottleCalendarId((c.getLong(c.getColumnIndex(BOTTLE_ALERT_CALENDAR_ID))));
-            sBrew.setEndBrewCalendarId((c.getLong(c.getColumnIndex(END_BREW_CALENDAR_ID))));
-            sBrew.setHasStarter((c.getInt(c.getColumnIndex(USING_STARTER))));
+            sBrew.setScheduledEventSchemaList(getAllScheduleEventsById(sBrew.getScheduleId()));
 
         }
         c.close();
@@ -1170,6 +1153,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             sBrew.setEndBrewCalendarId((c.getLong(c.getColumnIndex(END_BREW_CALENDAR_ID))));
             sBrew.setHasStarter((c.getInt(c.getColumnIndex(USING_STARTER))));
 
+            sBrew.setScheduledEventSchemaList(getAllScheduleEventsById(sBrew.getScheduleId()));
         }
         c.close();
         return sBrew;
@@ -1213,6 +1197,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 sBrew.setAlertBottleCalendarId((c.getLong(c.getColumnIndex(BOTTLE_ALERT_CALENDAR_ID))));
                 sBrew.setEndBrewCalendarId((c.getLong(c.getColumnIndex(END_BREW_CALENDAR_ID))));
                 sBrew.setHasStarter((c.getInt(c.getColumnIndex(USING_STARTER))));
+
+                sBrew.setScheduledEventSchemaList(getAllScheduleEventsById(sBrew.getScheduleId()));
 
                 // adding to Scheduled list if still active else set not active
                 if(sBrew.getEndBrewDate().compareTo(getDateTime()) >= 0)
@@ -1289,6 +1275,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 sBrew.setAlertBottleCalendarId((c.getLong(c.getColumnIndex(BOTTLE_ALERT_CALENDAR_ID))));
                 sBrew.setEndBrewCalendarId((c.getLong(c.getColumnIndex(END_BREW_CALENDAR_ID))));
                 sBrew.setHasStarter((c.getInt(c.getColumnIndex(USING_STARTER))));
+
+                sBrew.setScheduledEventSchemaList(getAllScheduleEventsById(sBrew.getScheduleId()));
+
                 sBrewList.add(sBrew);
 
             } while (c.moveToNext());
@@ -1329,6 +1318,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Update brew
         if(!(retVal > 0) )
             return false;
+        if(!addAllScheduleEvents(aSBrew.getScheduledEventSchemaList()))
+            return false;
+
 
         return true;
     }
@@ -1347,6 +1339,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         // updating row
         db.update(TABLE_BREWS_SCHEDULED, values, ROW_ID + " = ?",
                 new String[] { Long.toString(aScheduleId) });
+
+        //delete Schedule events
+        deleteScheduleEventByScheduleId(aScheduleId);
     }
 
     /*
@@ -1371,6 +1366,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         db.delete(TABLE_BREWS_SCHEDULED, BREW_ID + " = ? AND "+ USER_ID +  " = ?",
                 new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
+
+        deleteScheduleEventByBrewId(aBrewId);
     }
 
     //************************************Calculations Table functions***************
@@ -2688,13 +2685,144 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 new String[] { Long.toString(brewImageId) });
     }
 
+    //******************************Schedule Event Table function*********************************
+    /*
+    * add Schedule Event
+    */
+    public boolean CreateScheduleEvent(ScheduledEventSchema aScheduledEventSchema) {
+        Log.e(LOG, "Insert: CreateScheduleEvent["+aScheduledEventSchema.getScheduleId()+", "+ aScheduledEventSchema.getEventText() +"]");
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(SCHEDULE_ID, aScheduledEventSchema.getScheduleId());
+        values.put(BREW_ID, aScheduledEventSchema.getBrewId());
+        values.put(EVENT_DATE, aScheduledEventSchema.getEventDate());
+        values.put(EVENT_CALENDAR_ID, aScheduledEventSchema.getEventCalendarId());
+        values.put(EVENT_TEXT, aScheduledEventSchema.getEventText());
+
+        // insert row
+        return db.insert(TABLE_SCHEDULED_EVENT,null,values) > 0;
+    }
+
+    /*
+    * getting all Schedule Events for Schedule id
+    */
+    public List<ScheduledEventSchema> getAllScheduleEventsById(long aScheduleId) {
+        List<ScheduledEventSchema> scheduledEventSchemas = new ArrayList<ScheduledEventSchema>();
+        String selectQuery = "SELECT "+ROW_ID+", * FROM " + TABLE_SCHEDULED_EVENT
+                + " WHERE " + SCHEDULE_ID + " = " + aScheduleId;
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllScheduleEventsById Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            if (c.moveToFirst())
+            {
+                do {
+                    ScheduledEventSchema eventSchema = new ScheduledEventSchema();
+                    eventSchema.setScheduledEventId(c.getInt(c.getColumnIndex(ROW_ID)));
+                    eventSchema.setScheduleId(c.getInt(c.getColumnIndex(SCHEDULE_ID)));
+                    eventSchema.setBrewId(c.getInt(c.getColumnIndex(BREW_ID)));
+                    eventSchema.setEventCalendarId(c.getInt(c.getColumnIndex(EVENT_CALENDAR_ID)));
+                    eventSchema.setEventDate(c.getString(c.getColumnIndex(EVENT_DATE)));
+                    eventSchema.setEventText(c.getString(c.getColumnIndex(EVENT_TEXT)));
+
+                    scheduledEventSchemas.add(eventSchema);
+                } while (c.moveToNext());
+            }
+        }
+
+        c.close();
+        return scheduledEventSchemas;
+    }
+
+    /*
+    * add/update All schedule event
+    */
+    public boolean addAllScheduleEvents(List <ScheduledEventSchema> aScheduledEventSchema) {
+        Log.e(LOG, "Insert: addAllScheduleEvents");
+
+
+        for(ScheduledEventSchema scheduledEventSchema : aScheduledEventSchema)
+        {
+            if(!updateScheduleEvent(scheduledEventSchema))
+                if(!CreateScheduleEvent(scheduledEventSchema))
+                    return false;
+        }
+
+        return true;
+    }
+
+    /*
+    * Update Schedule Event
+    */
+    public boolean updateScheduleEvent(ScheduledEventSchema aScheduledEventSchema) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "updateScheduleEvent Schedule Id["+aScheduledEventSchema.getScheduleId()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(SCHEDULE_ID, aScheduledEventSchema.getScheduleId());
+        values.put(BREW_ID, aScheduledEventSchema.getBrewId());
+        values.put(EVENT_CALENDAR_ID, aScheduledEventSchema.getEventCalendarId());
+        values.put(EVENT_DATE, aScheduledEventSchema.getEventDate());
+        values.put(EVENT_TEXT, aScheduledEventSchema.getEventText());
+
+        // updating row
+        int retVal = db.update(TABLE_SCHEDULED_EVENT, values, ROW_ID + " = ?",
+                new String[] { Long.toString(aScheduledEventSchema.getScheduledEventId()) });
+
+        if(!(retVal > 0) )
+            return false;
+
+        return true;
+    }
+
+    /*
+    * delete schedule event by id
+    */
+    public void deleteScheduleEventById(long aEventId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteScheduleEventById Schedule Id["+Long.toString(aEventId) +"]");
+
+        db.delete(TABLE_SCHEDULED_EVENT, ROW_ID + " = ?",
+                new String[] { Long.toString(aEventId) });
+    }
+
+    /*
+* delete schedule event by Schedule id
+*/
+    public void deleteScheduleEventByScheduleId(long aScheduleId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteScheduleEventByScheduleId Brew Id["+Long.toString(aScheduleId) +"]");
+
+        db.delete(TABLE_SCHEDULED_EVENT, SCHEDULE_ID + " = ?",
+                new String[] { Long.toString(aScheduleId) });
+    }
+
+    /*
+* delete schedule event by Brew id
+*/
+    public void deleteScheduleEventByBrewId(long aBrewId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "deleteScheduleEventByBrewId Brew Id["+Long.toString(aBrewId) +"]");
+
+        db.delete(TABLE_SCHEDULED_EVENT, BREW_ID + " = ?",
+                new String[] { Long.toString(aBrewId) });
+    }
+
     //************************************Helper functions***************
     /**
      * get datetime
      * */
     private String getDateTime() {
-        Date date = new Date();
-        return APPUTILS.dateFormat.format(date);
+        return APPUTILS.dateFormat.format(new Date());
     }
 /*
     Add Brew Note on completion of a schedule

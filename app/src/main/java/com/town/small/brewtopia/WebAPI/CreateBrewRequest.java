@@ -50,6 +50,7 @@ public class CreateBrewRequest extends StringRequest {
         params.put("Method", aBrewSchema.getMethod());
         params.put("BatchSize", Double.toString(aBrewSchema.getBatchSize()));
         params.put("Efficiency", Double.toString(aBrewSchema.getEfficiency()));
+        params.put("SRM", Integer.toString(aBrewSchema.getSRM()));
         params.put("CreatedOn", APPUTILS.dateFormat.format(new Date()));
 
         ArrayList<String> additions = new ArrayList<>();

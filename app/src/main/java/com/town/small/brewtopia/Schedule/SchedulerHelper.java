@@ -63,23 +63,26 @@ public class SchedulerHelper {
             }
 
             createCalendarEvent(date, sBrew.getBrewName() + " Secondary");
-            sBrew.setAlertSecondaryCalendarId(eventID);
+            if(!(eventID==-1))
+                sBrew.setAlertSecondaryCalendarId(eventID);
 
             createCalendarEvent(date1, sBrew.getBrewName() + " Bottling");
-            sBrew.setAlertBottleCalendarId(eventID);
+            if(!(eventID==-1))
+                sBrew.setAlertBottleCalendarId(eventID);
 
             createCalendarEvent(date2, sBrew.getBrewName() + " End Brew");
-            sBrew.setEndBrewCalendarId(eventID);
+            if(!(eventID==-1))
+                sBrew.setEndBrewCalendarId(eventID);
         }
 
         DataBaseManager.getInstance(context).CreateAScheduledBrew(sBrew);
     }
 
-    public boolean createCalendarEvent(Date aDate, String aTitle)
+    public long createCalendarEvent(Date aDate, String aTitle)
     {
 
         if(!appSettingsHelper.GetBoolAppSettingsByName(AppSettingsHelper.SCHEDULER_CALENDAR_PUSH))
-            return false;
+            return -1;
 
         try {
             long startMillis = 0;
@@ -114,10 +117,10 @@ public class SchedulerHelper {
 
         }catch (Exception e)
         {
-            return false;
+            return -1;
         }
 
-        return true;
+        return eventID;
     }
 
 

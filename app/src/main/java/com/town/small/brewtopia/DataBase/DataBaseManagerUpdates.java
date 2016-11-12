@@ -12,6 +12,7 @@ public class DataBaseManagerUpdates {
     private static final String LOG = "DataBasePreLoad";
 
     private static DataBaseManager dbm;
+    private static DataBasePreLoad dpl;
 
     //Singleton
     private static DataBaseManagerUpdates mInstance = null;
@@ -20,6 +21,7 @@ public class DataBaseManagerUpdates {
         if (mInstance == null) {
             mInstance = new DataBaseManagerUpdates(aContext);
             dbm = DataBaseManager.getInstance(aContext);
+            dpl = DataBasePreLoad.getInstance(aContext);
         }
         return mInstance;
     }
@@ -100,6 +102,18 @@ public class DataBaseManagerUpdates {
         {
             aSQLiteDatabase.execSQL(dbm.CREATE_TABLE_BREW_IMAGES);
         }
+        if(aOldVersion < 46)
+        {
+            aSQLiteDatabase.execSQL(dbm.CREATE_TABLE_SCHEDULED_EVENT);
+        }
+        if(aOldVersion < 47 || aOldVersion < 48)
+        {
+            dpl.PreLoadBrewStyles(aSQLiteDatabase);
+        }
+        if(aOldVersion < 49)
+        {
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.SRM +" INTEGER DEFAULT 0 ");
+        }
     }
 
     private void dropAllTables(SQLiteDatabase aSQLiteDatabase)
@@ -118,6 +132,8 @@ public class DataBaseManagerUpdates {
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_INVENTORY_YEAST);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_INVENTORY_EQUIPMENT);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_INVENTORY_OTHER);
+        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_BREW_IMAGES);
+        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_SCHEDULED_EVENT);
 
         // create new tables
         dbm.onCreate(aSQLiteDatabase);

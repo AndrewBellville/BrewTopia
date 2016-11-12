@@ -16,6 +16,7 @@ package com.town.small.brewtopia.Schedule;
         import android.widget.GridView;
         import android.widget.ImageView;
         import android.widget.LinearLayout;
+        import android.widget.RelativeLayout;
         import android.widget.TextView;
 
         import com.town.small.brewtopia.DataClass.APPUTILS;
@@ -59,7 +60,7 @@ public class MyCalendar extends LinearLayout
     private View daySelected;
 
     // seasons' rainbow
-    int[] rainbow = new int[] {
+    int[] headerColor = new int[] {
             R.color.summer,
             R.color.fall,
             R.color.winter,
@@ -232,10 +233,10 @@ public class MyCalendar extends LinearLayout
         // set header color according to current season
         int month = currentDate.get(Calendar.MONTH);
         int season = monthSeason[month];
-        int color = rainbow[season];
+        int color = headerColor[season];
 
         header.setBackgroundColor(getResources().getColor(color));
-
+        grid.setBackgroundColor(getResources().getColor(R.color.ColorToneL2));
     }
 
 
@@ -334,7 +335,7 @@ public class MyCalendar extends LinearLayout
             {
                 // if it is today, set it to blue/bold
                 dateText.setTypeface(null, Typeface.BOLD);
-                dateText.setTextColor(getResources().getColor(R.color.today));
+                dateText.setTextColor(getResources().getColor(R.color.AccentColor));
             }
 
             // set text

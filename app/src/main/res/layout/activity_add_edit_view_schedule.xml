@@ -121,12 +121,27 @@
             android:layout_alignEnd="@+id/SchduleBottleAlerteditText"
             android:onClick="showDatePickerDialog"/>
 
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ScheduleEvents"
+            android:layout_below="@+id/ScheduleEndDateeditText"
+            android:scrollbars="none"
+            android:descendantFocusability="afterDescendants"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Event"
+            android:id="@+id/AddEventButton"
+            android:layout_below="@+id/ScheduleEvents"/>
+
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Update All Dates"
             android:id="@+id/DateRollUpCheckBox"
-            android:layout_below="@+id/ScheduleEndDateeditText"
+            android:layout_below="@+id/AddEventButton"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:checked="true" />
@@ -244,6 +259,5 @@
             android:layout_below="@+id/ScheduleNotestextView"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
-
     </RelativeLayout>
 </LinearLayout>

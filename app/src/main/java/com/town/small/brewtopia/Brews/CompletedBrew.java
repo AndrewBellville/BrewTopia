@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -89,6 +90,9 @@ public class CompletedBrew extends ActionBarActivity {
         dbManager = DataBaseManager.getInstance(getApplicationContext());
 
         userId = CurrentUser.getInstance().getUser().getUserId();
+
+        Button addScheduleEventButton = (Button) view.findViewById(R.id.AddEventButton);
+        addScheduleEventButton.setVisibility(View.GONE);
 
         ToggleFieldEditable(false);
         setColorSpinner();
