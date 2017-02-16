@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -25,6 +26,7 @@ import com.town.small.brewtopia.WebAPI.WebController;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserGlobal extends Fragment {
@@ -69,6 +71,26 @@ public class UserGlobal extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
+
+        SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
+        //added so keyboard doesn't popup
+        searchView.setFocusable(false);
+        searchView.setIconified(false);
+        searchView.clearFocus();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                LoadSerachedGlobalBrews(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                //Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
+                if(s.equals("")) GetGlobalBrews();
+                return false;
+            }
+        });
 
         noData = (TextView) view.findViewById(R.id.GlobalBrewsNoData);
 
@@ -118,6 +140,33 @@ public class UserGlobal extends Fragment {
 
             //instantiate custom adapter
             CustomBListAdapter adapter = new CustomBListAdapter(GlobalBrewList, getActivity());
+            adapter.setDeleteView(false);
+            adapter.hasColor(true);
+
+            GlobalbrewListView.setAdapter(adapter);
+        }
+        else
+        {
+            noData.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void LoadSerachedGlobalBrews(String searchText) {
+        Log.e(LOG, "Entering: LoadSerachedGlobalBrews");
+
+        //search current brewlist for Brew names containing search text
+        List<BrewSchema> tempBrewList = new ArrayList<BrewSchema>();
+        for(BrewSchema bs : GlobalBrewList)
+        {
+            if(bs.getBrewName().toUpperCase().contains(searchText.toUpperCase()))
+                tempBrewList.add(bs);
+        }
+
+        if (tempBrewList.size() > 0) {
+            noData.setVisibility(View.GONE);
+
+            //instantiate custom adapter
+            CustomBListAdapter adapter = new CustomBListAdapter(tempBrewList, getActivity());
             adapter.setDeleteView(false);
             adapter.hasColor(true);
 

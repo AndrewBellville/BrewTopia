@@ -69,7 +69,7 @@ public class ScheduledBrewSchema {
                 d.compareTo(APPUTILS.StringDateCompare(getAlertSecondaryDate())) < 0) {
             Date parsedDate = new Date();
             try {
-                parsedDate = APPUTILS.dateFormatCompare.parse(getAlertSecondaryDate());
+                parsedDate = APPUTILS.dateFormatCompare.parse(getStartDate());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -91,7 +91,7 @@ public class ScheduledBrewSchema {
                 d.compareTo(APPUTILS.StringDateCompare(getEndBrewDate())) <= 0) {
             Date parsedDate = new Date();
             try {
-                parsedDate = APPUTILS.dateFormatCompare.parse(getAlertSecondaryDate());
+                parsedDate = APPUTILS.dateFormatCompare.parse(getAlertBottleDate());
             } catch (ParseException e) {
                 e.printStackTrace();
             }

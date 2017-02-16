@@ -1339,9 +1339,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
         // updating row
         db.update(TABLE_BREWS_SCHEDULED, values, ROW_ID + " = ?",
                 new String[] { Long.toString(aScheduleId) });
-
-        //delete Schedule events
-        deleteScheduleEventByScheduleId(aScheduleId);
     }
 
     /*
@@ -1351,6 +1348,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
     {
         SQLiteDatabase db = this.getWritableDatabase();
         Log.e(LOG, "deleteBrewScheduled Schedule Id["+Long.toString(aScheduleId) +"]");
+
+        //delete Schedule events
+        deleteScheduleEventByScheduleId(aScheduleId);
 
         db.delete(TABLE_BREWS_SCHEDULED, ROW_ID + " = ?",
                 new String[] { Long.toString(aScheduleId) });

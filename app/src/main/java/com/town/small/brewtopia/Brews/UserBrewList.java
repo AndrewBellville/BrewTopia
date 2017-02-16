@@ -11,7 +11,9 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.town.small.brewtopia.DataBase.DataBaseManager;
 import com.town.small.brewtopia.Login;
@@ -68,11 +70,23 @@ public class UserBrewList extends Fragment {
             }
         });
 
-        RadioButton deleteButon = (RadioButton) view.findViewById(R.id.DeleteBrewRadioButton);
-        deleteButon.setOnClickListener(new View.OnClickListener() {
+        SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
+        //added so keyboard doesn't popup
+        searchView.setFocusable(false);
+        searchView.setIconified(false);
+        searchView.clearFocus();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onClick(View view) {
-                onRadioButtonClicked(view);
+            public boolean onQueryTextSubmit(String s) {
+                LoadSearchBrews(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                //Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
+                if(s.equals("")) LoadBrews();
+                return false;
             }
         });
 
@@ -82,7 +96,6 @@ public class UserBrewList extends Fragment {
         if(CurrentUser.getInstance().getUser().isTemp())
         {
             createButton.setVisibility(View.INVISIBLE);
-            deleteButon.setVisibility(View.INVISIBLE);
         }
 
         LoadBrews();
@@ -104,6 +117,7 @@ public class UserBrewList extends Fragment {
 
         if (brewList.size() > 0) {
 
+            BrewListView.setVisibility(View.VISIBLE);
             noData.setVisibility(View.GONE);
 
             //instantiate custom adapter
@@ -120,19 +134,57 @@ public class UserBrewList extends Fragment {
         }
         else
         {
+            BrewListView.setVisibility(View.INVISIBLE);
+            noData.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void LoadSearchBrews(String searchText) {
+        Log.e(LOG, "Entering: LoadSearchBrews "+ searchText);
+
+        //search current brewlist for Brew names containing search text
+        List<BrewSchema> tempBrewList = new ArrayList<BrewSchema>();
+        for(BrewSchema bs : brewList)
+        {
+            if(bs.getBrewName().toUpperCase().contains(searchText.toUpperCase()))
+                tempBrewList.add(bs);
+        }
+
+        if (tempBrewList.size() > 0) {
+
+            BrewListView.setVisibility(View.VISIBLE);
+            noData.setVisibility(View.GONE);
+
+            //instantiate custom adapter
+            CustomBListAdapter adapter = new CustomBListAdapter(tempBrewList, getActivity());
+            adapter.setDeleteView(isDelete);
+            adapter.hasColor(true);
+            adapter.setEventHandler(new CustomBListAdapter.EventHandler() {
+                @Override
+                public void OnDeleteClickListener(BrewSchema aBrewSchema) {
+                    dbManager.DeleteBrew(aBrewSchema.getBrewId(), userId);
+                }
+            });
+            BrewListView.setAdapter(adapter);
+        }
+        else
+        {
+            BrewListView.setVisibility(View.INVISIBLE);
             noData.setVisibility(View.VISIBLE);
         }
     }
 
     private void BrewSelect(BrewSchema aBrew)
     {
-            Intent intent = new Intent(getActivity(), UserBrew.class);
+        Log.e(LOG, "Entering: BrewSelect"+ aBrew.getBrewName());
 
-            // Set the state of display if View brew cannot be null
-            BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.VIEW,aBrew);
+        Intent intent = new Intent(getActivity(), UserBrew.class);
 
-            //start next activity
-            startActivity(intent);
+        // Set the state of display if View brew cannot be null
+        BrewActivityData.getInstance().setViewStateAndBrew(BrewActivityData.DisplayMode.VIEW,aBrew);
+
+        //start next activity
+        startActivity(intent);
     }
 
     public void onCreateClick(View aView)
