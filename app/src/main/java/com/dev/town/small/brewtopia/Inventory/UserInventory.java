@@ -90,7 +90,7 @@ public class UserInventory extends Fragment {
     private void CheckForBrewDisplay()
     {
         // If this is being displayed by the brew class we want to perform brew specific functionality
-        if( getActivity().getLocalClassName().equals("Brews.UserBrew") || getActivity().getLocalClassName().equals("Global.UserGlobal")) isBrewDisplay = true;
+        if( getActivity().getLocalClassName().contains("Brews.UserBrew") || getActivity().getLocalClassName().contains("Global.UserGlobal")) isBrewDisplay = true;
     }
 
     private void SetUpInventoryList()

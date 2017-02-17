@@ -25,31 +25,28 @@
         android:text="00:00:00"
         android:id="@+id/BrewTimeTextView"
         android:textSize="70dp"
-        android:layout_above="@+id/AdditionTextView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60dp" />
+        android:layout_below="@+id/TimerBrewNametextView"
+        android:layout_centerHorizontal="true" />
 
-    <TextView
+    <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Addition"
-        android:id="@+id/AdditionTextView"
-        android:textSize="30dp"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:id="@+id/AdditionListView"
+        android:layout_below="@+id/BrewTimeTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/AcknowledgeButton" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Acknowledge"
         android:id="@+id/AcknowledgeButton"
-        android:layout_below="@+id/AdditionTextView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="26dp"
+        android:layout_above="@+id/pauseButton"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 
     <Button
@@ -73,5 +70,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+
 
 </RelativeLayout>

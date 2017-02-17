@@ -60,11 +60,6 @@ public class TimerBoilAdditions extends Fragment {
         //instantiate custom adapter
         CustomBoilAdditionsAdapter adapter = new CustomBoilAdditionsAdapter(boilAdditionsSchemaList, getActivity());
         adapter.setEditable(false);
-        adapter.setEventHandler(new CustomBoilAdditionsAdapter.EventHandler() {
-            @Override
-            public void OnEditClick(BoilAdditionsSchema aBoilAdditionsSchema) {
-            }
-        });
 
         BrewAdditionsListView.setAdapter(adapter);
     }

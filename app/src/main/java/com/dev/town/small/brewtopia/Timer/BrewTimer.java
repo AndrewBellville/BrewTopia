@@ -3,12 +3,14 @@ package com.dev.town.small.brewtopia.Timer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import com.dev.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.dev.town.small.brewtopia.R;
@@ -20,7 +22,7 @@ public class BrewTimer extends Fragment {
     long seconds;
 
     private TextView brewTimer;
-    private TextView addition;
+    private ListView addition;
     private TextView brewName;
     private Button AckButton;
     private Button StartStopButton;
@@ -39,7 +41,6 @@ public class BrewTimer extends Fragment {
         View view = inflater.inflate(R.layout.activity_brew_timer, container, false);
 
         brewTimer = (TextView) view.findViewById(R.id.BrewTimeTextView);
-        addition = (TextView) view.findViewById(R.id.AdditionTextView);
         brewName = (TextView) view.findViewById(R.id.TimerBrewNametextView);
 
         StartStopButton = (Button) view.findViewById(R.id.StartStopButton);
@@ -69,8 +70,6 @@ public class BrewTimer extends Fragment {
             }
         });
 
-        addition.setText("");
-
         td = TimerData.getInstance();
         brewName.setText(td.getBrewName());
         // assign event handler
@@ -87,6 +86,10 @@ public class BrewTimer extends Fragment {
         });
 
         td.setStartTimeDisplay();
+
+        addition = (ListView) view.findViewById(R.id.AdditionListView);
+        CustomAddListAdapter adapter = new CustomAddListAdapter(td.getAdditionsList(), getActivity());
+        addition.setAdapter(adapter);
 
         context = getActivity();
         return view;
@@ -212,7 +215,20 @@ public class BrewTimer extends Fragment {
         {
             if(!td.isAllAdditionsComplete())FireAlarm();
 
-            addition.setText("Add: " + nextAddition.getAdditionName());
+            HighlightAddition(nextAddition.getAdditionTime());
         }
+    }
+
+    private void HighlightAddition(int nextAdditionTime)
+    {
+        for (int i = 0;i < td.getAdditionsList().size();i++)
+        {
+            if(td.getAdditionsList().get(i).getAdditionTime()== nextAdditionTime)
+                addition.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.AccentColor));
+            else if(td.getAdditionsList().get(i).getAdditionTime()> nextAdditionTime)
+                addition.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.ColorToneD2));
+        }
+
+
     }
 }
