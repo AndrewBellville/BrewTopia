@@ -1,4 +1,4 @@
-<com.town.small.brewtopia.Utilites.SlidingUpPaneLayout
+<com.dev.town.small.brewtopia.Utilites.SlidingUpPaneLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sliding_layout"
@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.town.small.brewtopia.Schedule.UserSchedule">
+    tools:context=".Schedule.UserSchedule">
 
     <LinearLayout
         android:id="@+id/bottom_view"
@@ -17,7 +17,7 @@
         android:gravity="center"
         android:background="#FFF"
         android:orientation="vertical">
-        <com.town.small.brewtopia.Schedule.MyCalendar
+        <com.dev.town.small.brewtopia.Schedule.MyCalendar
             xmlns:calendarNS="com.town.small.brewtopia.Calendar.MyCalendar"
             android:id="@+id/calendar_view"
             android:layout_width="match_parent"
@@ -37,6 +37,6 @@
             android:gravity="top"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
-</com.town.small.brewtopia.Utilites.SlidingUpPaneLayout>
+</com.dev.town.small.brewtopia.Utilites.SlidingUpPaneLayout>
 
 

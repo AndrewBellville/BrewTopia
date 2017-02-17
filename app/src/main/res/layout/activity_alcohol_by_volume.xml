@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context="com.town.small.brewtopia.Calculations.AlcoholByVolume"
+    tools:context=".Calculations.AlcoholByVolume"
     android:orientation="vertical">
 
     <include  android:id="@+id/app_bar"
