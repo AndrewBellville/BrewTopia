@@ -7,10 +7,8 @@ import android.graphics.Bitmap;
  */
 public class BrewImageSchema {
 
-    private long globalImageId=-1;
     private long imageId=-1;
     private long brewId=-1;
-    private long userId=-1;
     private Bitmap image;
     private String CreatedOn;
 
@@ -19,17 +17,11 @@ public class BrewImageSchema {
     }
 
     //Getters
-    public long getGlobalImageId() {
-        return globalImageId;
-    }
     public long getImageId() {
         return imageId;
     }
     public long getBrewId() {
         return brewId;
-    }
-    public long getUserId() {
-        return userId;
     }
     public Bitmap getImage() {
         return image;
@@ -39,17 +31,11 @@ public class BrewImageSchema {
     }
 
     //Setters
-    public void setGlobalImageId(long globalImageId) {
-        this.globalImageId = globalImageId;
-    }
     public void setImageId(long imageId) {
         this.imageId = imageId;
     }
     public void setBrewId(long brewId) {
         this.brewId = brewId;
-    }
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
     public void setImage(Bitmap image) {
         this.image = image;

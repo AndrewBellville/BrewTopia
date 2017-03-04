@@ -120,7 +120,7 @@ public class UserBrewList extends Fragment {
         //If temp user hide buttons
         if(CurrentUser.getInstance().getUser().isTemp())
         {
-            //createButton.setVisibility(View.INVISIBLE);
+            addBrewImage.setVisibility(View.INVISIBLE);
         }
 
         LoadBrews();

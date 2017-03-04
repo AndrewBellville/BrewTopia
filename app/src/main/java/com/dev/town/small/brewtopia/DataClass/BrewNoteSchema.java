@@ -8,10 +8,8 @@ public class BrewNoteSchema {
     // Log cat tag
     private static final String LOG = "BrewNoteSchema";
 
-    private long globalNoteId =-1;
     private long noteId =-1;
     private long BrewId=-1;
-    private long UserId;
     private String CreatedOn;
     private String BrewNote;
 
@@ -20,14 +18,8 @@ public class BrewNoteSchema {
     }
 
     //Getters
-    public long getGlobalNoteId() {
-        return globalNoteId;
-    }
     public long getBrewId() {
         return BrewId;
-    }
-    public long getUserId() {
-        return UserId;
     }
     public String getCreatedOn() {
         return CreatedOn;
@@ -39,17 +31,9 @@ public class BrewNoteSchema {
         return noteId;
     }
 
-
-
     //Setters
-    public void setGlobalNoteId(long globalNoteId) {
-        this.globalNoteId = globalNoteId;
-    }
     public void setBrewId(long brewId) {
         this.BrewId = brewId;
-    }
-    public void setUserId(long userId) {
-        UserId = userId;
     }
     public void setCreatedOn(String createdOn) {
         CreatedOn = createdOn;

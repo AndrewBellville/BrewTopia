@@ -13,12 +13,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.dev.town.small.brewtopia.DataClass.APPUTILS;
 import com.dev.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.dev.town.small.brewtopia.DataClass.BrewSchema;
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
 import com.dev.town.small.brewtopia.R;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -161,18 +163,18 @@ public class AddEditViewBrewNotes extends Fragment {
     {
         BrewSchema brewSchema  = brewData.getAddEditViewBrew();
         aBrewNoteSchema.setBrewNote(noteText.getText().toString());
+        aBrewNoteSchema.setCreatedOn(APPUTILS.dateFormat.format(new Date()));
         if(brewData.getAddEditViewState() != BrewActivityData.DisplayMode.ADD)
         {
             if(aBrewNoteSchema.getNoteId() == -1)
             {
-                aBrewNoteSchema.setUserId(brewSchema.getUserId());
                 aBrewNoteSchema.setBrewId(brewSchema.getBrewId());
                 dbManager.addBrewNote(aBrewNoteSchema);
             }
             else
                 dbManager.updateBrewNotes(aBrewNoteSchema);
 
-            resetBrewData(aBrewNoteSchema.getBrewId(),aBrewNoteSchema.getUserId());
+            resetBrewData(aBrewNoteSchema.getBrewId());
         }
         else
         {
@@ -184,12 +186,12 @@ public class AddEditViewBrewNotes extends Fragment {
     {
         //we should not be able to delete anything that doesnt exist so just delete
         dbManager.deleteBrewNoteById(aBrewNoteSchema.getNoteId());
-        resetBrewData(aBrewNoteSchema.getBrewId(),aBrewNoteSchema.getUserId());
+        resetBrewData(aBrewNoteSchema.getBrewId());
     }
 
-    private void resetBrewData(long aBrewId, long aUserId)
+    private void resetBrewData(long aBrewId)
     {
-        brewData.setAddEditViewBrew(dbManager.getBrew(aBrewId,aUserId));
+        brewData.setAddEditViewBrew(dbManager.getBrew(aBrewId));
         LoadBrewNoteView();
     }
 

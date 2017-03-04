@@ -1,6 +1,7 @@
 package com.dev.town.small.brewtopia.Brews;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.method.KeyListener;
@@ -12,8 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -54,6 +57,9 @@ public class AddEditViewBrew extends Fragment {
     private EditText BatchSize;
     private EditText Efficiency;
     private EditText SRM;
+
+    private RelativeLayout SyncLayout;
+    private TextView SyncText;
 
     private CheckBox favorite;
     private CheckBox onTap;
@@ -113,6 +119,8 @@ public class AddEditViewBrew extends Fragment {
         Efficiency = (EditText)mainView.findViewById(R.id.editTextEfficiency);
         SRM = (EditText)mainView.findViewById(R.id.editTextSRM);
 
+        SyncLayout = (RelativeLayout) returnView.findViewById(R.id.SyncRelativeLayout);
+        SyncText = (TextView) returnView.findViewById(R.id.SyncTextView);
 
         startButton = (Button)returnView.findViewById(R.id.AddStartBrewButton);
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -135,8 +143,6 @@ public class AddEditViewBrew extends Fragment {
             public void onClick(View view) {
                 if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.GLOBAL)
                     PullFromGlobal();
-                else
-                    PushToGlobal();
             }
         });
 
@@ -287,6 +293,17 @@ public class AddEditViewBrew extends Fragment {
         Efficiency.setText(Double.toString(aBrewSchema.getEfficiency()));
         SRM.setText(Integer.toString(aBrewSchema.getSRM()));
 
+        if(aBrewSchema.getBooleanIsDirty())
+        {
+            SyncLayout.setBackgroundColor(Color.RED);
+            SyncText.setText("Not Synced");
+        }
+        else
+        {
+            SyncLayout.setBackgroundColor(getResources().getColor(R.color.AccentColor));
+            SyncText.setText("Synced");
+        }
+
         // set to brew Style this might be deleted if its user created
         try
         {
@@ -316,7 +333,7 @@ public class AddEditViewBrew extends Fragment {
             if(!(TimerData.getInstance().isTimerActive()))
             {
                 //Set Brew into TimerData
-                TimerData.getInstance().setTimerData(dbManager.getBrew(brewSchema.getBrewId(), UserId));
+                TimerData.getInstance().setTimerData(dbManager.getBrew(brewSchema.getBrewId()));
             }
 
             //Create and intent which will open Timer Activity
@@ -452,21 +469,15 @@ public class AddEditViewBrew extends Fragment {
         {
             //add user Id for lists
             brew.setListUserId();
-
-            long brewId = dbManager.CreateABrew(brew);
-            if( brewId == -1)// -1 brews failed to create
-            {
-                Toast.makeText(getActivity(), "Duplicate Brew Name", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            brewSchema = dbManager.getBrew(brewId,brew.getUserId());
+            brewSchema = brew;
+            //try and sync to global
+            SyncToGlobal();
         }
         else if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.EDIT)
         {
             dbManager.updateABrew(brew);
 
-            brewSchema = brew;
+            brewSchema = dbManager.getBrew(brew.getBrewId());
         }
 
         brewActivityData.setAddEditViewBrew(brewSchema);
@@ -672,7 +683,7 @@ public class AddEditViewBrew extends Fragment {
         }
     }
 
-    private void PushToGlobal()
+    private void SyncToGlobal()
     {
         Response.Listener<String> ResponseListener = new Response.Listener<String>() {
             @Override
@@ -684,27 +695,13 @@ public class AddEditViewBrew extends Fragment {
                 } else {
                     //Pase response
                     try {
+                        Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
+                        //long brewId = Long.getLong(response.toString());
+                        //dbManager.CreateABrew(brewSchema,brewId);
 
-                        //Parse response into BrewShcema list
-                        JSONArray jsonArray = new JSONArray(response);
-                        JSONBrewParser jsonParser = new JSONBrewParser(getActivity(), JSONBrewParser.ParseType.PUSH);
-                        List<BrewSchema> brewSchemaList = jsonParser.ParseGlobalBrews(jsonArray);
-
-                        //For each brew schema up it SHOULD ONLY BE 1
-                        if (!(brewSchemaList.size() > 1))
-                        {
-                            for (BrewSchema bs : brewSchemaList) {
-                                brewSchema.setGlobalBrewId(bs.getGlobalBrewId());
-                                brewSchema.setBoilAdditionlist(bs.getBoilAdditionlist());
-                                brewSchema.setBrewNoteSchemaList(bs.getBrewNoteSchemaList());
-                                brewSchema.setBrewImageSchemaList(bs.getBrewImageSchemaList());
-                            }
-
-                            dbManager.updateABrew(brewSchema);
-                            Toast.makeText(getActivity(), brewSchema.getBrewName() + " Uploaded", Toast.LENGTH_SHORT).show();
-                        }
+                        //brewSchema = dbManager.getBrew(brewId);
                     }
-                    catch (JSONException e) {}
+                    catch (Exception e) {}
                 }
             }
         };
@@ -738,7 +735,7 @@ public class AddEditViewBrew extends Fragment {
                                 //TODO: Need to remove UserId field from all  brew child tables
                                 bs.setUserId(UserId);
                                 bs.setListUserId();
-                                dbManager.CreateABrew(bs);
+                                dbManager.CreateABrew(bs,bs.getBrewId());
                             }
 
 
@@ -750,7 +747,7 @@ public class AddEditViewBrew extends Fragment {
             }
         };
 
-        GetBrewRequest getBrewRequest = new GetBrewRequest(Long.toString(brewSchema.getGlobalBrewId()), ResponseListener,null);
+        GetBrewRequest getBrewRequest = new GetBrewRequest(Long.toString(brewSchema.getBrewId()), ResponseListener,null);
         WebController.getInstance().addToRequestQueue(getBrewRequest);
     }
 }

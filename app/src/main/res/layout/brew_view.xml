@@ -4,8 +4,26 @@
     android:layout_height="fill_parent"
     android:weightSum="1">
 
-    <RelativeLayout android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80px"
+        android:layout_alignParentTop="true"
+        android:id="@+id/SyncRelativeLayout"
+        android:background="@color/AccentColor">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Sync Text"
+            android:id="@+id/SyncTextView"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:textColor="#000000"/>
+    </RelativeLayout>
+
+    <RelativeLayout android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
         <ScrollView
             android:id="@+id/BrewScrollView"

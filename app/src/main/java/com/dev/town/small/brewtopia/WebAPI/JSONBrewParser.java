@@ -74,7 +74,6 @@ public class JSONBrewParser {
         try {
             if(parseType == ParseType.PUSH)
             {
-                brewSchema.setGlobalBrewId(Long.parseLong(aBrew.getString("GlobalBrewId")));
                 brewSchema.setUserId(Long.parseLong(aBrew.getString("UserId")));
             }
 
@@ -151,9 +150,7 @@ public class JSONBrewParser {
         try {
             if(parseType == ParseType.PUSH)
             {
-                boilAdditionsSchema.setGlobalAdditionId(Long.parseLong(aBrew.getString("GlobalAdditionId")));
                 boilAdditionsSchema.setAdditionId(Long.parseLong(aBrew.getString("AdditionId")));
-                boilAdditionsSchema.setUserId(Long.parseLong(aBrew.getString("UserId")));
                 boilAdditionsSchema.setBrewId(Long.parseLong(aBrew.getString("BrewId")));
             }
 
@@ -205,9 +202,7 @@ public class JSONBrewParser {
         try {
             if(parseType == ParseType.PUSH)
             {
-                brewNoteSchema.setGlobalNoteId(Long.parseLong(aBrewNote.getString("GlobalBrewNoteId")));
                 brewNoteSchema.setNoteId(Long.parseLong(aBrewNote.getString("BrewNoteId")));
-                brewNoteSchema.setUserId(Long.parseLong(aBrewNote.getString("UserId")));
                 brewNoteSchema.setBrewId(Long.parseLong(aBrewNote.getString("BrewId")));
             }
 
@@ -256,9 +251,7 @@ public class JSONBrewParser {
         try {
             if(parseType == ParseType.PUSH)
             {
-                brewImageSchema.setGlobalImageId(Long.parseLong(aBrewImage.getString("GlobalImageId")));
                 brewImageSchema.setImageId(Long.parseLong(aBrewImage.getString("ImageId")));
-                brewImageSchema.setUserId(Long.parseLong(aBrewImage.getString("UserId")));
                 brewImageSchema.setBrewId(Long.parseLong(aBrewImage.getString("BrewId")));
             }
 

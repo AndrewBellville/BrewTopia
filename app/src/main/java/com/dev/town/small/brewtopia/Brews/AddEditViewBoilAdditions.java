@@ -204,14 +204,13 @@ public class AddEditViewBoilAdditions extends Fragment {
             if(aBoilAdditionsSchema.getAdditionId() == -1)
             {
                 BrewSchema brewSchema  = brewData.getInstance().getAddEditViewBrew();
-                aBoilAdditionsSchema.setUserId(brewSchema.getUserId());
                 aBoilAdditionsSchema.setBrewId(brewSchema.getBrewId());
                 dbManager.add_boil_additions(aBoilAdditionsSchema);
             }
             else
                 dbManager.update_boil_addition(aBoilAdditionsSchema);
 
-            resetBrewData(aBoilAdditionsSchema.getBrewId(),aBoilAdditionsSchema.getUserId());
+            resetBrewData(aBoilAdditionsSchema.getBrewId());
         }
         else
         {
@@ -223,12 +222,12 @@ public class AddEditViewBoilAdditions extends Fragment {
     {
         //we should not be able to delete anything that doesnt exist so just delete
         dbManager.delete_all_boil_additions_by_id(aBoilAdditionsSchema.getAdditionId());
-        resetBrewData(aBoilAdditionsSchema.getBrewId(),aBoilAdditionsSchema.getUserId());
+        resetBrewData(aBoilAdditionsSchema.getBrewId());
     }
 
-    private void resetBrewData(long aBrewId, long aUserId)
+    private void resetBrewData(long aBrewId)
     {
-        brewData.getInstance().setAddEditViewBrew(dbManager.getBrew(aBrewId,aUserId));
+        brewData.getInstance().setAddEditViewBrew(dbManager.getBrew(aBrewId));
         loadAll();
     }
 

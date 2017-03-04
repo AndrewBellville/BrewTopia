@@ -66,8 +66,8 @@ public class CustomAddListAdapter extends BaseAdapter implements ListAdapter  {
         //Handle TextView and display string from list
         TextView listItemText = (TextView)view.findViewById(R.id.list_item_string);
         String truncatedString;
-        if(text1.length() >= 15)
-            truncatedString = text1.substring(0,15)+"...";
+        if(text1.length() >= 40)
+            truncatedString = text1.substring(0,40)+"...";
         else
             truncatedString = text1;
 

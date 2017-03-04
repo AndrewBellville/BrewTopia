@@ -5,10 +5,8 @@ package com.dev.town.small.brewtopia.DataClass;
  */
 public class BoilAdditionsSchema {
 
-    private long globalAdditionId=-1;
     private long additionId=-1;
     private long brewId=-1;
-    private long userId=-1;
     private String additionName = "";
     private int additionTime = 0;
     private double additionQty = 0.0;
@@ -18,10 +16,6 @@ public class BoilAdditionsSchema {
     }
 
     //getters
-
-    public long getGlobalAdditionId() {
-        return globalAdditionId;
-    }
     public String getAdditionName() {
         return additionName;
     }
@@ -30,9 +24,6 @@ public class BoilAdditionsSchema {
     }
     public long getBrewId() {
         return brewId;
-    }
-    public long getUserId() {
-        return userId;
     }
     public double getAdditionQty() {
         return additionQty;
@@ -46,9 +37,6 @@ public class BoilAdditionsSchema {
 
 
     //setters
-    public void setGlobalAdditionId(long globalAdditionId) {
-        this.globalAdditionId = globalAdditionId;
-    }
     public void setAdditionName(String additionName) {
         this.additionName = additionName;
     }
@@ -57,9 +45,6 @@ public class BoilAdditionsSchema {
     }
     public void setBrewId(long BrewId) {
         this.brewId = BrewId;
-    }
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
     public void setAdditionQty(double additionQty) {
         this.additionQty = additionQty;

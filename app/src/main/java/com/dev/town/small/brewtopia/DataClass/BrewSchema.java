@@ -14,7 +14,6 @@ public class BrewSchema {
     // Log cat tag
     private static final String LOG = "BrewSchema";
 
-    private long GlobalBrewId =-1;
     private long brewId =-1;
     private String BrewName;
     private long UserId = -1;
@@ -42,6 +41,8 @@ public class BrewSchema {
     private BrewStyleSchema StyleSchema;
     private int totalBrewed=0;
     private int SRM=0;
+    private int isDirty=0; //0 = no 1 = yes
+    private int isGlobal=0; //0 = no 1 = yes
 
     // constructors
     public BrewSchema() {
@@ -55,18 +56,6 @@ public class BrewSchema {
 
     public void setListUserId()
     {
-        for(Iterator<BoilAdditionsSchema> i = boilAdditionlist.iterator(); i.hasNext();)
-        {
-            BoilAdditionsSchema baSchema = i.next();
-            baSchema.setUserId(getUserId());
-        }
-
-        for(Iterator<BrewNoteSchema> i = brewNoteSchemaList.iterator(); i.hasNext();)
-        {
-            BrewNoteSchema nSchema = i.next();
-            nSchema.setUserId(getUserId());
-        }
-
         for(Iterator<InventorySchema> i = brewInventorySchemaList.iterator(); i.hasNext();)
         {
             InventorySchema iSchema = i.next();
@@ -83,9 +72,6 @@ public class BrewSchema {
     }
 
     //getters
-    public long getGlobalBrewId() {
-        return GlobalBrewId;
-    }
     public long getBrewId() {
         return brewId;
     }
@@ -189,12 +175,27 @@ public class BrewSchema {
     public int getSRM() {
         return SRM;
     }
+    public int getIsDirty() {
+        return isDirty;
+    }
+    public boolean getBooleanIsDirty() {
+        if(this.isDirty ==  1)
+            return true;
+        else
+            return false;
+    }
+    public int getIsGlobal() {
+        return isGlobal;
+    }
+    public boolean getBooleanIsGlobal() {
+        if(this.isGlobal ==  1)
+            return true;
+        else
+            return false;
+    }
 
 
     //setters
-    public void setGlobalBrewId(long globalBrewId) {
-        GlobalBrewId = globalBrewId;
-    }
     public void setBrewId(long id) {
         this.brewId = id;
     }
@@ -294,5 +295,23 @@ public class BrewSchema {
     }
     public void setSRM(int SRM) {
         this.SRM = SRM;
+    }
+    public void setIsDirty(int isDirty) {
+        this.isDirty = isDirty;
+    }
+    public void setBooleanIsDirty(boolean isDirty) {
+        if(isDirty)
+            this.isDirty = 1;
+        else
+            this.isDirty = 0;
+    }
+    public void setIsGlobal(int isGlobal) {
+        this.isGlobal = isGlobal;
+    }
+    public void setBooleanIsGlobal(boolean isGlobal) {
+        if(isGlobal)
+            this.isGlobal = 1;
+        else
+            this.isGlobal = 0;
     }
 }

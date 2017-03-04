@@ -88,15 +88,15 @@ public class DataBaseManagerUpdates {
         }
         if(aOldVersion < 42)
         {
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.GLOBAL_BREW_ID +" INTEGER DEFAULT -1 ");
+            //aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.GLOBAL_BREW_ID +" INTEGER DEFAULT -1 ");
         }
         if(aOldVersion < 43)
         {
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BOIL_ADDITIONS +" ADD COLUMN "+ dbm.GLOBAL_ADDITION_ID +" INTEGER DEFAULT -1 ");
+            //aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BOIL_ADDITIONS +" ADD COLUMN "+ dbm.GLOBAL_ADDITION_ID +" INTEGER DEFAULT -1 ");
         }
         if(aOldVersion < 44)
         {
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS_NOTES +" ADD COLUMN "+ dbm.GLOBAL_BREW_NOTE_ID +" INTEGER DEFAULT -1 ");
+            //aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS_NOTES +" ADD COLUMN "+ dbm.GLOBAL_BREW_NOTE_ID +" INTEGER DEFAULT -1 ");
         }
         if(aOldVersion < 45)
         {
@@ -113,6 +113,18 @@ public class DataBaseManagerUpdates {
         if(aOldVersion < 49)
         {
             aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.SRM +" INTEGER DEFAULT 0 ");
+        }
+        if(aOldVersion < 50)
+        {
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.DIRTY +" INTEGER DEFAULT 1 ");
+        }
+        if(aOldVersion < 51)
+        {
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.GLOBAL +" INTEGER DEFAULT 0 ");
+        }
+        if(aOldVersion < 52)
+        {
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.BREW_ID +" INTEGER DEFAULT rowid ");
         }
     }
 

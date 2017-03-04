@@ -69,7 +69,7 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
         }
         position = pos;
 
-        BrewSchema brewSchema = list.get(position);
+        final BrewSchema brewSchema = list.get(position);
 
         //If we have a color we need to strip it off text2 and sent color panel height and width
         if(hasColor)
@@ -155,14 +155,14 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
             @Override
             public void onClick(View v) {
                 //do something
-                Verify();
+                Verify(brewSchema);
             }
         });
 
         return view;
     }
 
-    private void Verify()
+    private void Verify(BrewSchema brewSchema)
     {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
@@ -176,7 +176,7 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+        builder.setMessage("Delete "+ brewSchema.getBrewName()+ "\n Are you sure?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
 
     }

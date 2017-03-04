@@ -27,7 +27,6 @@ public class CreateBrewRequest extends StringRequest {
     public CreateBrewRequest(BrewSchema aBrewSchema, Response.Listener<String> listener, Response.ErrorListener errorListener) {
         super(Method.POST, URL, listener, errorListener);
         params = new HashMap<>();
-        params.put("GlobalBrewId", Long.toString(aBrewSchema.getGlobalBrewId()));
         params.put("BrewId", Long.toString(aBrewSchema.getBrewId()));
         params.put("BrewName", aBrewSchema.getBrewName());
         params.put("UserId", Long.toString(aBrewSchema.getUserId()));
@@ -35,25 +34,28 @@ public class CreateBrewRequest extends StringRequest {
         params.put("Primary", Integer.toString(aBrewSchema.getPrimary()));
         params.put("Secondary", Integer.toString(aBrewSchema.getSecondary()));
         params.put("Bottling", Integer.toString(aBrewSchema.getBottle()));
-        params.put("Description", aBrewSchema.getDescription());
-        params.put("Style", aBrewSchema.getStyle());
         params.put("OriginalGravity", Double.toString(aBrewSchema.getTargetOG()));
         params.put("FinalGravity", Double.toString(aBrewSchema.getTargetFG()));
         params.put("ABV", Double.toString(aBrewSchema.getTargetABV()));
+        params.put("Description", aBrewSchema.getDescription());
+        params.put("Favorite", Integer.toString(aBrewSchema.getFavorite()));
+        params.put("Scheduled", Integer.toString(aBrewSchema.getScheduled()));
+        params.put("OnTap", Integer.toString(aBrewSchema.getOnTap()));
         params.put("IBU", Double.toString(aBrewSchema.getIBU()));
-        params.put("Method", aBrewSchema.getMethod());
         params.put("BatchSize", Double.toString(aBrewSchema.getBatchSize()));
         params.put("Efficiency", Double.toString(aBrewSchema.getEfficiency()));
+        params.put("Method", aBrewSchema.getMethod());
+        params.put("Style", aBrewSchema.getStyle());
+        params.put("TotalBrewed", Integer.toString(aBrewSchema.getTotalBrewed()));
         params.put("SRM", Integer.toString(aBrewSchema.getSRM()));
+        params.put("IsGlobal", Integer.toString(aBrewSchema.getIsGlobal()));
         params.put("CreatedOn", APPUTILS.dateFormat.format(new Date()));
 
         ArrayList<String> additions = new ArrayList<>();
         for (BoilAdditionsSchema ba: aBrewSchema.getBoilAdditionlist()) {
             HashMap<String,String> tempMap  = new HashMap<>();
-            tempMap.put("GlobalAdditionId",Long.toString(ba.getGlobalAdditionId()));
             tempMap.put("AdditionId",Long.toString(ba.getAdditionId()));
             tempMap.put("BrewId",Long.toString(ba.getBrewId()));
-            tempMap.put("UserId",Long.toString(ba.getUserId()));
             tempMap.put("AdditionName",ba.getAdditionName());
             tempMap.put("AdditionTime",Integer.toString(ba.getAdditionTime()));
             tempMap.put("AdditionQty",Double.toString(ba.getAdditionQty()));
@@ -67,10 +69,8 @@ public class CreateBrewRequest extends StringRequest {
         ArrayList<String> notes = new ArrayList<>();
         for (BrewNoteSchema bn: aBrewSchema.getBrewNoteSchemaList()) {
             HashMap<String,String> tempMap  = new HashMap<>();
-            tempMap.put("GlobalBrewNoteId",Long.toString(bn.getGlobalNoteId()));
             tempMap.put("BrewNoteId",Long.toString(bn.getNoteId()));
             tempMap.put("BrewId",Long.toString(bn.getBrewId()));
-            tempMap.put("UserId",Long.toString(bn.getUserId()));
             tempMap.put("Note",bn.getBrewNote());
             tempMap.put("CreatedOn",bn.getCreatedOn());
             JSONObject jsonObject = new JSONObject(tempMap);
@@ -82,10 +82,8 @@ public class CreateBrewRequest extends StringRequest {
         ArrayList<String> images = new ArrayList<>();
         for (BrewImageSchema bi: aBrewSchema.getBrewImageSchemaList()) {
             HashMap<String,String> tempMap  = new HashMap<>();
-            tempMap.put("GlobalImageId",Long.toString(bi.getGlobalImageId()));
             tempMap.put("ImageId",Long.toString(bi.getImageId()));
             tempMap.put("BrewId",Long.toString(bi.getBrewId()));
-            tempMap.put("UserId",Long.toString(bi.getUserId()));
             tempMap.put("Image", Base64.encodeToString(APPUTILS.GetBitmapByteArray(bi.getImage()), Base64.DEFAULT));
             tempMap.put("CreatedOn",bi.getCreatedOn());
             JSONObject jsonObject = new JSONObject(tempMap);

@@ -185,7 +185,7 @@ public class AddEditViewBrewImages extends Fragment {
         if (isDelete) {
             dbManager.deleteBrewImageById(temp.getSchema().getImageId());
             //call to reload images
-            resetBrewData(brewSchema.getBrewId(),brewSchema.getUserId());
+            resetBrewData(brewSchema.getBrewId());
 
         } else {
             //Create and intent which will open ImageDisplay for image clicked
@@ -209,7 +209,6 @@ public class AddEditViewBrewImages extends Fragment {
 
                 BrewImageSchema imageSchema = new BrewImageSchema();
                 imageSchema.setBrewId(brewSchema.getBrewId());
-                imageSchema.setUserId(brewSchema.getUserId());
                 imageSchema.setImage(GetImageFromData(aData));
                 dbManager.CreateBrewImage(imageSchema);
             }
@@ -221,7 +220,7 @@ public class AddEditViewBrewImages extends Fragment {
         }
 
         //call to reload images
-        resetBrewData(brewSchema.getBrewId(),brewSchema.getUserId());
+        resetBrewData(brewSchema.getBrewId());
     }
 
     private Bitmap GetImageFromData(Intent aData) {
@@ -261,9 +260,9 @@ public class AddEditViewBrewImages extends Fragment {
         isDelete = ((RadioButton) view).isChecked();
     }
 
-    private void resetBrewData(long aBrewId, long aUserId)
+    private void resetBrewData(long aBrewId)
     {
-        BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(aBrewId,aUserId));
+        BrewActivityData.getInstance().setAddEditViewBrew(dbManager.getBrew(aBrewId));
         LoadBrewImages();
     }
 
