@@ -520,7 +520,7 @@ public class UserInventory extends Fragment {
                 }
                 else
                 {
-                    view.setBackgroundColor(Color.BLUE);
+                    view.setBackgroundColor(getResources().getColor(R.color.AccentColor));
                     selectedInventorySchemas.add(inventorySchemas.get(i));
                 }
             }

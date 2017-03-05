@@ -334,7 +334,7 @@ public class MyCalendar extends LinearLayout
             {
                 // if it is today, set it to blue/bold
                 dateText.setTypeface(null, Typeface.BOLD);
-                dateText.setTextColor(getResources().getColor(R.color.AccentColor));
+                dateText.setTextColor(Color.BLUE);
             }
 
             // set text

@@ -185,7 +185,7 @@ public class Login extends ActionBarActivity {
                 message.setText("Local User Create Failed");
         }
         else {
-            message.setText("User Name Already Exists");
+            message.setText("New User Create Failed");
         }
         message.invalidate();
     }

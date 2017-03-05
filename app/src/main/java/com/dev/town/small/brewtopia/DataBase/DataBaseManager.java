@@ -424,7 +424,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
     * Creating a Brew
     */
-    public long CreateABrew(BrewSchema aBrew, long brewId) {
+    public long CreateABrew(BrewSchema aBrew) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         Log.e(LOG, "Insert: Brew["+aBrew.getBrewName()+"]");
@@ -455,39 +455,38 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(GLOBAL, 0);//BREW SHOULD NOT BE GLOBAL ON CREATE
 
         //Add brew
-        long row_id=0;
-        if(brewId == 0)
+        long brewId=0;
+        if(aBrew.getBrewId() == -1)
         {
             //If brew id from global is not set add to local db and set id as rowid
             values.put(DIRTY, 1);//MARK BREW AS DIRTY
-            row_id = db.insert(TABLE_BREWS,null,values);
-            values.put(BREW_ID, row_id);
+            brewId = db.insert(TABLE_BREWS,null,values);
         }
         else
         {
             //if global brew id is set then mark clean and set local brew id
             values.put(DIRTY, 0);//MARK BREW AS CLEAN
-            values.put(BREW_ID, brewId);
+            values.put(BREW_ID, aBrew.getBrewId());
             db.insert(TABLE_BREWS,null,values);
-            row_id = brewId;
+            brewId = aBrew.getBrewId();
         }
 
 
-        if(!(row_id > 0) )
+        if(!(brewId > 0) )
             return 0; // 0 nothing created
         else
         {
             for(BoilAdditionsSchema boilAdditionsSchema: aBrew.getBoilAdditionlist())
             {
-                boilAdditionsSchema.setBrewId(row_id);
+                boilAdditionsSchema.setBrewId(brewId);
             }
             for(BrewNoteSchema brewNoteSchema: aBrew.getBrewNoteSchemaList())
             {
-                brewNoteSchema.setBrewId(row_id);
+                brewNoteSchema.setBrewId(brewId);
             }
             for(InventorySchema inventorySchema: aBrew.getBrewInventorySchemaList())
             {
-                inventorySchema.setBrewId(row_id);
+                inventorySchema.setBrewId(brewId);
             }
         }
         if(!(add_all_boil_additions(aBrew.getBoilAdditionlist())))
@@ -497,7 +496,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         if(!(CreateBrewInventoryHelper(aBrew.getBrewInventorySchemaList())))
             return -1;// -1 failed created
 
-        return row_id; // All create created retrun brew Id
+        return brewId; // All create created retrun brew Id
     }
 
 

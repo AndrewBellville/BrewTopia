@@ -90,6 +90,15 @@ public class APPUTILS {
         }
     };
 
+    //********************Brew Method List**********************
+    public static final List<String> BrewMethod = new ArrayList<String>(){
+        {
+            add("Extract");
+            add("BIAB");
+            add("All Grain");
+        }
+    };
+
     //********************Calculations**********************
     public static Double GetABV(Double aOG, Double aFG)
     {

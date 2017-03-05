@@ -52,7 +52,7 @@ public class AddEditViewBrew extends Fragment {
     private EditText targetOG;
     private EditText targetFG;
     private EditText targetABV;
-    private EditText method;
+    private Spinner method;
     private EditText IBU;
     private EditText BatchSize;
     private EditText Efficiency;
@@ -69,6 +69,7 @@ public class AddEditViewBrew extends Fragment {
     private ScrollView ScrollView;
     private Spinner styleSpinner;
     ArrayAdapter<String> styleAdapter;
+    private ArrayAdapter<String> brewMethodAdapter;
 
     private KeyListener brewNameListener;
     private KeyListener primaryListener;
@@ -113,7 +114,6 @@ public class AddEditViewBrew extends Fragment {
         targetOG = (EditText)mainView.findViewById(R.id.editTextTargetOG);
         targetFG = (EditText)mainView.findViewById(R.id.editTextTargetFG);
         targetABV = (EditText)mainView.findViewById(R.id.editTextTargetABV);
-        method = (EditText)mainView.findViewById(R.id.editTextMethod);
         IBU = (EditText)mainView.findViewById(R.id.editTextIBU);
         BatchSize = (EditText)mainView.findViewById(R.id.editTextBatchSize);
         Efficiency = (EditText)mainView.findViewById(R.id.editTextEfficiency);
@@ -161,7 +161,6 @@ public class AddEditViewBrew extends Fragment {
         targetOGListener = targetOG.getKeyListener();
         targetFGListener = targetFG.getKeyListener();
         targetABVListener = targetABV.getKeyListener();
-        methodListener = method.getKeyListener();
         IBUListener = IBU.getKeyListener();
         BatchSizeListener = BatchSize.getKeyListener();
         EfficiencyListener = Efficiency.getKeyListener();
@@ -173,6 +172,9 @@ public class AddEditViewBrew extends Fragment {
         CanEdit = brewActivityData.CanEdit();
 
         setBrewStyleSpinner();
+        setMethodSpinner();
+        method = (Spinner)mainView.findViewById(R.id.MethodSpinner);
+        method.setAdapter(brewMethodAdapter);
 
         if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD) {
             ifAdd();
@@ -271,6 +273,15 @@ public class AddEditViewBrew extends Fragment {
         styleSpinner.setAdapter(styleAdapter);
     }
 
+    private void setMethodSpinner()
+    {
+        List<String> brewMethod = APPUTILS.BrewMethod;
+
+        brewMethodAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, brewMethod);
+        // Specify the layout to use when the list of choices appears
+        brewMethodAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    }
+
     private void DisplayBrew(BrewSchema aBrewSchema)
     {
         Log.e(LOG, "Entering: DisplayBrew");
@@ -284,7 +295,6 @@ public class AddEditViewBrew extends Fragment {
         targetOG.setText(Double.toString(aBrewSchema.getTargetOG()));
         targetFG.setText(Double.toString(aBrewSchema.getTargetFG()));
         targetABV.setText(Double.toString(APPUTILS.GetTruncatedABVPercent(aBrewSchema.getTargetABV()))+"%");
-        method.setText(aBrewSchema.getMethod());
         IBU.setText(Double.toString(aBrewSchema.getIBU()));
         favorite.setChecked(aBrewSchema.getBooleanFavorite());
         onTap.setChecked(aBrewSchema.getBooleanOnTap());
@@ -302,6 +312,15 @@ public class AddEditViewBrew extends Fragment {
         {
             SyncLayout.setBackgroundColor(getResources().getColor(R.color.AccentColor));
             SyncText.setText("Synced");
+        }
+
+        try
+        {
+            method.setSelection(brewMethodAdapter.getPosition(aBrewSchema.getMethod()));
+        }
+        catch (Exception e)
+        {
+            method.setSelection(0);
         }
 
         // set to brew Style this might be deleted if its user created
@@ -451,7 +470,7 @@ public class AddEditViewBrew extends Fragment {
         brew.setDescription(description.getText().toString());
         brew.setBoilTime(bt);
         brew.setStyle(styleSpinner.getSelectedItem().toString());
-        brew.setMethod(method.getText().toString());
+        brew.setMethod(method.getSelectedItem().toString());
         brew.setIBU(ibu);
         brew.setBooleanFavorite(favorite.isChecked());
         brew.setBooleanOnTap(onTap.isChecked());
@@ -498,7 +517,7 @@ public class AddEditViewBrew extends Fragment {
         targetOG.setText("");
         targetFG.setText("");
         targetABV.setText("");
-        method.setText("");
+        method.setSelection(0);
         IBU.setText("");
         favorite.setChecked(false);
         onTap.setChecked(false);
@@ -570,7 +589,6 @@ public class AddEditViewBrew extends Fragment {
             targetABV.setEnabled(false);
             //targetABV.setFocusable(false);
 
-            method.setKeyListener(null);
             method.setClickable(false);
             method.setEnabled(false);
             //method.setFocusable(false);
@@ -649,7 +667,6 @@ public class AddEditViewBrew extends Fragment {
             targetABV.setEnabled(false);
             //targetABV.setFocusable(true);
 
-            method.setKeyListener(methodListener);
             method.setClickable(true);
             method.setEnabled(true);
             //method.setFocusable(true);
@@ -691,17 +708,24 @@ public class AddEditViewBrew extends Fragment {
                 Log.e(LOG, response);
                 if (response.equals("Error"))// no match for user exists
                 {
-                    Toast.makeText(getActivity(), brewSchema.getBrewName() +" Upload Failed", Toast.LENGTH_SHORT).show();
+                    //If we fail the upload then create local
+                    long brewId = dbManager.CreateABrew(brewSchema);
+                    brewSchema = dbManager.getBrew(brewId);
                 } else {
-                    //Pase response
                     try {
-                        Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
-                        //long brewId = Long.getLong(response.toString());
-                        //dbManager.CreateABrew(brewSchema,brewId);
+                        //get response brew id and update brew and create local
+                        Toast.makeText(getActivity(), response.toString().trim(), Toast.LENGTH_LONG).show();
+                        //long brewId = Long.getLong(response.toString().trim());
+                        //brewSchema.setBrewId(brewId);
+                        //dbManager.CreateABrew(brewSchema);
 
                         //brewSchema = dbManager.getBrew(brewId);
                     }
-                    catch (Exception e) {}
+                    catch (Exception e) {
+                        //If we fail to cast response just then create local
+                        long brewId = dbManager.CreateABrew(brewSchema);
+                        brewSchema = dbManager.getBrew(brewId);
+                    }
                 }
             }
         };
@@ -735,7 +759,7 @@ public class AddEditViewBrew extends Fragment {
                                 //TODO: Need to remove UserId field from all  brew child tables
                                 bs.setUserId(UserId);
                                 bs.setListUserId();
-                                dbManager.CreateABrew(bs,bs.getBrewId());
+                                dbManager.CreateABrew(bs);
                             }
 
 

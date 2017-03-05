@@ -43,10 +43,10 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
-        <EditText
+        <Spinner
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/editTextMethod"
+            android:id="@+id/MethodSpinner"
             android:layout_below="@+id/textViewMethod"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:text="Boil Time"
             android:id="@+id/textViewBoilTime"
-            android:layout_below="@+id/editTextMethod"
+            android:layout_below="@+id/MethodSpinner"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
@@ -351,7 +351,6 @@
             android:layout_alignRight="@+id/editTextBottle"
             android:layout_alignEnd="@+id/editTextBottle"
             android:gravity="top" />
-
 
     </RelativeLayout>
 </LinearLayout>
