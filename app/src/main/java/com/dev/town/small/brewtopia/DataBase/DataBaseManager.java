@@ -554,6 +554,22 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
             //set images
             brew.setBrewImageSchemaList(getAllImagesForBrew(aBrewId));
+
+            //set schedule
+            brew.setScheduledBrewSchemas(getAllScheduledBrews(aBrewId));
+
+            //set schedule events
+            brew.setScheduledEventSchemas(getAllScheduleEventsByBrewId(aBrewId));
+
+            //set brew Inventory
+            List<InventorySchema> inventorySchemas = new ArrayList<InventorySchema>();
+            inventorySchemas.addAll(getAllHopsByUserIdandBrewId(brew.getUserId() ,aBrewId));
+            inventorySchemas.addAll(getAllFermentablesByUserIdandBrewId(brew.getUserId() ,aBrewId));
+            inventorySchemas.addAll(getAllGrainsByUserIdandBrewId(brew.getUserId() ,aBrewId));
+            inventorySchemas.addAll(getAllYeastByUserIdandBrewId(brew.getUserId() ,aBrewId));
+            inventorySchemas.addAll(getAllEquipmentByUserIdandBrewId(brew.getUserId() ,aBrewId));
+            inventorySchemas.addAll(getAllOtherByUserIdandBrewId(brew.getUserId() ,aBrewId));
+            brew.setBrewInventorySchemaList(inventorySchemas);
         }
 
         c.close();
@@ -1141,7 +1157,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
 */
     public ScheduledBrewSchema getNonActiveScheduledScheduleId(long ScheduleId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT "+ROW_ID+",* FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
+        String selectQuery = "SELECT "+ROW_ID+" FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
                 + ACTIVE + " = 0 "
                 + "AND " + ROW_ID + " = '" + Long.toString(ScheduleId) +"'";
 
@@ -1152,38 +1168,46 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ScheduledBrewSchema sBrew = new ScheduledBrewSchema();
         if (c != null) {
             c.moveToFirst();
-            sBrew.setScheduleId(c.getLong(c.getColumnIndex(ROW_ID)));
-            sBrew.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
-            sBrew.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
-            sBrew.setBrewName(c.getString(c.getColumnIndex(BREW_NAME)));
-            sBrew.setStartDate(c.getString(c.getColumnIndex(CREATED_ON)));
-            sBrew.setAlertSecondaryDate(c.getString(c.getColumnIndex(SECONDARY_ALERT_DATE)));
-            sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
-            sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
-            sBrew.setOG(c.getDouble(c.getColumnIndex(ORIGINAL_GRAVITY)));
-            sBrew.setFG((c.getDouble(c.getColumnIndex(FINAL_GRAVITY))));
-            sBrew.setABV((c.getDouble(c.getColumnIndex(ABV))));
-            sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
-            sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
-            sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
-            sBrew.setAlertSecondaryCalendarId((c.getLong(c.getColumnIndex(SECONDARY_ALERT_CALENDAR_ID))));
-            sBrew.setAlertBottleCalendarId((c.getLong(c.getColumnIndex(BOTTLE_ALERT_CALENDAR_ID))));
-            sBrew.setEndBrewCalendarId((c.getLong(c.getColumnIndex(END_BREW_CALENDAR_ID))));
-            sBrew.setHasStarter((c.getInt(c.getColumnIndex(USING_STARTER))));
-
-            sBrew.setScheduledEventSchemaList(getAllScheduleEventsById(sBrew.getScheduleId()));
+            sBrew = getScheduledScheduleId(c.getLong(c.getColumnIndex(ROW_ID)));
         }
         c.close();
         return sBrew;
     }
+    /*
+* Get All Scheduled Brews
+*/
+    public List<ScheduledBrewSchema> getAllScheduledBrews(long aBrewId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<ScheduledBrewSchema> sBrewList = new ArrayList<ScheduledBrewSchema>();
+        String selectQuery = "SELECT " + ROW_ID + " FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
+                + BREW_ID + " = " + aBrewId+" "
+                + "ORDER BY " + CREATED_ON;
 
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllScheduledBrews Count["+c.getCount()+"]");
+        if (c.getCount() > 0) {
+            c.moveToFirst();
+            do {
+                ScheduledBrewSchema sBrew = new ScheduledBrewSchema();
+                sBrew = getScheduledScheduleId(c.getLong(c.getColumnIndex(ROW_ID)));
+
+                sBrewList.add(sBrew);
+
+            } while (c.moveToNext());
+        }
+        c.close();
+        return sBrewList;
+    }
     /*
 * Get All Active Scheduled Brews
 */
     public List<ScheduledBrewSchema> getAllActiveScheduledBrews(long aUserId) {
         SQLiteDatabase db = this.getReadableDatabase();
         List<ScheduledBrewSchema> sBrewList = new ArrayList<ScheduledBrewSchema>();
-        String selectQuery = "SELECT " + ROW_ID + ",* FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
+        String selectQuery = "SELECT " + ROW_ID + " FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
                 + ACTIVE + " = 1 "
                 + "AND " + USER_ID + " = " + aUserId+" "
                 + "ORDER BY " + CREATED_ON;
@@ -1197,26 +1221,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             c.moveToFirst();
             do {
                 ScheduledBrewSchema sBrew = new ScheduledBrewSchema();
-                sBrew.setScheduleId(c.getLong(c.getColumnIndex(ROW_ID)));
-                sBrew.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
-                sBrew.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
-                sBrew.setBrewName(c.getString(c.getColumnIndex(BREW_NAME)));
-                sBrew.setStartDate(c.getString(c.getColumnIndex(CREATED_ON)));
-                sBrew.setAlertSecondaryDate(c.getString(c.getColumnIndex(SECONDARY_ALERT_DATE)));
-                sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
-                sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
-                sBrew.setOG(c.getDouble(c.getColumnIndex(ORIGINAL_GRAVITY)));
-                sBrew.setFG((c.getDouble(c.getColumnIndex(FINAL_GRAVITY))));
-                sBrew.setABV((c.getDouble(c.getColumnIndex(ABV))));
-                sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
-                sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
-                sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
-                sBrew.setAlertSecondaryCalendarId((c.getLong(c.getColumnIndex(SECONDARY_ALERT_CALENDAR_ID))));
-                sBrew.setAlertBottleCalendarId((c.getLong(c.getColumnIndex(BOTTLE_ALERT_CALENDAR_ID))));
-                sBrew.setEndBrewCalendarId((c.getLong(c.getColumnIndex(END_BREW_CALENDAR_ID))));
-                sBrew.setHasStarter((c.getInt(c.getColumnIndex(USING_STARTER))));
-
-                sBrew.setScheduledEventSchemaList(getAllScheduleEventsById(sBrew.getScheduleId()));
+                sBrew = getScheduledScheduleId(c.getLong(c.getColumnIndex(ROW_ID)));
 
                 // adding to Scheduled list if still active else set not active
                 if(sBrew.getEndBrewDate().compareTo(getDateTime()) >= 0)
@@ -1259,7 +1264,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<ScheduledBrewSchema> getAllNonActiveScheduledBrews(long aBrewId) {
         SQLiteDatabase db = this.getReadableDatabase();
         List<ScheduledBrewSchema> sBrewList = new ArrayList<ScheduledBrewSchema>();
-        String selectQuery = "SELECT " + ROW_ID + ",* FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
+        String selectQuery = "SELECT " + ROW_ID + " FROM " + TABLE_BREWS_SCHEDULED + " WHERE "
                 + ACTIVE + " = 0 "
                 + "AND " + BREW_ID + " = " + aBrewId+" "
                 + "ORDER BY " + CREATED_ON;
@@ -1273,26 +1278,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             c.moveToFirst();
             do {
                 ScheduledBrewSchema sBrew = new ScheduledBrewSchema();
-                sBrew.setScheduleId(c.getLong(c.getColumnIndex(ROW_ID)));
-                sBrew.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
-                sBrew.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
-                sBrew.setBrewName(c.getString(c.getColumnIndex(BREW_NAME)));
-                sBrew.setStartDate(c.getString(c.getColumnIndex(CREATED_ON)));
-                sBrew.setAlertSecondaryDate(c.getString(c.getColumnIndex(SECONDARY_ALERT_DATE)));
-                sBrew.setAlertBottleDate(c.getString(c.getColumnIndex(BOTTLE_ALERT_DATE)));
-                sBrew.setEndBrewDate((c.getString(c.getColumnIndex(END_BREW_DATE))));
-                sBrew.setOG(c.getDouble(c.getColumnIndex(ORIGINAL_GRAVITY)));
-                sBrew.setFG((c.getDouble(c.getColumnIndex(FINAL_GRAVITY))));
-                sBrew.setABV((c.getDouble(c.getColumnIndex(ABV))));
-                sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
-                sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
-                sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
-                sBrew.setAlertSecondaryCalendarId((c.getLong(c.getColumnIndex(SECONDARY_ALERT_CALENDAR_ID))));
-                sBrew.setAlertBottleCalendarId((c.getLong(c.getColumnIndex(BOTTLE_ALERT_CALENDAR_ID))));
-                sBrew.setEndBrewCalendarId((c.getLong(c.getColumnIndex(END_BREW_CALENDAR_ID))));
-                sBrew.setHasStarter((c.getInt(c.getColumnIndex(USING_STARTER))));
-
-                sBrew.setScheduledEventSchemaList(getAllScheduleEventsById(sBrew.getScheduleId()));
+                sBrew = getScheduledScheduleId(c.getLong(c.getColumnIndex(ROW_ID)));
 
                 sBrewList.add(sBrew);
 
@@ -2729,6 +2715,40 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
 
         Log.e(LOG, "getAllScheduleEventsById Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            if (c.moveToFirst())
+            {
+                do {
+                    ScheduledEventSchema eventSchema = new ScheduledEventSchema();
+                    eventSchema.setScheduledEventId(c.getInt(c.getColumnIndex(ROW_ID)));
+                    eventSchema.setScheduleId(c.getInt(c.getColumnIndex(SCHEDULE_ID)));
+                    eventSchema.setBrewId(c.getInt(c.getColumnIndex(BREW_ID)));
+                    eventSchema.setEventCalendarId(c.getInt(c.getColumnIndex(EVENT_CALENDAR_ID)));
+                    eventSchema.setEventDate(c.getString(c.getColumnIndex(EVENT_DATE)));
+                    eventSchema.setEventText(c.getString(c.getColumnIndex(EVENT_TEXT)));
+
+                    scheduledEventSchemas.add(eventSchema);
+                } while (c.moveToNext());
+            }
+        }
+
+        c.close();
+        return scheduledEventSchemas;
+    }
+    /*
+* getting all Schedule Events for Brew id
+*/
+    public List<ScheduledEventSchema> getAllScheduleEventsByBrewId(long aBrewId) {
+        List<ScheduledEventSchema> scheduledEventSchemas = new ArrayList<ScheduledEventSchema>();
+        String selectQuery = "SELECT "+ROW_ID+", * FROM " + TABLE_SCHEDULED_EVENT
+                + " WHERE " + BREW_ID + " = " + aBrewId;
+
+        Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Log.e(LOG, "getAllScheduleEventsByBrewId Count["+c.getCount()+"]");
         if (c.getCount() > 0 ) {
             if (c.moveToFirst())
             {

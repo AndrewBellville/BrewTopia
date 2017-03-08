@@ -135,20 +135,18 @@ public class UserGlobal extends Fragment {
 
         GlobalBrewList = brewSchemaList;
 
-        if (GlobalBrewList.size() > 0) {
+        if (GlobalBrewList.size() > 0)
             noData.setVisibility(View.GONE);
-
-            //instantiate custom adapter
-            CustomBListAdapter adapter = new CustomBListAdapter(GlobalBrewList, getActivity());
-            adapter.setDeleteView(false);
-            adapter.hasColor(true);
-
-            GlobalbrewListView.setAdapter(adapter);
-        }
         else
-        {
             noData.setVisibility(View.VISIBLE);
-        }
+
+        //instantiate custom adapter
+        CustomBListAdapter adapter = new CustomBListAdapter(GlobalBrewList, getActivity());
+        adapter.setDeleteView(false);
+        adapter.hasColor(true);
+
+        GlobalbrewListView.setAdapter(adapter);
+
     }
 
     private void LoadSerachedGlobalBrews(String searchText) {
@@ -162,20 +160,18 @@ public class UserGlobal extends Fragment {
                 tempBrewList.add(bs);
         }
 
-        if (tempBrewList.size() > 0) {
+        if (tempBrewList.size() > 0)
             noData.setVisibility(View.GONE);
-
-            //instantiate custom adapter
-            CustomBListAdapter adapter = new CustomBListAdapter(tempBrewList, getActivity());
-            adapter.setDeleteView(false);
-            adapter.hasColor(true);
-
-            GlobalbrewListView.setAdapter(adapter);
-        }
         else
-        {
             noData.setVisibility(View.VISIBLE);
-        }
+
+        //instantiate custom adapter
+        CustomBListAdapter adapter = new CustomBListAdapter(tempBrewList, getActivity());
+        adapter.setDeleteView(false);
+        adapter.hasColor(true);
+
+        GlobalbrewListView.setAdapter(adapter);
+
     }
 
     private void BrewSelect(BrewSchema aBrew)

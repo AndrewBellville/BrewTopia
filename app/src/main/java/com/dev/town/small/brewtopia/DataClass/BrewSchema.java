@@ -37,6 +37,8 @@ public class BrewSchema {
     private List <BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();
     private List <InventorySchema> brewInventorySchemaList = new ArrayList<InventorySchema>();
     private List<BrewImageSchema> brewImageSchemaList = new ArrayList<BrewImageSchema>();
+    private List<ScheduledBrewSchema> scheduledBrewSchemas = new ArrayList<ScheduledBrewSchema>();
+    private List<ScheduledEventSchema> scheduledEventSchemas = new ArrayList<ScheduledEventSchema>();
     private String Style;
     private BrewStyleSchema StyleSchema;
     private int totalBrewed=0;
@@ -172,6 +174,12 @@ public class BrewSchema {
     public List<BrewImageSchema> getBrewImageSchemaList() {
         return brewImageSchemaList;
     }
+    public List<ScheduledBrewSchema> getScheduledBrewSchemas() {
+        return scheduledBrewSchemas;
+    }
+    public List<ScheduledEventSchema> getScheduledEventSchemas() {
+        return scheduledEventSchemas;
+    }
     public int getSRM() {
         return SRM;
     }
@@ -292,6 +300,12 @@ public class BrewSchema {
     }
     public void setBrewImageSchemaList(List<BrewImageSchema> brewImageSchemaList) {
         this.brewImageSchemaList = brewImageSchemaList;
+    }
+    public void setScheduledBrewSchemas(List<ScheduledBrewSchema> scheduledBrewSchemas) {
+        this.scheduledBrewSchemas = scheduledBrewSchemas;
+    }
+    public void setScheduledEventSchemas(List<ScheduledEventSchema> scheduledEventSchemas) {
+        this.scheduledEventSchemas = scheduledEventSchemas;
     }
     public void setSRM(int SRM) {
         this.SRM = SRM;

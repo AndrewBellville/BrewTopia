@@ -141,6 +141,7 @@ public class AddEditViewBrew extends Fragment {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SyncToGlobal();
                 if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.GLOBAL)
                     PullFromGlobal();
             }
@@ -709,8 +710,8 @@ public class AddEditViewBrew extends Fragment {
                 if (response.equals("Error"))// no match for user exists
                 {
                     //If we fail the upload then create local
-                    long brewId = dbManager.CreateABrew(brewSchema);
-                    brewSchema = dbManager.getBrew(brewId);
+                    //long brewId = dbManager.CreateABrew(brewSchema);
+                    //brewSchema = dbManager.getBrew(brewId);
                 } else {
                     try {
                         //get response brew id and update brew and create local
@@ -723,8 +724,8 @@ public class AddEditViewBrew extends Fragment {
                     }
                     catch (Exception e) {
                         //If we fail to cast response just then create local
-                        long brewId = dbManager.CreateABrew(brewSchema);
-                        brewSchema = dbManager.getBrew(brewId);
+                        //long brewId = dbManager.CreateABrew(brewSchema);
+                        //brewSchema = dbManager.getBrew(brewId);
                     }
                 }
             }
