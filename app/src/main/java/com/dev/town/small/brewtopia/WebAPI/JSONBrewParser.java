@@ -10,6 +10,13 @@ import com.dev.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.dev.town.small.brewtopia.DataClass.BrewImageSchema;
 import com.dev.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.dev.town.small.brewtopia.DataClass.BrewSchema;
+import com.dev.town.small.brewtopia.DataClass.EquipmentSchema;
+import com.dev.town.small.brewtopia.DataClass.FermentablesSchema;
+import com.dev.town.small.brewtopia.DataClass.GrainsSchema;
+import com.dev.town.small.brewtopia.DataClass.HopsSchema;
+import com.dev.town.small.brewtopia.DataClass.InventorySchema;
+import com.dev.town.small.brewtopia.DataClass.OtherSchema;
+import com.dev.town.small.brewtopia.DataClass.YeastSchema;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -105,6 +112,30 @@ public class JSONBrewParser {
             //Build Brew Notes
             JSONArray brewImages = aBrew.getJSONArray("BrewImages");
             brewSchema.setBrewImageSchemaList(ParseGlobalBrewImages(brewImages));
+
+            //Build Brew InventoryHops
+            JSONArray InventoryHops = aBrew.getJSONArray("InventoryHops");
+            brewSchema.setBrewInventorySchemaList(ParseGlobalBrewHops(InventoryHops));
+
+            //Build Brew InventoryFermentables
+            JSONArray InventoryFermentables = aBrew.getJSONArray("InventoryFermentables");
+            brewSchema.getBrewInventorySchemaList().addAll(ParseGlobalBrewFermentables(InventoryFermentables));
+
+            //Build Brew InventoryGrains
+            JSONArray InventoryGrains = aBrew.getJSONArray("InventoryGrains");
+            brewSchema.getBrewInventorySchemaList().addAll(ParseGlobalBrewGains(InventoryGrains));
+
+            //Build Brew InventoryYeast
+            JSONArray InventoryYeast = aBrew.getJSONArray("InventoryYeast");
+            brewSchema.getBrewInventorySchemaList().addAll(ParseGlobalBrewYeasts(InventoryYeast));
+
+            //Build Brew InventoryEquipment
+            JSONArray InventoryEquipment = aBrew.getJSONArray("InventoryEquipment");
+            brewSchema.getBrewInventorySchemaList().addAll(ParseGlobalBrewEquipments(InventoryEquipment));
+
+            //Build Brew InventoryOther
+            JSONArray InventoryOther = aBrew.getJSONArray("InventoryOther");
+            brewSchema.getBrewInventorySchemaList().addAll(ParseGlobalBrewOthers(InventoryOther));
 
             brewSchema.setStyleSchema(dataBaseManager.getBrewsStylesByName(brewSchema.getStyle()));
 
@@ -264,5 +295,327 @@ public class JSONBrewParser {
         }
 
         return brewImageSchema;
+    }
+
+    /**
+     * Method to Parse All Brew Hops
+     * */
+    private List<InventorySchema> ParseGlobalBrewHops (JSONArray aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewHops");
+        List<InventorySchema> inventorySchemas = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aInventory.length(); i++) {
+
+                JSONObject inventory = (JSONObject) aInventory.get(i);
+                inventorySchemas.add(ParseGlobalBrewHop(inventory));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchemas;
+    }
+
+    /**
+     * Method to Parse one Brew Hop
+     * */
+    private InventorySchema ParseGlobalBrewHop (JSONObject aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewHop");
+        HopsSchema inventorySchema = new HopsSchema();
+
+        try {
+            if(parseType == ParseType.PUSH)
+            {
+                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("HopsId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
+            }
+            inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
+            inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
+            inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
+            inventorySchema.setType(aInventory.getString("InventoryType"));
+            inventorySchema.setAA(Double.parseDouble(aInventory.getString("AA")));
+            inventorySchema.setUse(aInventory.getString("InventoryUse"));
+            inventorySchema.setTime(Integer.parseInt(aInventory.getString("InventoryTime")));
+            inventorySchema.setInventoryUOfM(aInventory.getString("InventoryUofM"));
+            inventorySchema.setIBU(Double.parseDouble(aInventory.getString("IBU")));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchema;
+    }
+
+    /**
+     * Method to Parse All Brew Fermentables
+     * */
+    private List<InventorySchema> ParseGlobalBrewFermentables (JSONArray aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewFermentables");
+        List<InventorySchema> inventorySchemas = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aInventory.length(); i++) {
+
+                JSONObject inventory = (JSONObject) aInventory.get(i);
+                inventorySchemas.add(ParseGlobalBrewFermentable(inventory));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchemas;
+    }
+
+    /**
+     * Method to Parse one Brew Fermentable
+     * */
+    private InventorySchema ParseGlobalBrewFermentable (JSONObject aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewFermentable");
+        FermentablesSchema inventorySchema = new FermentablesSchema();
+
+        try {
+            if(parseType == ParseType.PUSH)
+            {
+                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("FermentablesId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
+            }
+            inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
+            inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
+            inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
+            inventorySchema.setPoundPerGallon(Double.parseDouble(aInventory.getString("PPG")));
+            inventorySchema.setLovibond(Double.parseDouble(aInventory.getString("Lovibond")));
+            inventorySchema.setInventoryUOfM(aInventory.getString("InventoryUofM"));
+            inventorySchema.setBill(Double.parseDouble(aInventory.getString("Bill")));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchema;
+    }
+
+    /**
+     * Method to Parse All Brew Gains
+     * */
+    private List<InventorySchema> ParseGlobalBrewGains (JSONArray aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewGains");
+        List<InventorySchema> inventorySchemas = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aInventory.length(); i++) {
+
+                JSONObject inventory = (JSONObject) aInventory.get(i);
+                inventorySchemas.add(ParseGlobalBrewGains(inventory));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchemas;
+    }
+
+    /**
+     * Method to Parse one Brew Gain
+     * */
+    private InventorySchema ParseGlobalBrewGains (JSONObject aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewGains");
+        GrainsSchema inventorySchema = new GrainsSchema();
+
+        try {
+            if(parseType == ParseType.PUSH)
+            {
+                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("GrainsId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
+            }
+            inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
+            inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
+            inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
+            inventorySchema.setPoundPerGallon(Double.parseDouble(aInventory.getString("PPG")));
+            inventorySchema.setLovibond(Double.parseDouble(aInventory.getString("Lovibond")));
+            inventorySchema.setInventoryUOfM(aInventory.getString("InventoryUofM"));
+            inventorySchema.setBill(Double.parseDouble(aInventory.getString("Bill")));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchema;
+    }
+
+    /**
+     * Method to Parse All Brew Yeasts
+     * */
+    private List<InventorySchema> ParseGlobalBrewYeasts (JSONArray aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewYeasts");
+        List<InventorySchema> inventorySchemas = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aInventory.length(); i++) {
+
+                JSONObject inventory = (JSONObject) aInventory.get(i);
+                inventorySchemas.add(ParseGlobalBrewYeast(inventory));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchemas;
+    }
+
+    /**
+     * Method to Parse one Brew Yeast
+     * */
+    private InventorySchema ParseGlobalBrewYeast (JSONObject aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewYeast");
+        YeastSchema inventorySchema = new YeastSchema();
+
+        try {
+            if(parseType == ParseType.PUSH)
+            {
+                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("YeastId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
+            }
+            inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
+            inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
+            inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
+            inventorySchema.setFlocculation(aInventory.getString("Flocculation"));
+            inventorySchema.setStarter(Integer.parseInt(aInventory.getString("Starter")));
+            inventorySchema.setAttenuation(Double.parseDouble(aInventory.getString("Attenuation")));
+            inventorySchema.setOptimumTempLow(Double.parseDouble(aInventory.getString("OTL")));
+            inventorySchema.setOptimumTempHigh(Double.parseDouble(aInventory.getString("OTH")));
+            inventorySchema.setInventoryUOfM(aInventory.getString("InventoryUofM"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchema;
+    }
+
+    /**
+     * Method to Parse All Brew Equipments
+     * */
+    private List<InventorySchema> ParseGlobalBrewEquipments (JSONArray aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewEquipments");
+        List<InventorySchema> inventorySchemas = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aInventory.length(); i++) {
+
+                JSONObject inventory = (JSONObject) aInventory.get(i);
+                inventorySchemas.add(ParseGlobalBrewEquipment(inventory));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchemas;
+    }
+
+    /**
+     * Method to Parse one Brew Equipment
+     * */
+    private InventorySchema ParseGlobalBrewEquipment (JSONObject aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewEquipment");
+        EquipmentSchema inventorySchema = new EquipmentSchema();
+
+        try {
+            if(parseType == ParseType.PUSH)
+            {
+                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("EquipmentId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
+            }
+            inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
+            inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
+            inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
+            inventorySchema.setInventoryUOfM(aInventory.getString("InventoryUofM"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchema;
+    }
+
+    /**
+     * Method to Parse All Brew Others
+     * */
+    private List<InventorySchema> ParseGlobalBrewOthers (JSONArray aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewOthers");
+        List<InventorySchema> inventorySchemas = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aInventory.length(); i++) {
+
+                JSONObject inventory = (JSONObject) aInventory.get(i);
+                inventorySchemas.add(ParseGlobalBrewOther(inventory));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchemas;
+    }
+
+    /**
+     * Method to Parse one Brew Other
+     * */
+    private InventorySchema ParseGlobalBrewOther (JSONObject aInventory) {
+
+        Log.d(LOG, "Entering: ParseGlobalBrewOther");
+        OtherSchema inventorySchema = new OtherSchema();
+
+        try {
+            if(parseType == ParseType.PUSH)
+            {
+                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("OtherInventoryId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
+                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
+            }
+            inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
+            inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
+            inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
+            inventorySchema.setInventoryUOfM(aInventory.getString("InventoryUofM"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return inventorySchema;
     }
 }

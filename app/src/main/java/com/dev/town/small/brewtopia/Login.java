@@ -16,8 +16,14 @@ import com.dev.town.small.brewtopia.AppSettings.AppSettingsHelper;
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
 import com.dev.town.small.brewtopia.DataClass.*;
 import com.dev.town.small.brewtopia.WebAPI.CreateUserRequest;
+import com.dev.town.small.brewtopia.WebAPI.JSONUserParser;
 import com.dev.town.small.brewtopia.WebAPI.LoginRequest;
 import com.dev.town.small.brewtopia.WebAPI.WebController;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.List;
 
 
 public class Login extends ActionBarActivity {
@@ -72,9 +78,22 @@ public class Login extends ActionBarActivity {
                 Log.e(LOG, response);
                 if (response.equals("Error"))// no match for user password
                 {
-                    performLogIn(false,-1);
+                    performLogIn(false,null);
                 } else {
-                    performLogIn(true, Long.parseLong(response));
+                    try{
+                        //Parse response into BrewShcema list
+                        JSONArray jsonArray = new JSONArray(response);
+                        JSONUserParser jsonParser = new JSONUserParser();
+                        UserSchema userSchema = jsonParser.ParseUser(jsonArray);
+
+                        //set local pass and update if needed
+                        userSchema.setPassword(password.getText().toString());
+                        dbManager.updateUser(userSchema);
+                        performLogIn(true, userSchema);
+                    }
+                    catch (JSONException e) {
+                        performLogIn(false,null);
+                    }
                 }
             }
         };
@@ -84,7 +103,7 @@ public class Login extends ActionBarActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(LOG, error.toString());
-                performLogIn(false,-1); // try to login from local DB
+                performLogIn(false, null); // try to login from local DB
             }
         };
 
@@ -92,7 +111,7 @@ public class Login extends ActionBarActivity {
         WebController.getInstance().addToRequestQueue(loginRequest);
     }
 
-    private void performLogIn(boolean isSuccess, long aUserId)
+    private void performLogIn(boolean isSuccess, UserSchema aUserSchema)
     {
         Log.e(LOG, "Entering: perfromLogin");
 
@@ -102,19 +121,20 @@ public class Login extends ActionBarActivity {
             Intent intent = new Intent(this, UserProfile.class);
             //set active user
             //dbManager.SyncUser();
-            currentUser.setUser(dbManager.getUser(aUserId));
+            currentUser.setUser(aUserSchema);
             //load all app setting for user
             appSettingsHelper.LoadMap();
             //start next activity
             startActivity(intent);
             message.setText("");
+            currentUser.getUser().writeString();
         }
         else
         {
             // if we have failed login from server try and login from local DB
             long userId =  dbManager.DoesUserLoginExist(userName.getText().toString(),password.getText().toString());
             if(userId > 0){
-                performLogIn(true, userId);
+                performLogIn(true, dbManager.getUser(userId));
                 Toast.makeText(this, "Local Login", Toast.LENGTH_SHORT).show();
             }
             else
@@ -145,11 +165,17 @@ public class Login extends ActionBarActivity {
                 {
                     performCreate(false, null);
                 } else {
-                    UserSchema user = new UserSchema(userName.getText().toString(),password.getText().toString());
-                    try {
-                        user.setUserId(Long.parseLong(response.trim()));
-                        performCreate(true,user);
-                    }catch (Exception e) {
+                    try{
+                        //Parse response into BrewShcema list
+                        JSONArray jsonArray = new JSONArray(response);
+                        JSONUserParser jsonParser = new JSONUserParser();
+                        UserSchema userSchema = jsonParser.ParseUser(jsonArray);
+
+                        //set local pass and update if needed
+                        userSchema.setPassword(password.getText().toString());
+                        performCreate(false, null);
+                    }
+                    catch (JSONException e) {
                         performCreate(false, null);
                     }
                 }

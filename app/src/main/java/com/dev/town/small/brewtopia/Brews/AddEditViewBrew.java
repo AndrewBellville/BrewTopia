@@ -199,6 +199,10 @@ public class AddEditViewBrew extends Fragment {
             editBrewButton.setVisibility(View.INVISIBLE);
         }
 
+        if(CurrentUser.getInstance().getUser().getRole() != UserSchema.UserRoles.Admin.getValue()) {
+            uploadButton.setVisibility(View.INVISIBLE);
+        }
+
         return returnView;
     }
 
@@ -245,7 +249,7 @@ public class AddEditViewBrew extends Fragment {
         //get brew and display
         DisplayBrew(brewSchema);
         startButton.setVisibility(View.INVISIBLE);
-        if(UserId > 0) {
+        if(CurrentUser.getInstance().getUser().getRole() == UserSchema.UserRoles.Admin.getValue()) {
             uploadButton.setText("DownLoad");
             uploadButton.setVisibility(View.VISIBLE);
         }

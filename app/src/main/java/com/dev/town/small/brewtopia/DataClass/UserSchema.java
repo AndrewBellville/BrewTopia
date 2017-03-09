@@ -10,9 +10,24 @@ public class UserSchema {
     // Log cat tag
     private static final String LOG = "UserSchema";
 
+    //User Roles
+    public enum UserRoles {
+        Admin(0), User(1), Unknown(2);
+
+        private final int value;
+        private UserRoles(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
     long userId;
     String UserName;
     private String Password;
+    int Role = 1; //Role 0=Admin,1=user,2=unknown
     private String CreatedOn;
     private boolean isTemp = false;
 
@@ -27,12 +42,20 @@ public class UserSchema {
         this.Password = aPassword;
     }
 
+    public void writeString()
+    {
+        Log.e(LOG, "Id[" + getUserId() + "] UserName[" + getUserName() + "]  Role[" + getRole() + "]  Password[" + getPassword() + "]");
+    }
+
     // setters
     public void setUserName(String aUserName) {
         this.UserName = aUserName;
     }
     public void setPassword(String aPassword) {
         this.Password = aPassword;
+    }
+    public int getRole() {
+        return Role;
     }
     public void setCreatedOn(String aCreatedOn){
         this.CreatedOn = aCreatedOn;
@@ -50,6 +73,9 @@ public class UserSchema {
     }
     public String getPassword() {
         return this.Password;
+    }
+    public void setRole(int role) {
+        Role = role;
     }
     public String getCreatedOn() { return this.CreatedOn; }
     public void setUserId(long userId) {

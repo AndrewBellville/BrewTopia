@@ -235,7 +235,7 @@ public class UserInventory extends Fragment {
     {
         ArrayList<InventorySchema> inventorySchemas = new ArrayList<InventorySchema>();
 
-        for(InventorySchema inventorySchema : BrewActivityData.getInstance().getBrewInventorySchemaList())
+        for(InventorySchema inventorySchema : BrewActivityData.getInstance().getAddEditViewBrew().getBrewInventorySchemaList())
         {
             if(inventorySchema instanceof HopsSchema && aInventoryCategories == InventoryCategories.Hops)
                 inventorySchemas.add(inventorySchema);

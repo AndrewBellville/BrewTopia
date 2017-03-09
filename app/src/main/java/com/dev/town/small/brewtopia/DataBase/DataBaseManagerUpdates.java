@@ -124,7 +124,11 @@ public class DataBaseManagerUpdates {
         }
         if(aOldVersion < 52)
         {
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.BREW_ID +" INTEGER DEFAULT rowid ");
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.BREW_ID +" INTEGER DEFAULT -1 ");
+        }
+        if(aOldVersion < 53)
+        {
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_USERS +" ADD COLUMN "+ dbm.ROLE +" INTEGER DEFAULT 1 ");
         }
     }
 

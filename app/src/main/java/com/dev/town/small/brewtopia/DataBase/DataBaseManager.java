@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 52;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 53;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag
@@ -83,6 +83,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     // USERS column names
     protected static final String USER_NAME = "UserName";
     protected static final String PASSWORD = "Password";
+    protected static final String ROLE = "Role";
 
     // BREWS column names
     protected static final String BREW_NAME = "BrewName";
@@ -166,7 +167,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_USERS
     protected static final String CREATE_TABLE_USERS = "CREATE TABLE "
             + TABLE_USERS + "(" + USER_ID + " INTEGER PRIMARY KEY,"
-            + USER_NAME + " TEXT,"+ PASSWORD + " TEXT," + CREATED_ON + " DATETIME )";
+            + USER_NAME + " TEXT,"+ PASSWORD + " TEXT," + ROLE + " INTEGER," + CREATED_ON + " DATETIME )";
 
     //CREATE_TABLE_BREWS
     protected static final String CREATE_TABLE_BREWS = "CREATE TABLE "
@@ -325,6 +326,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(USER_ID, aUser.getUserId());
         values.put(USER_NAME, aUser.getUserName());
         values.put(PASSWORD, aUser.getPassword());
+        values.put(ROLE, aUser.getRole());
         values.put(CREATED_ON, getDateTime());
 
         // insert row
@@ -352,11 +354,35 @@ public class DataBaseManager extends SQLiteOpenHelper {
         user.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
         user.setUserName(c.getString(c.getColumnIndex(USER_NAME)));
         user.setPassword((c.getString(c.getColumnIndex(PASSWORD))));
+        user.setRole((c.getInt(c.getColumnIndex(ROLE))));
         user.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
 
         Log.e(LOG, "Insert: getUser["+user.getUserName()+"]");
         c.close();
         return user;
+    }
+
+    /*
+* Update User
+*/
+    public Boolean updateUser(UserSchema aUserSchema) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e(LOG, "updateUser Name["+aUserSchema.getUserName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(USER_NAME, aUserSchema.getUserName());
+        values.put(ROLE, aUserSchema.getRole());
+        values.put(PASSWORD, aUserSchema.getPassword());
+
+        // updating row
+        int retVal = db.update(TABLE_USERS, values, USER_ID + " = ?",
+                new String[] { Long.toString(aUserSchema.getUserId()) });
+
+        //Update user
+        if(!(retVal > 0) )
+            return false;
+        else
+            return true;
     }
 
     /*
