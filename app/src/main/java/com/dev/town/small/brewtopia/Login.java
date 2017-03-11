@@ -1,6 +1,8 @@
 package com.dev.town.small.brewtopia;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -120,7 +122,6 @@ public class Login extends ActionBarActivity {
             //Create and intent which will open next activity UserProfile
             Intent intent = new Intent(this, UserProfile.class);
             //set active user
-            //dbManager.SyncUser();
             currentUser.setUser(aUserSchema);
             //load all app setting for user
             appSettingsHelper.LoadMap();
@@ -148,6 +149,12 @@ public class Login extends ActionBarActivity {
     public void onCreateClick(View aView)
     {
         Log.e(LOG, "Entering: onCreateClick");
+
+        if(!HasInternet()) {
+            message.setText("Internet Connection Needed");
+            return;
+        }
+
         validateUserCreate();
     }
 
@@ -173,7 +180,7 @@ public class Login extends ActionBarActivity {
 
                         //set local pass and update if needed
                         userSchema.setPassword(password.getText().toString());
-                        performCreate(false, null);
+                        performCreate(true, userSchema);
                     }
                     catch (JSONException e) {
                         performCreate(false, null);
@@ -242,6 +249,14 @@ public class Login extends ActionBarActivity {
 
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://smalltowndev.com/index.php/brewtopia/releaseNotes"));
         startActivity(browserIntent);
+    }
+
+    private boolean HasInternet()
+    {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 }

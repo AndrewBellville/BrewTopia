@@ -154,27 +154,4 @@ public class DataBaseManagerUpdates {
         // create new tables
         dbm.onCreate(aSQLiteDatabase);
     }
-
-    protected void UserSync(SQLiteDatabase aSQLiteDatabase)
-    {
-       /* aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_USERS +" SET "+ dbm.USER_ID +"= 2 WHERE "+dbm.USER_ID +"= 1");
-
-        aSQLiteDatabase.execSQL("INSERT INTO "+ dbm.TABLE_USERS +" ("+ dbm.USER_ID+","+ dbm.USER_NAME+","+ dbm.PASSWORD+","+ dbm.CREATED_ON+") " +
-                "SELECT 2,"+ dbm.USER_NAME+","+ dbm.PASSWORD+","+ dbm.CREATED_ON+" FROM "+ dbm.TABLE_USERS +" WHERE "+dbm.USER_ID +"= 1" );
-        aSQLiteDatabase.execSQL("DELETE FROM "+ dbm.TABLE_USERS + "WHERE " +dbm.USER_ID +"= 1" );*/
-
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_BREWS +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_BREWS_STYLES +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_BREWS_NOTES +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_BOIL_ADDITIONS +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_BREWS_SCHEDULED +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_APP_SETTINGS +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_INVENTORY_HOPS +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_INVENTORY_FERMENTABLES +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_INVENTORY_GRAINS +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_INVENTORY_YEAST +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_INVENTORY_EQUIPMENT +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-        aSQLiteDatabase.execSQL("UPDATE "+ dbm.TABLE_INVENTORY_OTHER +" SET "+ dbm.USER_ID +"= 3 WHERE "+dbm.USER_ID +"= 2");
-
-    }
 }

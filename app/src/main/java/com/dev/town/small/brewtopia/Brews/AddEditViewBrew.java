@@ -493,9 +493,17 @@ public class AddEditViewBrew extends Fragment {
         {
             //add user Id for lists
             brew.setListUserId();
-            brewSchema = brew;
+            //brewSchema = brew;
             //try and sync to global
-            SyncToGlobal();
+            //SyncToGlobal();
+            long brewId = dbManager.CreateABrew(brew);
+            if( brewId == -1)// -1 brews failed to create
+            {
+                Toast.makeText(getActivity(), "Duplicate Brew Name", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            brewSchema = dbManager.getBrew(brewId);
         }
         else if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.EDIT)
         {
