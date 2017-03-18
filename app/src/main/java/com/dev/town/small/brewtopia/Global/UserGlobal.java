@@ -18,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.dev.town.small.brewtopia.Brews.BrewActivityData;
 import com.dev.town.small.brewtopia.Brews.CustomBListAdapter;
 import com.dev.town.small.brewtopia.Brews.UserBrew;
+import com.dev.town.small.brewtopia.DataClass.APPUTILS;
 import com.dev.town.small.brewtopia.DataClass.BrewSchema;
 import com.dev.town.small.brewtopia.R;
 import com.dev.town.small.brewtopia.WebAPI.GlobalBrewsRequest;
@@ -44,7 +45,7 @@ public class UserGlobal extends Fragment {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.activity_user_global,container,false);
 
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
 
         GlobalbrewListView = (ListView)view.findViewById(R.id.GlobalBrewList);
         GlobalbrewListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -105,12 +106,12 @@ public class UserGlobal extends Fragment {
 
     private void GetGlobalBrews()
     {
-        Log.e(LOG, "Entering: GetGlobalBrews");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: GetGlobalBrews");
 
         Response.Listener<JSONArray> ResponseListener = new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                Log.d(LOG, response.toString());
+                if(APPUTILS.isLogging)Log.d(LOG, response.toString());
                 //Get respose and  parse JSON into BrewSchema
                 LoadGlobalBrews(new JSONBrewParser(getActivity(), JSONBrewParser.ParseType.PUSH).ParseGlobalBrews(response));
                 // Now we call setRefreshing(false) to signal refresh has finished
@@ -122,7 +123,7 @@ public class UserGlobal extends Fragment {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(LOG, error.toString());
+                if(APPUTILS.isLogging) Log.e(LOG, error.toString());
             }
         };
 
@@ -131,7 +132,7 @@ public class UserGlobal extends Fragment {
     }
 
     private void LoadGlobalBrews(List<BrewSchema> brewSchemaList) {
-        Log.e(LOG, "Entering: LoadGlobalBrews");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadGlobalBrews");
 
         GlobalBrewList = brewSchemaList;
 
@@ -150,7 +151,7 @@ public class UserGlobal extends Fragment {
     }
 
     private void LoadSerachedGlobalBrews(String searchText) {
-        Log.e(LOG, "Entering: LoadSerachedGlobalBrews");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadSerachedGlobalBrews");
 
         //search current brewlist for Brew names containing search text
         List<BrewSchema> tempBrewList = new ArrayList<BrewSchema>();
@@ -188,6 +189,6 @@ public class UserGlobal extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        Log.e(LOG, "Entering: onResume");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onResume");
     }
 }

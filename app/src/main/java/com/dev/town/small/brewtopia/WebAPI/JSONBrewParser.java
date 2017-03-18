@@ -12,7 +12,6 @@ import com.dev.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.dev.town.small.brewtopia.DataClass.BrewSchema;
 import com.dev.town.small.brewtopia.DataClass.EquipmentSchema;
 import com.dev.town.small.brewtopia.DataClass.FermentablesSchema;
-import com.dev.town.small.brewtopia.DataClass.GrainsSchema;
 import com.dev.town.small.brewtopia.DataClass.HopsSchema;
 import com.dev.town.small.brewtopia.DataClass.InventorySchema;
 import com.dev.town.small.brewtopia.DataClass.OtherSchema;
@@ -49,7 +48,7 @@ public class JSONBrewParser {
      * */
     public List<BrewSchema> ParseGlobalBrews(JSONArray jsonArray) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrews");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrews");
 
         List<BrewSchema> brewSchemaList = new ArrayList<>();
 
@@ -75,7 +74,7 @@ public class JSONBrewParser {
      * */
     private BrewSchema ParseGlobalBrew (JSONObject aBrew) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrew");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrew");
         BrewSchema brewSchema = new BrewSchema();
 
         try {
@@ -121,10 +120,6 @@ public class JSONBrewParser {
             JSONArray InventoryFermentables = aBrew.getJSONArray("InventoryFermentables");
             brewSchema.getBrewInventorySchemaList().addAll(ParseGlobalBrewFermentables(InventoryFermentables));
 
-            //Build Brew InventoryGrains
-            JSONArray InventoryGrains = aBrew.getJSONArray("InventoryGrains");
-            brewSchema.getBrewInventorySchemaList().addAll(ParseGlobalBrewGains(InventoryGrains));
-
             //Build Brew InventoryYeast
             JSONArray InventoryYeast = aBrew.getJSONArray("InventoryYeast");
             brewSchema.getBrewInventorySchemaList().addAll(ParseGlobalBrewYeasts(InventoryYeast));
@@ -152,7 +147,7 @@ public class JSONBrewParser {
      * */
     private List<BoilAdditionsSchema> ParseGlobalBrewAdditions (JSONArray aAdditions) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewAdditions");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewAdditions");
         List<BoilAdditionsSchema> boilAdditionsSchemas = new ArrayList<>();
 
         try {
@@ -175,7 +170,7 @@ public class JSONBrewParser {
      * */
     private BoilAdditionsSchema ParseGlobalBrewAddition (JSONObject aBrew) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrew");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrew");
         BoilAdditionsSchema boilAdditionsSchema = new BoilAdditionsSchema();
 
         try {
@@ -204,7 +199,7 @@ public class JSONBrewParser {
      * */
     private List<BrewNoteSchema> ParseGlobalBrewNotes (JSONArray aNotes) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewNotes");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewNotes");
         List<BrewNoteSchema> brewNoteSchemaList = new ArrayList<>();
 
         try {
@@ -227,7 +222,7 @@ public class JSONBrewParser {
      * */
     private BrewNoteSchema ParseGlobalBrewNote (JSONObject aBrewNote) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewNote");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewNote");
         BrewNoteSchema brewNoteSchema = new BrewNoteSchema();
 
         try {
@@ -253,7 +248,7 @@ public class JSONBrewParser {
      * */
     private List<BrewImageSchema> ParseGlobalBrewImages (JSONArray aImage) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewImages");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewImages");
         List<BrewImageSchema> brewImageSchemaList = new ArrayList<>();
 
         try {
@@ -276,7 +271,7 @@ public class JSONBrewParser {
      * */
     private BrewImageSchema ParseGlobalBrewImage (JSONObject aBrewImage) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewImage");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewImage");
         BrewImageSchema brewImageSchema = new BrewImageSchema();
 
         try {
@@ -302,7 +297,7 @@ public class JSONBrewParser {
      * */
     private List<InventorySchema> ParseGlobalBrewHops (JSONArray aInventory) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewHops");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewHops");
         List<InventorySchema> inventorySchemas = new ArrayList<>();
 
         try {
@@ -325,7 +320,7 @@ public class JSONBrewParser {
      * */
     private InventorySchema ParseGlobalBrewHop (JSONObject aInventory) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewHop");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewHop");
         HopsSchema inventorySchema = new HopsSchema();
 
         try {
@@ -358,7 +353,7 @@ public class JSONBrewParser {
      * */
     private List<InventorySchema> ParseGlobalBrewFermentables (JSONArray aInventory) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewFermentables");
+        if(APPUTILS.isLogging) Log.d(LOG, "Entering: ParseGlobalBrewFermentables");
         List<InventorySchema> inventorySchemas = new ArrayList<>();
 
         try {
@@ -381,7 +376,7 @@ public class JSONBrewParser {
      * */
     private InventorySchema ParseGlobalBrewFermentable (JSONObject aInventory) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewFermentable");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewFermentable");
         FermentablesSchema inventorySchema = new FermentablesSchema();
 
         try {
@@ -408,65 +403,11 @@ public class JSONBrewParser {
     }
 
     /**
-     * Method to Parse All Brew Gains
-     * */
-    private List<InventorySchema> ParseGlobalBrewGains (JSONArray aInventory) {
-
-        Log.d(LOG, "Entering: ParseGlobalBrewGains");
-        List<InventorySchema> inventorySchemas = new ArrayList<>();
-
-        try {
-            for (int i = 0; i < aInventory.length(); i++) {
-
-                JSONObject inventory = (JSONObject) aInventory.get(i);
-                inventorySchemas.add(ParseGlobalBrewGains(inventory));
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
-        }
-
-        return inventorySchemas;
-    }
-
-    /**
-     * Method to Parse one Brew Gain
-     * */
-    private InventorySchema ParseGlobalBrewGains (JSONObject aInventory) {
-
-        Log.d(LOG, "Entering: ParseGlobalBrewGains");
-        GrainsSchema inventorySchema = new GrainsSchema();
-
-        try {
-            if(parseType == ParseType.PUSH)
-            {
-                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("GrainsId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
-            }
-            inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
-            inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
-            inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
-            inventorySchema.setPoundPerGallon(Double.parseDouble(aInventory.getString("PPG")));
-            inventorySchema.setLovibond(Double.parseDouble(aInventory.getString("Lovibond")));
-            inventorySchema.setInventoryUOfM(aInventory.getString("InventoryUofM"));
-            inventorySchema.setBill(Double.parseDouble(aInventory.getString("Bill")));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
-        }
-
-        return inventorySchema;
-    }
-
-    /**
      * Method to Parse All Brew Yeasts
      * */
     private List<InventorySchema> ParseGlobalBrewYeasts (JSONArray aInventory) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewYeasts");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewYeasts");
         List<InventorySchema> inventorySchemas = new ArrayList<>();
 
         try {
@@ -489,7 +430,7 @@ public class JSONBrewParser {
      * */
     private InventorySchema ParseGlobalBrewYeast (JSONObject aInventory) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewYeast");
+        if(APPUTILS.isLogging) Log.d(LOG, "Entering: ParseGlobalBrewYeast");
         YeastSchema inventorySchema = new YeastSchema();
 
         try {
@@ -522,7 +463,7 @@ public class JSONBrewParser {
      * */
     private List<InventorySchema> ParseGlobalBrewEquipments (JSONArray aInventory) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewEquipments");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewEquipments");
         List<InventorySchema> inventorySchemas = new ArrayList<>();
 
         try {
@@ -545,7 +486,7 @@ public class JSONBrewParser {
      * */
     private InventorySchema ParseGlobalBrewEquipment (JSONObject aInventory) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewEquipment");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewEquipment");
         EquipmentSchema inventorySchema = new EquipmentSchema();
 
         try {
@@ -573,7 +514,7 @@ public class JSONBrewParser {
      * */
     private List<InventorySchema> ParseGlobalBrewOthers (JSONArray aInventory) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewOthers");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewOthers");
         List<InventorySchema> inventorySchemas = new ArrayList<>();
 
         try {
@@ -596,7 +537,7 @@ public class JSONBrewParser {
      * */
     private InventorySchema ParseGlobalBrewOther (JSONObject aInventory) {
 
-        Log.d(LOG, "Entering: ParseGlobalBrewOther");
+        if(APPUTILS.isLogging) Log.d(LOG, "Entering: ParseGlobalBrewOther");
         OtherSchema inventorySchema = new OtherSchema();
 
         try {

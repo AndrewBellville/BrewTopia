@@ -1,5 +1,7 @@
 package com.dev.town.small.brewtopia;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -32,7 +34,7 @@ public class Login extends ActionBarActivity {
 
     // Log cat tag
     private static final String LOG = "Login";
-    private static final String VERSION = "v0.1.0.5";
+    private static final String VERSION = "v0.1.1.0";
 
     private EditText userName;
     private EditText password;
@@ -47,7 +49,7 @@ public class Login extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
         dbManager = DataBaseManager.getInstance(getApplicationContext());
         currentUser = CurrentUser.getInstance();
 
@@ -64,13 +66,13 @@ public class Login extends ActionBarActivity {
     //******************Login****************************
     public void onLoginClick(View aView)
     {
-        Log.e(LOG, "Entering: onLoginClick");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onLoginClick");
         validateUserLogin();
     }
 
     private void validateUserLogin()
     {
-        Log.e(LOG, "Entering: validateUserLogin");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: validateUserLogin");
 
         //TODO better verification
         //verify user record exists
@@ -90,7 +92,6 @@ public class Login extends ActionBarActivity {
 
                         //set local pass and update if needed
                         userSchema.setPassword(password.getText().toString());
-                        dbManager.updateUser(userSchema);
                         performLogIn(true, userSchema);
                     }
                     catch (JSONException e) {
@@ -115,10 +116,17 @@ public class Login extends ActionBarActivity {
 
     private void performLogIn(boolean isSuccess, UserSchema aUserSchema)
     {
-        Log.e(LOG, "Entering: perfromLogin");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: perfromLogin");
 
         if (isSuccess)
         {
+            //check for if user exists on this device if yes just update
+            //else create a new user on the device / create the app setting
+            if(dbManager.DoesUserExist(aUserSchema.getUserId()))
+                dbManager.updateUser(aUserSchema);
+            else
+                CreateLocalUser(aUserSchema);
+
             //Create and intent which will open next activity UserProfile
             Intent intent = new Intent(this, UserProfile.class);
             //set active user
@@ -148,19 +156,19 @@ public class Login extends ActionBarActivity {
     //******************Create****************************
     public void onCreateClick(View aView)
     {
-        Log.e(LOG, "Entering: onCreateClick");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreateClick");
 
         if(!HasInternet()) {
             message.setText("Internet Connection Needed");
             return;
         }
 
-        validateUserCreate();
+        showDisclaimer();
     }
 
     private void validateUserCreate()
     {
-        Log.e(LOG, "Entering: validateUserCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: validateUserCreate");
 
         //TODO better verification
 
@@ -189,26 +197,27 @@ public class Login extends ActionBarActivity {
             }
         };
 
-        CreateUserRequest createUserRequest = new CreateUserRequest(userName.getText().toString(),password.getText().toString(),ResponseListener,null);
+        UserSchema userSchema = new UserSchema(userName.getText().toString(),password.getText().toString());
+        userSchema.setAppSettingsSchemas(appSettingsHelper.CreateAppSettings());
+
+        CreateUserRequest createUserRequest = new CreateUserRequest(userSchema,ResponseListener,null);
         WebController.getInstance().addToRequestQueue(createUserRequest);
     }
 
     private boolean CreateLocalUser(UserSchema aUserSchema)
     {
-        Log.e(LOG, "Entering: CreateLocalUser");
+        if(APPUTILS.isLogging) Log.e(LOG, "Entering: CreateLocalUser");
 
         //create user schema from XML field data and create user in DB
-        if(dbManager.CreateAUser(aUserSchema)) {
-            aUserSchema = dbManager.getUser(aUserSchema.getUserId());
-            appSettingsHelper.CreateAppSettings(aUserSchema.getUserId());
+        if(dbManager.CreateAUser(aUserSchema))
             return true;
-         }
+
         return false;
     }
 
     private void performCreate(boolean isSuccess,UserSchema aUserSchema)
     {
-        Log.e(LOG, "Entering: performCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: performCreate");
 
         if (isSuccess)
         {
@@ -226,13 +235,14 @@ public class Login extends ActionBarActivity {
     //****************No User Login********************
     public void onNoUserLogin(View aView)
     {
-        Log.e(LOG, "Entering: onNoUserLogin");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onNoUserLogin");
 
         //Create and intent which will open next activity UserProfile
         Intent intent = new Intent(this, UserProfile.class);
         //set Temp user
         UserSchema userSchema = new UserSchema();
-        userSchema.setUserId(-2);
+        userSchema.setUserId(0);
+        userSchema.setRole(UserSchema.UserRoles.Unknown.getValue());
         userSchema.setTemp(true);
         currentUser.setUser(userSchema);
         //load all app setting for user
@@ -245,10 +255,37 @@ public class Login extends ActionBarActivity {
     //****************Version Click********************
     public void onVersionClick(View aView)
     {
-        Log.e(LOG, "Entering: onVersionClick");
+        if(APPUTILS.isLogging) Log.e(LOG, "Entering: onVersionClick");
 
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://smalltowndev.com/index.php/brewtopia/releaseNotes"));
         startActivity(browserIntent);
+    }
+
+    private void showDisclaimer()
+    {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        validateUserCreate();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("BrewTopia is provided as is and your use is entirely at your own risk. \n\n" +
+                " No warrant is made as to performance or data accuracy. \n\n" +
+                " Author is not liable for any issues related to this application. \n\n" +
+                " Have Fun and  Brew On!")
+                .setTitle("Disclaimer")
+                .setPositiveButton("I Accept", dialogClickListener)
+                .setNegativeButton("Cancel", dialogClickListener).show();
     }
 
     private boolean HasInternet()

@@ -48,7 +48,7 @@ public class AddEditViewBrewNotes extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.activity_add_edit_view_brew_notes,container,false);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
 
         BrewNotesListView = (ListView)view.findViewById(R.id.brewNotesLstView);
         NoNotes = (TextView)view.findViewById(R.id.noNotesTextView);
@@ -83,7 +83,7 @@ public class AddEditViewBrewNotes extends Fragment {
     }
 
     private void LoadBrewNoteView() {
-        Log.e(LOG, "Entering: LoadBrewNoteView");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadBrewNoteView");
 
         List<BrewNoteSchema> brewNoteSchemaList = new ArrayList<BrewNoteSchema>();
 
@@ -128,7 +128,7 @@ public class AddEditViewBrewNotes extends Fragment {
         final AlertDialog alertDialog = alertDialogBuilder.create();
 
         Button deleteButton = (Button) dialogView.findViewById(R.id.deleteButton);
-        if(aBrewNoteSchema.getNoteId() == -1) deleteButton.setVisibility(View.INVISIBLE);
+        if(aBrewNoteSchema.getNoteId() ==0) deleteButton.setVisibility(View.INVISIBLE);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -166,7 +166,7 @@ public class AddEditViewBrewNotes extends Fragment {
         aBrewNoteSchema.setCreatedOn(APPUTILS.dateFormat.format(new Date()));
         if(brewData.getAddEditViewState() != BrewActivityData.DisplayMode.ADD)
         {
-            if(aBrewNoteSchema.getNoteId() == -1)
+            if(aBrewNoteSchema.getNoteId() == 0)
             {
                 aBrewNoteSchema.setBrewId(brewSchema.getBrewId());
                 dbManager.addBrewNote(aBrewNoteSchema);
@@ -196,7 +196,7 @@ public class AddEditViewBrewNotes extends Fragment {
     }
 
     public void onAddClick(View aView) {
-        Log.e(LOG, "Entering: onAddClick");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onAddClick");
         createBrewNote();
     }
 

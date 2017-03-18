@@ -35,9 +35,6 @@ public class CompletedBrew extends ActionBarActivity {
 
     private EditText brewName;
     private EditText StartDate;
-    private EditText SecondaryAlert;
-    private EditText BottleAlert;
-    private EditText EndDate;
     private EditText Notes;
     private EditText OriginalGravity;
     private EditText FinalGravity;
@@ -55,7 +52,7 @@ public class CompletedBrew extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
         setContentView(R.layout.schedule_view);
 
         //Add add edit layout default
@@ -67,9 +64,6 @@ public class CompletedBrew extends ActionBarActivity {
 
         brewName = (EditText)findViewById(R.id.ScheduleBNameeditText);
         StartDate = (EditText)findViewById(R.id.ScheduleStarteditText);
-        SecondaryAlert = (EditText)findViewById(R.id.Schedule2AlerteditText);
-        BottleAlert = (EditText)findViewById(R.id.SchduleBottleAlerteditText);
-        EndDate = (EditText)findViewById(R.id.ScheduleEndDateeditText);
         Notes = (EditText)findViewById(R.id.ScheduleNoteseditText);
         OriginalGravity = (EditText)findViewById(R.id.ScheduleOGeditText);
         FinalGravity = (EditText)findViewById(R.id.ScheduleFGeditText);
@@ -111,13 +105,10 @@ public class CompletedBrew extends ActionBarActivity {
 
     private void DisplaySchedule(ScheduledBrewSchema aScheduleSchema)
     {
-        Log.e(LOG, "Entering: DisplaySchedule");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: DisplaySchedule");
         //Reset all fields
         brewName.setText(aScheduleSchema.getBrewName());
         StartDate.setText(aScheduleSchema.getStartDate());
-        SecondaryAlert.setText(aScheduleSchema.getAlertSecondaryDate());
-        BottleAlert.setText(aScheduleSchema.getAlertBottleDate());
-        EndDate.setText(aScheduleSchema.getEndBrewDate());
         Notes.setText(aScheduleSchema.getNotes());
         OriginalGravity.setText(Double.toString(aScheduleSchema.getOG()));
         FinalGravity.setText(Double.toString(aScheduleSchema.getFG()));
@@ -140,7 +131,7 @@ public class CompletedBrew extends ActionBarActivity {
 
     private void ToggleFieldEditable(boolean aEditable)
     {
-        Log.e(LOG, "Entering: ToggleFieldEditable");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: ToggleFieldEditable");
 
         //addEditButton.setVisibility(View.INVISIBLE);
         //brewName.setKeyListener(null);
@@ -152,21 +143,6 @@ public class CompletedBrew extends ActionBarActivity {
         StartDate.setClickable(false);
         StartDate.setEnabled(false);
         StartDate.setFocusable(false);
-
-        //SecondaryAlert.setKeyListener(null);
-        SecondaryAlert.setClickable(false);
-        SecondaryAlert.setEnabled(false);
-        SecondaryAlert.setFocusable(false);
-
-        //BottleAlert.setKeyListener(null);
-        BottleAlert.setClickable(false);
-        BottleAlert.setEnabled(false);
-        BottleAlert.setFocusable(false);
-
-        //EndDate.setKeyListener(null);
-        EndDate.setClickable(false);
-        EndDate.setEnabled(false);
-        EndDate.setFocusable(false);
 
        // OriginalGravity.setKeyListener(null);
         OriginalGravity.setClickable(false);

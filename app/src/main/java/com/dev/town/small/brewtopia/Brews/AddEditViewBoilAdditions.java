@@ -49,7 +49,7 @@ public class AddEditViewBoilAdditions extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.activity_add_edit_view_boil_additions,container,false);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
 
         dbManager = DataBaseManager.getInstance(getActivity());
 
@@ -85,7 +85,7 @@ public class AddEditViewBoilAdditions extends Fragment {
 
     private void loadAll()
     {
-        Log.e(LOG, "Entering: loadAll");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: loadAll");
 
         List<BoilAdditionsSchema> boilAdditionsSchemaList = new ArrayList<BoilAdditionsSchema>();
 
@@ -148,7 +148,7 @@ public class AddEditViewBoilAdditions extends Fragment {
         final AlertDialog alertDialog = alertDialogBuilder.create();
 
         Button deleteButton = (Button) dialogView.findViewById(R.id.deleteButton);
-        if(editBoilAdditionsSchema.getAdditionId() == -1) deleteButton.setVisibility(View.INVISIBLE);
+        if(editBoilAdditionsSchema.getAdditionId() == 0) deleteButton.setVisibility(View.INVISIBLE);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -201,7 +201,7 @@ public class AddEditViewBoilAdditions extends Fragment {
 
         if(brewData.getInstance().getAddEditViewState() != BrewActivityData.DisplayMode.ADD)
         {
-            if(aBoilAdditionsSchema.getAdditionId() == -1)
+            if(aBoilAdditionsSchema.getAdditionId() == 0)
             {
                 BrewSchema brewSchema  = brewData.getInstance().getAddEditViewBrew();
                 aBoilAdditionsSchema.setBrewId(brewSchema.getBrewId());
@@ -242,7 +242,7 @@ public class AddEditViewBoilAdditions extends Fragment {
     }
 
     public void onAddClick(View aView) {
-        Log.e(LOG, "Entering: onAddClick");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onAddClick");
         createBoilAddition();
     }
 

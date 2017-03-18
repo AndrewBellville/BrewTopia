@@ -62,9 +62,6 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
     private EditText brewName;
     private EditText StartDate;
-    private EditText SecondaryAlert;
-    private EditText BottleAlert;
-    private EditText EndDate;
     private EditText Notes;
     private EditText OriginalGravity;
     private EditText FinalGravity;
@@ -98,7 +95,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
         setContentView(R.layout.schedule_view);
 
         //Add add edit layout default
@@ -112,12 +109,6 @@ public class AddEditViewSchedule extends ActionBarActivity {
         brewName = (EditText)findViewById(R.id.ScheduleBNameeditText);
         StartDate = (EditText)findViewById(R.id.ScheduleStarteditText);
         datesList[0] = StartDate;
-        SecondaryAlert = (EditText)findViewById(R.id.Schedule2AlerteditText);
-        datesList[1] = SecondaryAlert;
-        BottleAlert = (EditText)findViewById(R.id.SchduleBottleAlerteditText);
-        datesList[2] = BottleAlert;
-        EndDate = (EditText)findViewById(R.id.ScheduleEndDateeditText);
-        datesList[3] = EndDate;
         Notes = (EditText)findViewById(R.id.ScheduleNoteseditText);
         OriginalGravity = (EditText)findViewById(R.id.ScheduleOGeditText);
         FinalGravity = (EditText)findViewById(R.id.ScheduleFGeditText);
@@ -201,13 +192,10 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
     private void DisplaySchedule(ScheduledBrewSchema aScheduleSchema)
     {
-        Log.e(LOG, "Entering: DisplaySchedule");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: DisplaySchedule");
         //Reset all fields
         brewName.setText(aScheduleSchema.getBrewName());
         StartDate.setText(aScheduleSchema.getStartDate());
-        SecondaryAlert.setText(aScheduleSchema.getAlertSecondaryDate());
-        BottleAlert.setText(aScheduleSchema.getAlertBottleDate());
-        EndDate.setText(aScheduleSchema.getEndBrewDate());
         Notes.setText(aScheduleSchema.getNotes());
         OriginalGravity.setText(Double.toString(aScheduleSchema.getOG()));
         FinalGravity.setText(Double.toString(aScheduleSchema.getFG()));
@@ -277,7 +265,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
     private void rollDateUpdateForward(int pos, int daysToAdd)
     {
-        Log.e(LOG, "Entering: rollDateUpdateForward Pos["+pos+"] days["+daysToAdd+"] Total["+datesList.length+"]");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: rollDateUpdateForward Pos["+pos+"] days["+daysToAdd+"] Total["+datesList.length+"]");
 
         if(pos ==  datesList.length)
             return;
@@ -315,7 +303,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
     private void validateSubmit()
     {
-        Log.e(LOG, "Entering: validateSubmit");
+        if(APPUTILS.isLogging) Log.e(LOG, "Entering: validateSubmit");
 
         //Create Brew schedule
         ScheduledBrewSchema sbrew = gScheduleSchema;
@@ -341,34 +329,19 @@ public class AddEditViewSchedule extends ActionBarActivity {
         sbrew.setOG(og);
         sbrew.setFG(fg);
 
-        //SecondaryAlert date need to be greater then all other dates before it
-        if( (StartDate.getText().toString().compareTo(SecondaryAlert.getText().toString()) <= 0) &&
-                (SecondaryAlert.getText().toString().compareTo(StartDate.getText().toString()) >= 0) &&
-                (BottleAlert.getText().toString().compareTo(StartDate.getText().toString()) >= 0) &&
-                (BottleAlert.getText().toString().compareTo(SecondaryAlert.getText().toString()) >= 0) &&
-                (EndDate.getText().toString().compareTo(StartDate.getText().toString()) >= 0) &&
-                (EndDate.getText().toString().compareTo(SecondaryAlert.getText().toString()) >= 0) &&
-                (EndDate.getText().toString().compareTo(BottleAlert.getText().toString()) >= 0))
-        {
-            sbrew.setStartDate(StartDate.getText().toString());
-            sbrew.setAlertSecondaryDate(SecondaryAlert.getText().toString());
-            sbrew.setAlertBottleDate(BottleAlert.getText().toString());
-            sbrew.setEndBrewDate(EndDate.getText().toString());
 
-            updateUserCalendar(sbrew);
-        }
-        else
-        {
-            Toast.makeText(getApplicationContext(), "Invalid Date", Toast.LENGTH_LONG).show();
-        }
+        sbrew.setStartDate(StartDate.getText().toString());
 
         List<ScheduledEventSchema> templist = new ArrayList<>();
         for(ScheduledEventSchema scheduledEventSchema : gScheduleSchema.getScheduledEventSchemaList())
         {
-            if(validateScheduleDate(scheduledEventSchema.getEventDate()))
+            if(sbrew.getStartDate().compareTo(scheduledEventSchema.getEventDate()) >= 0)
                 templist.add(scheduledEventSchema);
         }
         gScheduleSchema.setScheduledEventSchemaList(templist);
+
+        //update user calendar
+        updateUserCalendar();
 
         if(colorSpinner.getSelectedItem().toString() == "Blue")
             sbrew.setColor("#0000FF");
@@ -389,14 +362,9 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
     public void onDeleteClick(View aView)
     {
-        //delete each event from user Calendar
-        schedulerHelper.deleteCalendarEvent(gScheduleSchema.getAlertSecondaryCalendarId());
-        schedulerHelper.deleteCalendarEvent(gScheduleSchema.getAlertBottleCalendarId());
-        schedulerHelper.deleteCalendarEvent(gScheduleSchema.getEndBrewCalendarId());
-
         for(ScheduledEventSchema  scheduledEventSchema: gScheduleSchema.getScheduledEventSchemaList())
         {
-            if(!(scheduledEventSchema.getEventCalendarId()==-1))
+            if(!(scheduledEventSchema.getEventCalendarId()==0))
                 schedulerHelper.deleteCalendarEvent(scheduledEventSchema.getScheduledEventId());
         }
 
@@ -405,25 +373,8 @@ public class AddEditViewSchedule extends ActionBarActivity {
         this.finish();
     }
 
-    private void updateUserCalendar(ScheduledBrewSchema sbrew)
+    private void updateUserCalendar()
     {
-        Date date = new Date();
-        Date date1 = new Date();
-        Date date2 = new Date();
-        try {
-            date = APPUTILS.dateFormat.parse(sbrew.getAlertSecondaryDate());
-            date1 = APPUTILS.dateFormat.parse(sbrew.getAlertBottleDate());
-            date2 = APPUTILS.dateFormat.parse(sbrew.getEndBrewDate());
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        //delete each event from user Calendar
-        schedulerHelper.updateCalendarEvent(date,sbrew.getAlertSecondaryCalendarId());
-        schedulerHelper.updateCalendarEvent(date1,sbrew.getAlertBottleCalendarId());
-        schedulerHelper.updateCalendarEvent(date2,sbrew.getEndBrewCalendarId());
-
         //loop over all schedule events and add / update
         for(ScheduledEventSchema scheduledEventSchema : gScheduleSchema.getScheduledEventSchemaList())
         {
@@ -431,7 +382,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
             try {
                 date3 = APPUTILS.dateFormat.parse(scheduledEventSchema.getEventDate());
 
-                if(!(scheduledEventSchema.getEventCalendarId() == -1))
+                if(!(scheduledEventSchema.getEventCalendarId() == 0))
                     schedulerHelper.updateCalendarEvent(date3,scheduledEventSchema.getEventCalendarId());
                 else
                 {
@@ -485,7 +436,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         final AlertDialog alertDialog = alertDialogBuilder.create();
 
         Button deleteButton = (Button) dialogView.findViewById(R.id.deleteButton);
-        if(aScheduledEventSchema.getScheduledEventId() == -1) deleteButton.setVisibility(View.INVISIBLE);
+        if(aScheduledEventSchema.getScheduledEventId() == 0) deleteButton.setVisibility(View.INVISIBLE);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -520,8 +471,8 @@ public class AddEditViewSchedule extends ActionBarActivity {
     {
         aScheduledEventSchema.setEventText(eventText.getText().toString());
         aScheduledEventSchema.setEventDate(eventDate.getText().toString());
-        //if getScheduledEventId == -1 then its and update and we dont want to add it to the list
-        if(validateScheduleDate(aScheduledEventSchema.getEventDate()) && aScheduledEventSchema.getScheduledEventId() == -1)
+        //if getScheduledEventId == 0 then its and update and we dont want to add it to the list
+        if(validateScheduleDate(aScheduledEventSchema.getEventDate()) && aScheduledEventSchema.getScheduledEventId() == 0)
         {
             gScheduleSchema.getScheduledEventSchemaList().add(aScheduledEventSchema);
             DisplaySchedule(gScheduleSchema);
@@ -534,7 +485,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         gScheduleSchema = dbManager.getScheduledScheduleId(gScheduleSchema.getScheduleId());
 
         //delete from calendar if exists
-        if(!(aScheduledEventSchema.getEventCalendarId()==-1))
+        if(!(aScheduledEventSchema.getEventCalendarId()==0))
             schedulerHelper.deleteCalendarEvent(aScheduledEventSchema.getEventCalendarId());
 
         DisplaySchedule(gScheduleSchema);
@@ -543,7 +494,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
     private boolean validateScheduleDate(String aEventDate)
     {
         if(StartDate.getText().toString().compareTo(aEventDate) <= 0 &&
-                EndDate.getText().toString().compareTo(aEventDate) >= 0)
+                gScheduleSchema.getEndBrewDate().compareTo(aEventDate) >= 0)
             return true;
         else
             Toast.makeText(getApplicationContext(), "Invalid Date", Toast.LENGTH_LONG).show();
@@ -553,7 +504,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
     private void ToggleFieldEditable(boolean aEditable)
     {
-        Log.e(LOG, "Entering: ToggleFieldEditable");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: ToggleFieldEditable");
         //Reset all fields
         if(!aEditable) {
             //addEditButton.setVisibility(View.INVISIBLE);
@@ -566,21 +517,6 @@ public class AddEditViewSchedule extends ActionBarActivity {
             StartDate.setClickable(false);
             StartDate.setEnabled(false);
             StartDate.setFocusable(false);
-
-            SecondaryAlert.setKeyListener(null);
-            SecondaryAlert.setClickable(false);
-            SecondaryAlert.setEnabled(false);
-            SecondaryAlert.setFocusable(false);
-
-            BottleAlert.setKeyListener(null);
-            BottleAlert.setClickable(false);
-            BottleAlert.setEnabled(false);
-            BottleAlert.setFocusable(false);
-
-            EndDate.setKeyListener(null);
-            EndDate.setClickable(false);
-            EndDate.setEnabled(false);
-            EndDate.setFocusable(false);
 
             OriginalGravity.setKeyListener(null);
             OriginalGravity.setClickable(false);
@@ -623,19 +559,6 @@ public class AddEditViewSchedule extends ActionBarActivity {
             //StartDate.setKeyListener(StartDateListener);
             StartDate.setClickable(true);
             StartDate.setEnabled(true);
-
-            //SecondaryAlert.setKeyListener(SecondaryAlertListener);
-            SecondaryAlert.setClickable(true);
-            SecondaryAlert.setEnabled(true);
-
-            //BottleAlert.setKeyListener(BottleAlertListener);
-            BottleAlert.setClickable(true);
-            BottleAlert.setEnabled(true);
-
-            EndDate.setClickable(true);
-            EndDate.setEnabled(true);
-            //EndDate.setFocusable(true);
-
 
             OriginalGravity.setKeyListener(OriginalGravityListener);
             OriginalGravity.setClickable(true);

@@ -69,10 +69,6 @@
             android:icon="@drawable/beer_dark"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".Inventory.AddEditViewGrains"
-            android:icon="@drawable/beer_dark"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
             android:name=".Inventory.AddEditViewYeast"
             android:icon="@drawable/beer_dark"
             android:windowSoftInputMode="adjustPan" />

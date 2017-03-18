@@ -94,7 +94,7 @@ public class AddEditViewBrew extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
         View returnView = inflater.inflate(R.layout.brew_view,container,false);
 
         //Add add edit layout default
@@ -289,7 +289,7 @@ public class AddEditViewBrew extends Fragment {
 
     private void DisplayBrew(BrewSchema aBrewSchema)
     {
-        Log.e(LOG, "Entering: DisplayBrew");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: DisplayBrew");
         //Reset all fields
         brewName.setText(aBrewSchema.getBrewName());
         primary.setText(Integer.toString(aBrewSchema.getPrimary()));
@@ -378,7 +378,7 @@ public class AddEditViewBrew extends Fragment {
 
     private void validateSubmit()
     {
-        Log.e(LOG, "Entering: validateSubmit");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: validateSubmit");
 
         if(brewName.getText().toString().equals(""))
         {
@@ -497,7 +497,7 @@ public class AddEditViewBrew extends Fragment {
             //try and sync to global
             //SyncToGlobal();
             long brewId = dbManager.CreateABrew(brew);
-            if( brewId == -1)// -1 brews failed to create
+            if( brewId == 0)// 0 brews failed to create
             {
                 Toast.makeText(getActivity(), "Duplicate Brew Name", Toast.LENGTH_LONG).show();
                 return;
@@ -519,7 +519,7 @@ public class AddEditViewBrew extends Fragment {
 
     private void ClearFields()
     {
-        Log.e(LOG, "Entering: ClearFields");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: ClearFields");
         //Reset all fields
         brewName.setText("");
         primary.setText("");
@@ -553,7 +553,7 @@ public class AddEditViewBrew extends Fragment {
 
     private void ToggleFieldEditable(boolean aEditable)
     {
-        Log.e(LOG, "Entering: ToggleFieldEditable");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: ToggleFieldEditable");
         //Reset all fields
         if(!aEditable) {
             //addEditButton.setVisibility(View.INVISIBLE);
@@ -718,7 +718,7 @@ public class AddEditViewBrew extends Fragment {
         Response.Listener<String> ResponseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.e(LOG, response);
+                if(APPUTILS.isLogging)Log.e(LOG, response);
                 if (response.equals("Error"))// no match for user exists
                 {
                     //If we fail the upload then create local
@@ -752,7 +752,7 @@ public class AddEditViewBrew extends Fragment {
         Response.Listener<String> ResponseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.e(LOG, response);
+                if(APPUTILS.isLogging)Log.e(LOG, response);
                 if (response.equals("Error"))// no match for user exists
                 {
                     Toast.makeText(getActivity(), brewSchema.getBrewName() +" Upload Failed", Toast.LENGTH_SHORT).show();

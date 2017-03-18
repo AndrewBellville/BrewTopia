@@ -13,6 +13,7 @@ import com.dev.town.small.brewtopia.DataClass.BrewSchema;
 import com.dev.town.small.brewtopia.DataClass.CurrentUser;
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
 import com.dev.town.small.brewtopia.DataClass.ScheduledBrewSchema;
+import com.dev.town.small.brewtopia.DataClass.ScheduledEventSchema;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -46,33 +47,45 @@ public class SchedulerHelper {
         //Create Schedule for Brew
         ScheduledBrewSchema sBrew = new ScheduledBrewSchema(aBrew.getBrewId(), CurrentUser.getInstance().getUser().getUserId());
         sBrew.setBrewName(aBrew.getBrewName());
-        sBrew.SetScheduledDates(aBrew.getPrimary(), aBrew.getSecondary(), aBrew.getBottle());
         sBrew.setColor(aBrew.getStyleSchema().getBrewStyleColor());
 
+        //secondary
+        if(aBrew.getSecondary() != 0) {
+            ScheduledEventSchema secondaryEvent = new ScheduledEventSchema();
+            secondaryEvent.setBrewId(aBrew.getBrewId());
+            secondaryEvent.setEventText(aBrew.getBrewName() + " Secondary");
+            secondaryEvent.setEventDate(sBrew.addDateTime(aBrew.getPrimary(), null));
+            sBrew.getScheduledEventSchemaList().add(secondaryEvent);
+        }
+        //Bottling
+        if(aBrew.getBottle() !=  0) {
+            ScheduledEventSchema bottlingEvent = new ScheduledEventSchema();
+            bottlingEvent.setBrewId(aBrew.getBrewId());
+            bottlingEvent.setEventText(aBrew.getBrewName() + " Bottling");
+            bottlingEvent.setEventDate(sBrew.addDateTime(aBrew.getPrimary()+aBrew.getSecondary(), null));
+            sBrew.getScheduledEventSchemaList().add(bottlingEvent);
+        }
+        //End
+        ScheduledEventSchema endBrewEvent = new ScheduledEventSchema();
+        endBrewEvent.setBrewId(aBrew.getBrewId());
+        endBrewEvent.setEventText(aBrew.getBrewName() + " End Brew");
+        endBrewEvent.setEventDate(sBrew.addDateTime(aBrew.getPrimary()+aBrew.getSecondary()+aBrew.getBottle(), null));
+        sBrew.getScheduledEventSchemaList().add(endBrewEvent);
+
         if(appSettingsHelper.GetBoolAppSettingsByName(AppSettingsHelper.SCHEDULER_CALENDAR_PUSH)) {
-            Date date = new Date();
-            Date date1 = new Date();
-            Date date2 = new Date();
-            try {
-                date = APPUTILS.dateFormat.parse(sBrew.getAlertSecondaryDate());
-                date1 = APPUTILS.dateFormat.parse(sBrew.getAlertBottleDate());
-                date2 = APPUTILS.dateFormat.parse(sBrew.getEndBrewDate());
 
-            } catch (ParseException e) {
-                e.printStackTrace();
+
+            for (ScheduledEventSchema scheduleEvent:sBrew.getScheduledEventSchemaList()) {
+                Date date = new Date();
+                try {
+                    date = APPUTILS.dateFormat.parse(scheduleEvent.getEventDate());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                createCalendarEvent(date, scheduleEvent.getEventText());
+                if(!(eventID==0))
+                    scheduleEvent.setEventCalendarId(eventID);
             }
-
-            createCalendarEvent(date, sBrew.getBrewName() + " Secondary");
-            if(!(eventID==-1))
-                sBrew.setAlertSecondaryCalendarId(eventID);
-
-            createCalendarEvent(date1, sBrew.getBrewName() + " Bottling");
-            if(!(eventID==-1))
-                sBrew.setAlertBottleCalendarId(eventID);
-
-            createCalendarEvent(date2, sBrew.getBrewName() + " End Brew");
-            if(!(eventID==-1))
-                sBrew.setEndBrewCalendarId(eventID);
         }
 
         DataBaseManager.getInstance(context).CreateAScheduledBrew(sBrew);
@@ -82,7 +95,7 @@ public class SchedulerHelper {
     {
 
         if(!appSettingsHelper.GetBoolAppSettingsByName(AppSettingsHelper.SCHEDULER_CALENDAR_PUSH))
-            return -1;
+            return 0;
 
         try {
             long startMillis = 0;
@@ -117,7 +130,7 @@ public class SchedulerHelper {
 
         }catch (Exception e)
         {
-            return -1;
+            return 0;
         }
 
         return eventID;
@@ -127,7 +140,7 @@ public class SchedulerHelper {
     public boolean updateCalendarEvent(Date aDate, long aEventID)
     {
         if ( (!appSettingsHelper.GetBoolAppSettingsByName(AppSettingsHelper.SCHEDULER_CALENDAR_PUSH)) &&
-                eventID == -1)
+                eventID == 0)
             return false;
 
         long startMillis = 0;
@@ -158,7 +171,7 @@ public class SchedulerHelper {
     public boolean deleteCalendarEvent(long aEventID)
     {
         if ( (!appSettingsHelper.GetBoolAppSettingsByName(AppSettingsHelper.SCHEDULER_CALENDAR_PUSH)) &&
-                eventID == -1)
+                eventID == 0)
             return false;
 
         try {

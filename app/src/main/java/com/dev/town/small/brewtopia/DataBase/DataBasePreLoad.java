@@ -69,7 +69,7 @@ public class DataBasePreLoad {
         String selectQuery = "SELECT * FROM " + dbm.TABLE_USERS + " WHERE "
                 + dbm.USER_NAME + " = 'ADMIN'";
 
-        Log.e(LOG, selectQuery);
+        if(APPUTILS.isLogging)Log.e(LOG, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -87,6 +87,7 @@ public class DataBasePreLoad {
             //Create iterator on Set
             Iterator mapIterator = mapSet.iterator();
 
+            int index=1;
             while (mapIterator.hasNext()) {
                 Map.Entry mapEntry = (Map.Entry) mapIterator.next();
                 // getKey Method of HashMap access a key of map
@@ -95,6 +96,7 @@ public class DataBasePreLoad {
                 String value = (String) mapEntry.getValue();
 
                 ContentValues values = new ContentValues();
+                values.put(dbm.STYLE_ID, index++);
                 values.put(dbm.STYLE_NAME, keyValue);
                 values.put(dbm.USER_ID, user.getUserId());
                 values.put(dbm.STYLE_COLOR, value);

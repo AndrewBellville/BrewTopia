@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
+import com.dev.town.small.brewtopia.DataClass.APPUTILS;
 import com.dev.town.small.brewtopia.DataClass.AppSettingsSchema;
 import com.dev.town.small.brewtopia.DataClass.CurrentUser;
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
@@ -81,7 +82,7 @@ public class AppSettings extends ActionBarActivity {
     }
 
     private void LoadSettings() {
-        Log.e(LOG, "Entering: LoadSettings");
+        if(APPUTILS.isLogging) Log.e(LOG, "Entering: LoadSettings");
 
         for (AppSettingsSchema appSettingsSchema : dbManager.getAllAppSettingsByUserId(userId))
         {
@@ -112,7 +113,7 @@ public class AppSettings extends ActionBarActivity {
 
     private void SettingSelected(AppSettingsSchema selectedRow)
     {
-        Log.e(LOG, "Entering: SettingSelected " + selectedRow.getSettingName());
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: SettingSelected " + selectedRow.getSettingName());
         if(selectedRow.getSettingName().equals(AppSettingsHelper.OTHER_DELETE_USER ))
             Verify();
     }
@@ -120,12 +121,12 @@ public class AppSettings extends ActionBarActivity {
 
     private void DeleteUser()
     {
-        Log.i(LOG, "Entering: DeleteUser");
+        if(APPUTILS.isLogging)Log.i(LOG, "Entering: DeleteUser");
 
         Response.Listener<String> ResponseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.e(LOG, response);
+                if(APPUTILS.isLogging)Log.e(LOG, response);
                 if (!response.equals("Error"))// no match for user exists
                 {
                     dbManager.deleteUserById(CurrentUser.getInstance().getUser().getUserId());

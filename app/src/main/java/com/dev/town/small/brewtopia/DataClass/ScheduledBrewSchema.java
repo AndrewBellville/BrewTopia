@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -13,22 +15,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class ScheduledBrewSchema {
 
-    private long scheduleId=-1;
-    private long BrewId=-1;
+    private long scheduleId=0;
+    private long BrewId=0;
     private long UserId=-1;
     private String brewName = "";
     private String StartDate;
-    private String AlertSecondaryDate;
-    private long AlertSecondaryCalendarId=-1;
-    private String AlertBottleDate;
-    private long AlertBottleCalendarId=-1;
-    private String EndBrewDate;
-    private long EndBrewCalendarId=-1;
     private String Notes;
     private Double OG=0.0;
     private Double FG=0.0;
     private Double ABV=0.0;
-    private int Active;
+    private int Active=1;
     private int displayLevel = 0;
     private String color;
     private int hasStarter=0; //0 = no 1 = yes
@@ -46,58 +42,51 @@ public class ScheduledBrewSchema {
         setUserId(aUserId);
     }
 
-    public void SetScheduledDates(int aPrimaryDate,int aSecondaryDate, int aBottleDate)
-    {
-        setAlertSecondaryDate(addDateTime(aPrimaryDate, null));
-        setAlertBottleDate(addDateTime(aPrimaryDate + aSecondaryDate, null));
-        setEndBrewDate(addDateTime(aPrimaryDate + aSecondaryDate + aBottleDate, null));
-
-        if(getEndBrewDate().compareTo(addDateTime(0, null)) >= 0)
-            setActive(1);
-        else
-            setActive(0);
-    }
-
     public String getCurrentState()
     {
+        //get the current date as a string
         Date date = new Date();
         String d = APPUTILS.dateFormatCompare.format(date);
 
-        if(d.compareTo(APPUTILS.StringDateCompare(getStartDate())) >= 0 &&
-                d.compareTo(APPUTILS.StringDateCompare(getAlertSecondaryDate())) < 0) {
-            Date parsedDate = new Date();
-            try {
-                parsedDate = APPUTILS.dateFormatCompare.parse(getStartDate());
-            } catch (ParseException e) {
-                e.printStackTrace();
+        //sort the list of events in order of event date smallest to largest
+        Collections.sort(scheduledEventSchemaList, new Comparator<ScheduledEventSchema>(){
+            public int compare(ScheduledEventSchema se1, ScheduledEventSchema se2){
+                return se1.getEventDate().compareTo(se2.getEventDate());
             }
-            long diff = date.getTime() - parsedDate.getTime();
-            return "Primary " + TimeUnit.MILLISECONDS.toDays(diff) + " Days";
-        }
-        else if(d.compareTo(APPUTILS.StringDateCompare(getAlertSecondaryDate())) >= 0 &&
-                d.compareTo(APPUTILS.StringDateCompare(getAlertBottleDate())) < 0) {
-            Date parsedDate = new Date();
-            try {
-                parsedDate = APPUTILS.dateFormatCompare.parse(getAlertSecondaryDate());
-            } catch (ParseException e) {
-                e.printStackTrace();
+        });
+
+        // loop over each event and find the one  we are currently in
+        for (int i = 0; i < scheduledEventSchemaList.size(); i++) {
+            //find the first date we are less then
+            if(d.compareTo(APPUTILS.StringDateCompare(scheduledEventSchemaList.get(i).getEventDate())) < 0)
+            {
+                //if we are less then first event we should be in primary else we are at event list -1
+                if(i==0)
+                {
+                    Date parsedDate = new Date();
+                    try {
+                        parsedDate = APPUTILS.dateFormatCompare.parse(getStartDate());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    long diff = date.getTime() - parsedDate.getTime();
+                    return "Primary " + TimeUnit.MILLISECONDS.toDays(diff) + " Days";
+                }
+                else
+                {
+                    Date parsedDate = new Date();
+                    try {
+                        parsedDate = APPUTILS.dateFormatCompare.parse(scheduledEventSchemaList.get(i-1).getEventDate());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    long diff = date.getTime() - parsedDate.getTime();
+                    return scheduledEventSchemaList.get(i-1).getEventText()+ " " + TimeUnit.MILLISECONDS.toDays(diff) + " Days";
+                }
             }
-            long diff = date.getTime() - parsedDate.getTime();
-            return "Secondary " + TimeUnit.MILLISECONDS.toDays(diff) + " Days";
         }
-        else if(d.compareTo(APPUTILS.StringDateCompare(getAlertBottleDate())) >= 0 &&
-                d.compareTo(APPUTILS.StringDateCompare(getEndBrewDate())) <= 0) {
-            Date parsedDate = new Date();
-            try {
-                parsedDate = APPUTILS.dateFormatCompare.parse(getAlertBottleDate());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            long diff = date.getTime() - parsedDate.getTime();
-            return "Bottles " + TimeUnit.MILLISECONDS.toDays(diff) + " Days";
-        }
-        else
-            return "Out Of Range";
+
+        return "Out Of Range";
     }
 
     public String addDateTime(int addDays, Date date) {
@@ -147,37 +136,11 @@ public class ScheduledBrewSchema {
     public boolean DateHasAction(Date d)
     {
         SimpleDateFormat formatter = APPUTILS.dateFormatCompare;
-
-        Date SecondaryDate = new Date();
-        Date BottleDate = new Date();
-        Date endDate = new Date();
-        try {
-            SecondaryDate = formatter.parse(getAlertSecondaryDate());
-            BottleDate = formatter.parse(getAlertBottleDate());
-            endDate = formatter.parse(getEndBrewDate());
-        }
-        catch (ParseException e) {
-            e.printStackTrace();
-            return false;
-        }
-
         String date = formatter.format(d);
-        String sDate = formatter.format(SecondaryDate);
-        String bDate = formatter.format(BottleDate);
-        String eDate = formatter.format(endDate);
-
-        int SecondaryDateCompare = date.compareTo(sDate);
-        int bottleDateCompare = date.compareTo(bDate);
-        int EndDateCompare =  date.compareTo(eDate);
-
-        if(( SecondaryDateCompare == 0 ) || ( bottleDateCompare ==  0 ) || ( EndDateCompare ==  0 ) )
-        {
-            return true;
-        }
 
         for(ScheduledEventSchema scheduledEventSchema : getScheduledEventSchemaList())
         {
-            Date date1 = new Date();
+            Date date1;
 
             try {
                 date1 = formatter.parse(scheduledEventSchema.getEventDate());
@@ -215,15 +178,6 @@ public class ScheduledBrewSchema {
     public String getStartDate() {
         return StartDate;
     }
-    public String getAlertSecondaryDate() {
-        return AlertSecondaryDate;
-    }
-    public String getAlertBottleDate() {
-        return AlertBottleDate;
-    }
-    public String getEndBrewDate() {
-        return EndBrewDate;
-    }
     public int getActive() {
         return Active;
     }
@@ -251,15 +205,6 @@ public class ScheduledBrewSchema {
     public Double getABV() {
         return ABV;
     }
-    public long getAlertSecondaryCalendarId() {
-        return AlertSecondaryCalendarId;
-    }
-    public long getAlertBottleCalendarId() {
-        return AlertBottleCalendarId;
-    }
-    public long getEndBrewCalendarId() {
-        return EndBrewCalendarId;
-    }
     public String getBrewName() {
         return brewName;
     }
@@ -275,6 +220,20 @@ public class ScheduledBrewSchema {
     public List<ScheduledEventSchema> getScheduledEventSchemaList() {
         return scheduledEventSchemaList;
     }
+    public String getEndBrewDate()
+    {
+        //sort the list of events in order of event date smallest to largest
+        Collections.sort(scheduledEventSchemaList, new Comparator<ScheduledEventSchema>(){
+            public int compare(ScheduledEventSchema se1, ScheduledEventSchema se2){
+                return se1.getEventDate().compareTo(se2.getEventDate());
+            }
+        });
+        //return last event date in sorted list
+        if(scheduledEventSchemaList.size() > 0)
+            return scheduledEventSchemaList.get(scheduledEventSchemaList.size()-1).getEventDate();
+        else
+            return APPUTILS.dateFormatCompare.format(new Date());
+    }
 
     //Setters
     public void setUserId(long userId) {
@@ -285,15 +244,6 @@ public class ScheduledBrewSchema {
     }
     public void setStartDate(String startDate) {
         StartDate = startDate;
-    }
-    public void setAlertSecondaryDate(String alertSecondaryDate) {
-        AlertSecondaryDate = alertSecondaryDate;
-    }
-    public void setAlertBottleDate(String alertBottleDate) {
-        AlertBottleDate = alertBottleDate;
-    }
-    public void setEndBrewDate(String endBrewDate) {
-        EndBrewDate = endBrewDate;
     }
     public void setActive(int active) {
         Active = active;
@@ -322,15 +272,6 @@ public class ScheduledBrewSchema {
     }
     public void setABV(Double ABV) {
         this.ABV = ABV;
-    }
-    public void setAlertSecondaryCalendarId(long alertSecondaryCalendarId) {
-        AlertSecondaryCalendarId = alertSecondaryCalendarId;
-    }
-    public void setAlertBottleCalendarId(long alertBottleCalendarId) {
-        AlertBottleCalendarId = alertBottleCalendarId;
-    }
-    public void setEndBrewCalendarId(long endBrewCalendarId) {
-        EndBrewCalendarId = endBrewCalendarId;
     }
     public void setBrewName(String brewName) {
         this.brewName = brewName;

@@ -31,7 +31,7 @@ public class AlcoholByVolume extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alcohol_by_volume);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
 
         toolbar=(Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);

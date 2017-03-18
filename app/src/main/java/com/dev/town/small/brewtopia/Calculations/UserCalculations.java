@@ -39,7 +39,7 @@ public class UserCalculations extends Fragment {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.activity_user_calculations,container,false);
 
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
         currentUser = CurrentUser.getInstance();
         userName = currentUser.getUser().getUserName();
         CalculationsListView = (ListView)view.findViewById(R.id.CalculationsListView);
@@ -61,12 +61,12 @@ public class UserCalculations extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        Log.e(LOG, "Entering: onResume");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onResume");
         LoadCalculations();
     }
 
     private void LoadCalculations() {
-        Log.e(LOG, "Entering: LoadCalculations");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadCalculations");
 
         //List<BrewSchema> brewList = dbManager.getAllBrews();
         list = new ArrayList<HashMap<String, String>>();

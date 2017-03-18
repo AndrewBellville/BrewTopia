@@ -5,8 +5,8 @@ package com.dev.town.small.brewtopia.DataClass;
  */
 public class BoilAdditionsSchema {
 
-    private long additionId=-1;
-    private long brewId=-1;
+    private long additionId=0;
+    private long brewId=0;
     private String additionName = "";
     private int additionTime = 0;
     private double additionQty = 0.0;

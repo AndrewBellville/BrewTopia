@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.dev.town.small.brewtopia.AppSettings.AppSettings;
+import com.dev.town.small.brewtopia.DataClass.APPUTILS;
 import com.dev.town.small.brewtopia.R;
 import com.dev.town.small.brewtopia.Utilites.SlidingTabLayout;
 import com.dev.town.small.brewtopia.Inventory.UserInventory;
@@ -37,7 +38,7 @@ public class UserBrew extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_brew);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
 
         toolbar=(Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);

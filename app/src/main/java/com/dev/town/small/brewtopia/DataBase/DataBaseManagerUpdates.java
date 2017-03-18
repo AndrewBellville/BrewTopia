@@ -40,7 +40,6 @@ public class DataBaseManagerUpdates {
             //aSQLiteDatabase.execSQL("ALTER TABLE foo ADD COLUMN new_column INTEGER DEFAULT 0");
             aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_INVENTORY_HOPS +" ADD COLUMN "+ dbm.INVENTORY_UOFM +" TEXT DEFAULT '' ");
             aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_INVENTORY_FERMENTABLES +" ADD COLUMN "+ dbm.INVENTORY_UOFM +" TEXT DEFAULT '' ");
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_INVENTORY_GRAINS +" ADD COLUMN "+ dbm.INVENTORY_UOFM +" TEXT DEFAULT '' ");
             aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_INVENTORY_YEAST +" ADD COLUMN "+ dbm.INVENTORY_UOFM +" TEXT DEFAULT '' ");
             aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_INVENTORY_EQUIPMENT +" ADD COLUMN "+ dbm.INVENTORY_UOFM +" TEXT DEFAULT '' ");
         }
@@ -124,7 +123,7 @@ public class DataBaseManagerUpdates {
         }
         if(aOldVersion < 52)
         {
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.BREW_ID +" INTEGER DEFAULT -1 ");
+            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.BREW_ID +" INTEGER DEFAULT 0 ");
         }
         if(aOldVersion < 53)
         {
@@ -144,7 +143,6 @@ public class DataBaseManagerUpdates {
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_APP_SETTINGS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_INVENTORY_HOPS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_INVENTORY_FERMENTABLES);
-        aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_INVENTORY_GRAINS);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_INVENTORY_YEAST);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_INVENTORY_EQUIPMENT);
         aSQLiteDatabase.execSQL("DROP TABLE IF EXISTS " + dbm.TABLE_INVENTORY_OTHER);

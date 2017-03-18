@@ -14,7 +14,7 @@ public class BrewSchema {
     // Log cat tag
     private static final String LOG = "BrewSchema";
 
-    private long brewId =-1;
+    private long brewId =0;
     private String BrewName;
     private long UserId = -1;
     private int boilTime;
@@ -52,7 +52,7 @@ public class BrewSchema {
 
     public BrewSchema(String aBrewName) {
 
-        Log.e(LOG, "Creating New Brew Schema Brew Name[" + aBrewName + "]");
+        if(APPUTILS.isLogging)Log.e(LOG, "Creating New Brew Schema Brew Name[" + aBrewName + "]");
         this.BrewName = aBrewName;
     }
 

@@ -5,8 +5,8 @@ package com.dev.town.small.brewtopia.DataClass;
  */
 public class InventorySchema {
 
-    private long InventoryId=-1;
-    private long BrewId=-1;
+    private long InventoryId=0;
+    private long BrewId=0;
     private long UserId=-1;
     private String InventoryName="";
     private int InvetoryQty=0;

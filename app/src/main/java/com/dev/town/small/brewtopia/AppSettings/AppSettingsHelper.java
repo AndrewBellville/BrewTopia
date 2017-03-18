@@ -1,11 +1,11 @@
 package com.dev.town.small.brewtopia.AppSettings;
 
 import android.content.Context;
-
 import com.dev.town.small.brewtopia.DataClass.AppSettingsSchema;
 import com.dev.town.small.brewtopia.DataClass.CurrentUser;
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
 import com.dev.town.small.brewtopia.DataClass.UserSchema;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,23 +60,17 @@ public class AppSettingsHelper {
     }
 
     //Create All app settings and load to DB should be called on user create only
-    public void CreateAppSettings(long aUserId)
+    public List<AppSettingsSchema> CreateAppSettings()
     {
+        // create list User id will be populated on server side when user is created
         List<AppSettingsSchema> settingsList = new ArrayList<AppSettingsSchema>();
-        settingsList.add(buildSettingsSchema(aUserId,SCHEDULER_CALENDAR_PUSH,SCHEDULER, OFF));
-        settingsList.add(buildSettingsSchema(aUserId,SCHEDULER_AUTO_CREATE,SCHEDULER, ON));
-        settingsList.add(buildSettingsSchema(aUserId,OTHER_CHANGE_USER_INFO,OTHER, OFF));
-        settingsList.add(buildSettingsSchema(aUserId,OTHER_DELETE_USER,OTHER, OFF));
+        settingsList.add(buildSettingsSchema(SCHEDULER_CALENDAR_PUSH,SCHEDULER, OFF));
+        settingsList.add(buildSettingsSchema(SCHEDULER_AUTO_CREATE,SCHEDULER, ON));
+        settingsList.add(buildSettingsSchema(OTHER_CHANGE_USER_INFO,OTHER, OFF));
+        settingsList.add(buildSettingsSchema(OTHER_DELETE_USER,OTHER, OFF));
 
         //Add all setting to DB
-        dbManager.addAllAppSettings(settingsList);
-    }
-
-    // Delete and  reload all app setting for user
-    public void UpdateAppSettings(long aUserId)
-    {
-        dbManager.deleteUserSettingById(aUserId);
-        CreateAppSettings(aUserId);
+        return  settingsList;
     }
 
     public void UpdateAppSetting(AppSettingsSchema aAppSettingsSchema, boolean isSet)
@@ -113,10 +107,9 @@ public class AppSettingsHelper {
         return false;
     }
 
-    private AppSettingsSchema buildSettingsSchema(long aUserId, String aName, String aScreen,  String aValue)
+    private AppSettingsSchema buildSettingsSchema(String aName, String aScreen,  String aValue)
     {
         AppSettingsSchema appSettingsSchema = new AppSettingsSchema();
-        appSettingsSchema.setUserId(aUserId);
         appSettingsSchema.setSettingName(aName);
         appSettingsSchema.setSettingScreen(aScreen);
         appSettingsSchema.setSettingValue(aValue);// 0 = off 1 = on

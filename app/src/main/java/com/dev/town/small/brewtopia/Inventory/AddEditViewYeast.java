@@ -182,7 +182,7 @@ public class AddEditViewYeast extends ActionBarActivity {
 
     private void DisplayYeast()
     {
-        Log.e(LOG, "Entering: DisplayYeast");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: DisplayYeast");
 
         //Reset all fields
         Name.setText(yeastSchema.getInventoryName());
@@ -206,7 +206,7 @@ public class AddEditViewYeast extends ActionBarActivity {
     }
 
     private void validateSubmit() {
-        Log.e(LOG, "Entering: validateSubmit");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: validateSubmit");
 
         if(Name.getText().toString().equals(""))
         {
@@ -276,7 +276,7 @@ public class AddEditViewYeast extends ActionBarActivity {
         {
 
             long inventoryId = dbManager.CreateYeast(aYeastSchema);
-            if( inventoryId == -1)// -1 brews failed to create
+            if( inventoryId == 0)// 0 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;
@@ -294,7 +294,7 @@ public class AddEditViewYeast extends ActionBarActivity {
 
             aYeastSchema.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
             long inventoryId = dbManager.CreateYeast(aYeastSchema);
-            if( inventoryId == -1)// -1 brews failed to create
+            if( inventoryId == 0)// 0 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;

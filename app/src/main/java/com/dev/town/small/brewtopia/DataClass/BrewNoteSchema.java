@@ -8,8 +8,8 @@ public class BrewNoteSchema {
     // Log cat tag
     private static final String LOG = "BrewNoteSchema";
 
-    private long noteId =-1;
-    private long BrewId=-1;
+    private long noteId =0;
+    private long BrewId=0;
     private String CreatedOn;
     private String BrewNote;
 

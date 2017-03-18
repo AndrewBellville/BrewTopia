@@ -155,7 +155,7 @@ public class AddEditViewEquipment extends ActionBarActivity {
 
     private void DisplayEquipment()
     {
-        Log.e(LOG, "Entering: DisplayEquipment");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: DisplayEquipment");
 
         //Reset all fields
         Name.setText(equipmentSchema.getInventoryName());
@@ -173,7 +173,7 @@ public class AddEditViewEquipment extends ActionBarActivity {
     }
 
     private void validateSubmit() {
-        Log.e(LOG, "Entering: validateSubmit");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: validateSubmit");
 
         if(Name.getText().toString().equals(""))
         {
@@ -215,7 +215,7 @@ public class AddEditViewEquipment extends ActionBarActivity {
         {
 
             long inventoryId = dbManager.CreateEquipment(aEquipmentSchema);
-            if( inventoryId == -1)// -1 brews failed to create
+            if( inventoryId == 0)// 0 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;
@@ -228,12 +228,12 @@ public class AddEditViewEquipment extends ActionBarActivity {
         }
 
         // If this was on brew activity add we also want to add this to the brew and the brew already exists
-        if(AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD && BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() >=0)
+        if(AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD && !(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId() ==0))
         {
 
             aEquipmentSchema.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
             long inventoryId = dbManager.CreateEquipment(aEquipmentSchema);
-            if( inventoryId == -1)// -1 brews failed to create
+            if( inventoryId == 0)// 0 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;

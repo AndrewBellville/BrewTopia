@@ -2,6 +2,9 @@ package com.dev.town.small.brewtopia.DataClass;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Andrew on 3/1/2015.
  */
@@ -24,12 +27,13 @@ public class UserSchema {
         }
     }
 
-    long userId;
+    long userId=-1;
     String UserName;
     private String Password;
     int Role = 1; //Role 0=Admin,1=user,2=unknown
     private String CreatedOn;
     private boolean isTemp = false;
+    private List<AppSettingsSchema> appSettingsSchemas = new ArrayList<>();
 
     // constructors
     public UserSchema() {
@@ -37,14 +41,14 @@ public class UserSchema {
 
     public UserSchema(String aUserName, String aPassword) {
 
-        Log.e(LOG, "Creating New User Schema UserName[" + aUserName + "], Password[" + aPassword + "]");
+        if(APPUTILS.isLogging)Log.e(LOG, "Creating New User Schema UserName[" + aUserName + "], Password[" + aPassword + "]");
         this.UserName = aUserName;
         this.Password = aPassword;
     }
 
     public void writeString()
     {
-        Log.e(LOG, "Id[" + getUserId() + "] UserName[" + getUserName() + "]  Role[" + getRole() + "]  Password[" + getPassword() + "]");
+        if(APPUTILS.isLogging)Log.e(LOG, "Id[" + getUserId() + "] UserName[" + getUserName() + "]  Role[" + getRole() + "]  Password[" + getPassword() + "]");
     }
 
     // setters
@@ -66,6 +70,9 @@ public class UserSchema {
     public boolean isTemp() {
         return isTemp;
     }
+    public List<AppSettingsSchema> getAppSettingsSchemas() {
+        return appSettingsSchemas;
+    }
 
     // getters
     public String getUserName() {
@@ -83,5 +90,8 @@ public class UserSchema {
     }
     public void setTemp(boolean temp) {
         isTemp = temp;
+    }
+    public void setAppSettingsSchemas(List<AppSettingsSchema> appSettingsSchemas) {
+        this.appSettingsSchemas = appSettingsSchemas;
     }
 }

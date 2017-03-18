@@ -155,7 +155,7 @@ public class AddEditViewOther extends ActionBarActivity {
 
     private void DisplayOther()
     {
-        Log.e(LOG, "Entering: DisplayOther");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: DisplayOther");
 
         //Reset all fields
         Name.setText(otherSchema.getInventoryName());
@@ -173,7 +173,7 @@ public class AddEditViewOther extends ActionBarActivity {
     }
 
     private void validateSubmit() {
-        Log.e(LOG, "Entering: validateSubmit");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: validateSubmit");
 
         if(Name.getText().toString().equals(""))
         {
@@ -215,7 +215,7 @@ public class AddEditViewOther extends ActionBarActivity {
         {
 
             long inventoryId = dbManager.CreateOther(aOtherSchema);
-            if( inventoryId == -1)// -1 brews failed to create
+            if( inventoryId == 0)// 0 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;
@@ -233,7 +233,7 @@ public class AddEditViewOther extends ActionBarActivity {
 
             aOtherSchema.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
             long inventoryId = dbManager.CreateOther(aOtherSchema);
-            if( inventoryId == -1)// -1 brews failed to create
+            if( inventoryId == 0)// 0 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;

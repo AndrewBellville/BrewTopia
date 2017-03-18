@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dev.town.small.brewtopia.DataClass.APPUTILS;
 import com.dev.town.small.brewtopia.R;
 
 import java.math.BigDecimal;
@@ -35,7 +36,7 @@ public class BrixCalculations extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_brix_calculations);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
 
         toolbar=(Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);

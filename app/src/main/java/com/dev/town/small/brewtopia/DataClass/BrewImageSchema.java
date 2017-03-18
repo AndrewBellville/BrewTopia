@@ -7,8 +7,8 @@ import android.graphics.Bitmap;
  */
 public class BrewImageSchema {
 
-    private long imageId=-1;
-    private long brewId=-1;
+    private long imageId=0;
+    private long brewId=0;
     private Bitmap image;
     private String CreatedOn;
 

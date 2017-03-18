@@ -3,6 +3,7 @@ package com.dev.town.small.brewtopia.Brews;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.dev.town.small.brewtopia.DataClass.APPUTILS;
 import com.dev.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.dev.town.small.brewtopia.DataClass.BrewImageSchema;
 import com.dev.town.small.brewtopia.DataClass.BrewNoteSchema;
@@ -74,7 +75,7 @@ public class BrewActivityData {
     //If the Current User owns the current brew allow edit
     public boolean CanEdit()
     {
-        Log.e(LOG, "Entering: CanEdit " + AddEditViewBrew.getUserId() + " " +CurrentUser.getInstance().getUser().getUserId());
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: CanEdit " + AddEditViewBrew.getUserId() + " " +CurrentUser.getInstance().getUser().getUserId());
         if(AddEditViewBrew.getUserId() == CurrentUser.getInstance().getUser().getUserId() && getAddEditViewState() != DisplayMode.GLOBAL)
             return true;
 

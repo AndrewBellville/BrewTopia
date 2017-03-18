@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
+import com.dev.town.small.brewtopia.DataClass.APPUTILS;
 import com.dev.town.small.brewtopia.DataClass.BrewImageSchema;
 import com.dev.town.small.brewtopia.DataClass.BrewSchema;
 import com.dev.town.small.brewtopia.R;
@@ -56,7 +57,7 @@ public class AddEditViewBrewImages extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.activity_user_brew_images,container,false);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
 
         imageTable = (TableLayout)view.findViewById(R.id.ImageTable);
         noImage = (TextView)view.findViewById(R.id.NoImage);
@@ -101,7 +102,7 @@ public class AddEditViewBrewImages extends Fragment {
     //TODO Optimize
     //TODO Load only new images based on creation date
     private void LoadBrewImages() {
-        Log.e(LOG, "Entering: LoadBrewImages");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadBrewImages");
 
         //set all sizing
         Display display =  getActivity().getWindowManager().getDefaultDisplay();
@@ -159,7 +160,7 @@ public class AddEditViewBrewImages extends Fragment {
 
     // handles the button click and opens Image gallery
     public void ImportImageClick(View aView) {
-        Log.e(LOG, "Entering: ImportImageClick");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: ImportImageClick");
 
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
@@ -169,7 +170,7 @@ public class AddEditViewBrewImages extends Fragment {
 
     // handles the button click and intent for camera
     public void TakePictureClick(View aView) {
-        Log.e(LOG, "Entering: TakePictureClick");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: TakePictureClick");
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
@@ -179,7 +180,7 @@ public class AddEditViewBrewImages extends Fragment {
 
     // handles the image click
     public void ImageClickHandler(View aView) {
-        Log.e(LOG, "Entering: ImageClickHandler");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: ImageClickHandler");
         //get image that was clicked
         ImageSchemaView temp = (ImageSchemaView) aView;
         if (isDelete) {
@@ -200,7 +201,7 @@ public class AddEditViewBrewImages extends Fragment {
     // handles the selection of a single image from image gallery and stores to db
     @Override
     public void onActivityResult(int aRequestCode, int aResultCode, Intent aData) {
-        Log.e(LOG, "Entering: onActivityResult requestCode [" + aRequestCode + "] resultCode[" + aResultCode + "]");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onActivityResult requestCode [" + aRequestCode + "] resultCode[" + aResultCode + "]");
         super.onActivityResult(aRequestCode, aResultCode, aData);
 
         if(aRequestCode == RESULT_LOAD_IMAGE || aRequestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE)
@@ -224,7 +225,7 @@ public class AddEditViewBrewImages extends Fragment {
     }
 
     private Bitmap GetImageFromData(Intent aData) {
-        Log.e(LOG, "Entering: GetImageFromData");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: GetImageFromData");
         Uri selectedImage = aData.getData();
         String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
@@ -238,7 +239,7 @@ public class AddEditViewBrewImages extends Fragment {
         //TODO should save this image but need to optimize
         Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
 
-        Log.e(LOG, Integer.toString(yourSelectedImage.getWidth())+"  "+Integer.toString(yourSelectedImage.getHeight()));
+        if(APPUTILS.isLogging)Log.e(LOG, Integer.toString(yourSelectedImage.getWidth())+"  "+Integer.toString(yourSelectedImage.getHeight()));
 
         while(yourSelectedImage.getWidth() > 500 || yourSelectedImage.getHeight() > 500){
             yourSelectedImage = Bitmap.createScaledBitmap(yourSelectedImage, yourSelectedImage.getWidth()/2, yourSelectedImage.getHeight()/2, true);

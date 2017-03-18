@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import com.dev.town.small.brewtopia.AppSettings.AppSettings;
 import com.dev.town.small.brewtopia.Brews.UserBrewList;
 import com.dev.town.small.brewtopia.Calculations.UserCalculations;
+import com.dev.town.small.brewtopia.DataClass.APPUTILS;
 import com.dev.town.small.brewtopia.Global.UserGlobal;
 import com.dev.town.small.brewtopia.Inventory.UserInventory;
 import com.dev.town.small.brewtopia.Schedule.UserSchedule;
@@ -45,7 +46,7 @@ public class UserProfile extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
 
         toolbar=(Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);

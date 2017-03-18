@@ -47,7 +47,7 @@ public class UserBrewList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.activity_user_brew_list,container,false);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
         try {
             userId = CurrentUser.getInstance().getUser().getUserId();
         }
@@ -131,12 +131,12 @@ public class UserBrewList extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        Log.e(LOG, "Entering: onResume");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onResume");
         LoadBrews();
     }
 
     private void LoadBrews() {
-        Log.e(LOG, "Entering: LoadBrews");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadBrews");
 
         brewList = dbManager.getAllBrews(userId);
 
@@ -165,7 +165,7 @@ public class UserBrewList extends Fragment {
     }
 
     private void LoadSearchBrews(String searchText) {
-        Log.e(LOG, "Entering: LoadSearchBrews "+ searchText);
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadSearchBrews "+ searchText);
 
         //search current brewlist for Brew names containing search text
         List<BrewSchema> tempBrewList = new ArrayList<BrewSchema>();
@@ -200,7 +200,7 @@ public class UserBrewList extends Fragment {
     }
 
     private void BrewSelect(BrewSchema aBrew) {
-        Log.e(LOG, "Entering: BrewSelect" + aBrew.getBrewName());
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: BrewSelect" + aBrew.getBrewName());
 
         Intent intent = new Intent(getActivity(), UserBrew.class);
 
@@ -213,7 +213,7 @@ public class UserBrewList extends Fragment {
 
     public void onCreateClick()
     {
-        Log.e(LOG, "Entering: onCreateClick");
+        if(APPUTILS.isLogging) Log.e(LOG, "Entering: onCreateClick");
 
         Intent intent = new Intent(getActivity(), UserBrew.class);
 

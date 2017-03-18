@@ -36,7 +36,7 @@ public class UserCompletedBrewList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.activity_user_comp_brew_list,container,false);
-        Log.e(LOG, "Entering: onCreate");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
         try {
             userId = CurrentUser.getInstance().getUser().getUserId();
         }
@@ -66,12 +66,12 @@ public class UserCompletedBrewList extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        Log.e(LOG, "Entering: onResume");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onResume");
         LoadCompletedBrews();
     }
 
     private void LoadCompletedBrews() {
-        Log.e(LOG, "Entering: LoadCompletedBrews");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadCompletedBrews");
 
         completedbrewList = dbManager.getAllNonActiveScheduledBrews(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
 

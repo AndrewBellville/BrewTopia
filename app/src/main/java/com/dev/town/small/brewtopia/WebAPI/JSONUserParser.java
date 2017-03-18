@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
 import com.dev.town.small.brewtopia.DataClass.APPUTILS;
+import com.dev.town.small.brewtopia.DataClass.AppSettingsSchema;
 import com.dev.town.small.brewtopia.DataClass.BoilAdditionsSchema;
 import com.dev.town.small.brewtopia.DataClass.BrewImageSchema;
 import com.dev.town.small.brewtopia.DataClass.BrewNoteSchema;
@@ -33,7 +34,7 @@ public class JSONUserParser {
      * */
     public UserSchema ParseUser(JSONArray jsonArray) {
 
-        Log.d(LOG, "Entering: ParseUser");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseUser");
 
         List<UserSchema> userSchemas = new ArrayList<>();
 
@@ -63,7 +64,7 @@ public class JSONUserParser {
      * */
     private UserSchema ParseUser (JSONObject aUser) {
 
-        Log.d(LOG, "Entering: ParseUser");
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseUser");
         UserSchema userSchema = new UserSchema();
 
         try {
@@ -72,11 +73,61 @@ public class JSONUserParser {
             userSchema.setRole(Integer.parseInt(aUser.getString("Role")));
             userSchema.setCreatedOn(aUser.getString("CreatedOn"));
 
+            JSONArray appSettings = aUser.getJSONArray("AppSettings");
+            userSchema.setAppSettingsSchemas(ParseAppSettings(appSettings));
+
         } catch (JSONException e) {
             e.printStackTrace();
             //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
         }
 
         return userSchema;
+    }
+
+    /**
+     * Method to Parse All App Settings
+     * */
+    private List<AppSettingsSchema> ParseAppSettings (JSONArray aAppSetting) {
+
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseAppSettings");
+        List<AppSettingsSchema> appSettingsSchemas = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aAppSetting.length(); i++) {
+
+                JSONObject addition = (JSONObject) aAppSetting.get(i);
+                appSettingsSchemas.add(ParseAppSetting(addition));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return appSettingsSchemas;
+    }
+
+    /**
+     * Method to Parse one App Setting
+     * */
+    private AppSettingsSchema ParseAppSetting (JSONObject aAppSetting) {
+
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseAppSetting");
+        AppSettingsSchema appSettingsSchemas = new AppSettingsSchema();
+
+        try {
+
+            appSettingsSchemas.setAppSetttingId(Long.parseLong(aAppSetting.getString("SettingsId")));
+            appSettingsSchemas.setUserId(Long.parseLong(aAppSetting.getString("UserId")));
+            appSettingsSchemas.setSettingName(aAppSetting.getString("SettingsName"));
+            appSettingsSchemas.setSettingValue(aAppSetting.getString("SettingsValue"));
+            appSettingsSchemas.setSettingScreen(aAppSetting.getString("SettingsScreen"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return appSettingsSchemas;
     }
 }

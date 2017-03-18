@@ -91,7 +91,7 @@ public class MyCalendar extends LinearLayout
      */
     private void initControl(Context context, AttributeSet attrs)
     {
-        Log.e(LOG, "Entering: initControl");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: initControl");
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.my_calendar, this);
 
@@ -104,7 +104,7 @@ public class MyCalendar extends LinearLayout
 
     private void loadDateFormat(AttributeSet attrs)
     {
-        Log.e(LOG, "Entering: loadDateFormat");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: loadDateFormat");
         TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.CalendarView);
 
         try
@@ -121,7 +121,7 @@ public class MyCalendar extends LinearLayout
     }
     private void assignUiElements()
     {
-        Log.e(LOG, "Entering: assignUiElements");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: assignUiElements");
         // layout is inflated, assign local variables to components
         header = (LinearLayout)findViewById(R.id.calendar_header);
         btnPrev = (ImageView)findViewById(R.id.calendar_prev_button);
@@ -132,7 +132,7 @@ public class MyCalendar extends LinearLayout
 
     private void assignClickHandlers()
     {
-        Log.e(LOG, "Entering: assignClickHandlers");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: assignClickHandlers");
         // add one month and refresh UI
         btnNext.setOnClickListener(new OnClickListener()
         {
@@ -204,7 +204,7 @@ public class MyCalendar extends LinearLayout
      */
     public void updateCalendarList(List<ScheduledBrewSchema> events)
     {
-        Log.e(LOG, "Entering: updateCalendar");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: updateCalendar");
         ArrayList<Date> cells = new ArrayList<Date>();
         Calendar calendar = (Calendar)currentDate.clone();
 

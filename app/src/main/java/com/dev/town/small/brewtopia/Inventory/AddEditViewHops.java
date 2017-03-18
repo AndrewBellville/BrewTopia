@@ -179,7 +179,7 @@ public class AddEditViewHops extends ActionBarActivity {
 
     private void DisplayHops()
     {
-        Log.e(LOG, "Entering: DisplayHops");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: DisplayHops");
 
         //Reset all fields
         hopsName.setText(hopsSchema.getInventoryName());
@@ -202,7 +202,7 @@ public class AddEditViewHops extends ActionBarActivity {
     }
 
     private void validateSubmit() {
-        Log.e(LOG, "Entering: validateSubmit");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: validateSubmit");
 
         if(hopsName.getText().toString().equals(""))
         {
@@ -269,7 +269,7 @@ public class AddEditViewHops extends ActionBarActivity {
         {
 
             long inventoryId = dbManager.CreateHops(aHops);
-            if( inventoryId == -1)// -1 brews failed to create
+            if( inventoryId == 0)// 0 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;
@@ -287,7 +287,7 @@ public class AddEditViewHops extends ActionBarActivity {
 
             aHops.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
             long inventoryId = dbManager.CreateHops(aHops);
-            if( inventoryId == -1)// -1 brews failed to create
+            if( inventoryId == 0)// 0 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;

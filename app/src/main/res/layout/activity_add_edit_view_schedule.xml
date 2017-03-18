@@ -55,77 +55,11 @@
             android:layout_alignEnd="@+id/ScheduleBNameeditText"
             android:onClick="showDatePickerDialog"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Secondary Alert Date:"
-            android:id="@+id/Schedule2AlerttextView"
-            android:layout_below="@+id/ScheduleStarteditText"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="date"
-            android:ems="10"
-            android:id="@+id/Schedule2AlerteditText"
-            android:layout_below="@+id/Schedule2AlerttextView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/ScheduleStarteditText"
-            android:layout_alignEnd="@+id/ScheduleStarteditText"
-            android:onClick="showDatePickerDialog"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Botteling Alert Date:"
-            android:id="@+id/ScheduleBottleAlerttextView"
-            android:layout_below="@+id/Schedule2AlerteditText"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="date"
-            android:ems="10"
-            android:id="@+id/SchduleBottleAlerteditText"
-            android:layout_below="@+id/ScheduleBottleAlerttextView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/Schedule2AlerteditText"
-            android:layout_alignEnd="@+id/Schedule2AlerteditText"
-            android:onClick="showDatePickerDialog"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="End Date:"
-            android:id="@+id/SchduleEndDatetextView"
-            android:layout_below="@+id/SchduleBottleAlerteditText"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="date"
-            android:ems="10"
-            android:id="@+id/ScheduleEndDateeditText"
-            android:layout_below="@+id/SchduleEndDatetextView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/SchduleBottleAlerteditText"
-            android:layout_alignEnd="@+id/SchduleBottleAlerteditText"
-            android:onClick="showDatePickerDialog"/>
-
         <ListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/ScheduleEvents"
-            android:layout_below="@+id/ScheduleEndDateeditText"
+            android:layout_below="@+id/ScheduleStarteditText"
             android:scrollbars="none"
             android:descendantFocusability="afterDescendants"/>
 
@@ -163,9 +97,8 @@
             android:id="@+id/ScheduleOGeditText"
             android:layout_below="@+id/SchduleOGtextView"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/SchduleBottleAlerteditText"
-            android:layout_alignEnd="@+id/SchduleBottleAlerteditText"/>
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -184,9 +117,8 @@
             android:id="@+id/ScheduleFGeditText"
             android:layout_below="@+id/SchduleFGtextView"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/SchduleBottleAlerteditText"
-            android:layout_alignEnd="@+id/SchduleBottleAlerteditText"/>
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -205,9 +137,8 @@
             android:id="@+id/ScheduleABVeditText"
             android:layout_below="@+id/SchduleABVtextView"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/SchduleBottleAlerteditText"
-            android:layout_alignEnd="@+id/SchduleBottleAlerteditText"/>
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true" />
 
         <CheckBox
             android:layout_width="wrap_content"

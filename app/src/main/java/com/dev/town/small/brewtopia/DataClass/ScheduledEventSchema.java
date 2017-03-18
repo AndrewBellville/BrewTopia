@@ -5,9 +5,9 @@ package com.dev.town.small.brewtopia.DataClass;
  */
 public class ScheduledEventSchema {
 
-    private long scheduledEventId=-1;
-    private long scheduleId=-1;
-    private long brewId=-1;
+    private long scheduledEventId=0;
+    private long scheduleId=0;
+    private long brewId=0;
     private String eventDate;
     private long eventCalendarId=-1;
     private String eventText;

@@ -11,7 +11,6 @@ import com.dev.town.small.brewtopia.DataClass.BrewNoteSchema;
 import com.dev.town.small.brewtopia.DataClass.BrewSchema;
 import com.dev.town.small.brewtopia.DataClass.EquipmentSchema;
 import com.dev.town.small.brewtopia.DataClass.FermentablesSchema;
-import com.dev.town.small.brewtopia.DataClass.GrainsSchema;
 import com.dev.town.small.brewtopia.DataClass.HopsSchema;
 import com.dev.town.small.brewtopia.DataClass.InventorySchema;
 import com.dev.town.small.brewtopia.DataClass.OtherSchema;
@@ -112,17 +111,12 @@ public class CreateBrewRequest extends StringRequest {
             tempMap.put("BrewId",Long.toString(bs.getBrewId()));
             tempMap.put("UserId",Long.toString(bs.getUserId()));
             tempMap.put("BrewName",bs.getBrewName());
-            tempMap.put("SecondaryAlertDate",bs.getAlertSecondaryDate());
-            tempMap.put("BottleAlertDate",bs.getAlertBottleDate());
             tempMap.put("EndBrewDate",bs.getEndBrewDate());
             tempMap.put("Note",bs.getNotes());
             tempMap.put("StyleColor",bs.getColor());
             tempMap.put("OriginalGravity",Double.toString(bs.getOG()));
             tempMap.put("FinalGravity",Double.toString(bs.getFG()));
             tempMap.put("ABV",Double.toString(bs.getABV()));
-            tempMap.put("SecondaryCalendarId",Long.toString(bs.getAlertSecondaryCalendarId()));
-            tempMap.put("BottleCalendarId",Long.toString(bs.getAlertBottleCalendarId()));
-            tempMap.put("EndBrewCalendarId",Long.toString(bs.getEndBrewCalendarId()));
             tempMap.put("Active",Integer.toString(bs.getActive()));
             tempMap.put("CreatedOn",bs.getStartDate());
             tempMap.put("UseStarter",Integer.toString(bs.getHasStarter()));
@@ -149,7 +143,6 @@ public class CreateBrewRequest extends StringRequest {
         //*******************Brew Inventory***********************************
         ArrayList<String> inventoryHops = new ArrayList<>();
         ArrayList<String> inventoryFermentables = new ArrayList<>();
-        ArrayList<String> inventoryGains = new ArrayList<>();
         ArrayList<String> inventoryYeast = new ArrayList<>();
         ArrayList<String> inventoryEquipment = new ArrayList<>();
         ArrayList<String> inventoryOther = new ArrayList<>();
@@ -163,11 +156,6 @@ public class CreateBrewRequest extends StringRequest {
             {
                 JSONObject jsonObject = new JSONObject(InventoryFermentablesHelper((FermentablesSchema)is));
                 inventoryFermentables.add( jsonObject.toString());
-            }
-            if(is instanceof GrainsSchema)
-            {
-                JSONObject jsonObject = new JSONObject(InventoryGrainsHelper((GrainsSchema)is));
-                inventoryGains.add( jsonObject.toString());
             }
             if(is instanceof YeastSchema)
             {
@@ -188,7 +176,6 @@ public class CreateBrewRequest extends StringRequest {
         }
         params.put("InventoryHops", inventoryHops.toString());
         params.put("InventoryFermentables", inventoryFermentables.toString());
-        params.put("InventoryGains", inventoryGains.toString());
         params.put("InventoryYeast", inventoryYeast.toString());
         params.put("InventoryEquipment", inventoryEquipment.toString());
         params.put("InventoryOther", inventoryOther.toString());
@@ -224,23 +211,6 @@ public class CreateBrewRequest extends StringRequest {
     {
         HashMap<String,String> tempMap  = new HashMap<>();
         tempMap.put("FermentablesId",Long.toString(aInventorySchema.getInventoryId()));
-        tempMap.put("BrewId",Long.toString(aInventorySchema.getBrewId()));
-        tempMap.put("UserId",Long.toString(aInventorySchema.getUserId()));
-        tempMap.put("InventoryQty",Integer.toString(aInventorySchema.getInvetoryQty()));
-        tempMap.put("InventoryName",aInventorySchema.getInventoryName());
-        tempMap.put("InventoryAmount",Double.toString(aInventorySchema.getAmount()));
-        tempMap.put("PPG",Double.toString(aInventorySchema.getPoundPerGallon()));
-        tempMap.put("Lovibond",Double.toString(aInventorySchema.getLovibond()));
-        tempMap.put("InventoryUofM",aInventorySchema.getInventoryUOfM());
-        tempMap.put("Bill",Double.toString(aInventorySchema.getBill()));
-
-        return tempMap;
-    }
-
-    private HashMap<String,String> InventoryGrainsHelper(GrainsSchema aInventorySchema)
-    {
-        HashMap<String,String> tempMap  = new HashMap<>();
-        tempMap.put("GrainsId",Long.toString(aInventorySchema.getInventoryId()));
         tempMap.put("BrewId",Long.toString(aInventorySchema.getBrewId()));
         tempMap.put("UserId",Long.toString(aInventorySchema.getUserId()));
         tempMap.put("InventoryQty",Integer.toString(aInventorySchema.getInvetoryQty()));

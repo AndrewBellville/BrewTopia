@@ -22,6 +22,9 @@ import java.util.Locale;
  */
 public class APPUTILS {
 
+    ///********************If we re going to write to log**********************
+    public static boolean isLogging = true;
+
     //***********************Date Formatting**********************************
     public static SimpleDateFormat dateFormat = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss", Locale.getDefault());

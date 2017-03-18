@@ -172,7 +172,7 @@ public class AddEditViewFermentables extends ActionBarActivity {
 
     private void DisplayFermentables()
     {
-        Log.e(LOG, "Entering: DisplayFermentables");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: DisplayFermentables");
 
         //Reset all fields
         Name.setText(fermentablesSchema.getInventoryName());
@@ -194,7 +194,7 @@ public class AddEditViewFermentables extends ActionBarActivity {
     }
 
     private void validateSubmit() {
-        Log.e(LOG, "Entering: validateSubmit");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: validateSubmit");
 
         if(Name.getText().toString().equals(""))
         {
@@ -260,7 +260,7 @@ public class AddEditViewFermentables extends ActionBarActivity {
         {
 
             long inventoryId = dbManager.CreateFermentable(aFermentablesSchema);
-            if( inventoryId == -1)// -1 brews failed to create
+            if( inventoryId == 0)// 0 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;
@@ -278,7 +278,7 @@ public class AddEditViewFermentables extends ActionBarActivity {
 
             aFermentablesSchema.setBrewId(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
             long inventoryId = dbManager.CreateFermentable(aFermentablesSchema);
-            if( inventoryId == -1)// -1 brews failed to create
+            if( inventoryId == 0)// 0 brews failed to create
             {
                 Toast.makeText(this, "Create  Failed", Toast.LENGTH_LONG).show();
                 return;

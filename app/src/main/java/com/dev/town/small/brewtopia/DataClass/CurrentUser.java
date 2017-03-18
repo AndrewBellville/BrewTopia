@@ -31,7 +31,7 @@ public class CurrentUser {
     }
 
     public void setUser(UserSchema user) {
-        Log.e(LOG, "Entering: setUser");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: setUser");
         this.user = user;
     }
 }

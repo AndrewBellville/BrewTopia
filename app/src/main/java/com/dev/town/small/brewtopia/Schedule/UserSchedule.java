@@ -122,7 +122,7 @@ public class UserSchedule extends Fragment {
     }
 
     private void LoadScheduleView(Date date) {
-        Log.e(LOG, "Entering: LoadBrews");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadBrews");
 
         List<ScheduledBrewSchema> scheduledDayList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserId());
         list = new ArrayList<ScheduledBrewSchema>();
