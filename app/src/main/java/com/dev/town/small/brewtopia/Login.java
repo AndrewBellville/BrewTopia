@@ -20,6 +20,9 @@ import com.dev.town.small.brewtopia.AppSettings.AppSettingsHelper;
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
 import com.dev.town.small.brewtopia.DataClass.*;
 import com.dev.town.small.brewtopia.WebAPI.CreateUserRequest;
+import com.dev.town.small.brewtopia.WebAPI.GetBrewRequest;
+import com.dev.town.small.brewtopia.WebAPI.GetUserBrewsRequest;
+import com.dev.town.small.brewtopia.WebAPI.JSONBrewParser;
 import com.dev.town.small.brewtopia.WebAPI.JSONUserParser;
 import com.dev.town.small.brewtopia.WebAPI.LoginRequest;
 import com.dev.town.small.brewtopia.WebAPI.WebController;
@@ -116,27 +119,34 @@ public class Login extends ActionBarActivity {
 
     private void performLogIn(boolean isSuccess, UserSchema aUserSchema)
     {
-        if(APPUTILS.isLogging)Log.e(LOG, "Entering: perfromLogin");
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: performLogin");
 
         if (isSuccess)
         {
+            // if  the user exists globally but not local flag it
+            boolean newDevice = false;
+
             //check for if user exists on this device if yes just update
             //else create a new user on the device / create the app setting
-            if(dbManager.DoesUserExist(aUserSchema.getUserId()))
+            if(dbManager.DoesUserExist(aUserSchema.getUserId())) {
                 dbManager.updateUser(aUserSchema);
-            else
+            }
+            else {
                 CreateLocalUser(aUserSchema);
+                newDevice = true;
+            }
 
-            //Create and intent which will open next activity UserProfile
-            Intent intent = new Intent(this, UserProfile.class);
             //set active user
             currentUser.setUser(aUserSchema);
             //load all app setting for user
             appSettingsHelper.LoadMap();
-            //start next activity
-            startActivity(intent);
+            //clear any message
             message.setText("");
-            currentUser.getUser().writeString();
+
+            if(!newDevice)
+                OpenApp();
+            else
+                getGlobalUserInfo(aUserSchema.getUserId());
         }
         else
         {
@@ -151,6 +161,39 @@ public class Login extends ActionBarActivity {
 
         }
         message.invalidate();
+    }
+
+    private void getGlobalUserInfo(Long aUserId)
+    {
+            Response.Listener<String> ResponseListener = new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    if(APPUTILS.isLogging)Log.e(LOG, response);
+                    if (response.equals("Error"))// no match for user exists
+                    {
+                        //Toast.makeText(getActivity(), brewSchema.getBrewName() +" Upload Failed", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //Pase response
+                        try {
+
+                            //Parse response into BrewShcema list
+                            JSONArray jsonArray = new JSONArray(response);
+                            JSONBrewParser jsonParser = new JSONBrewParser(getApplication(),JSONBrewParser.ParseType.PULL);
+                            List<BrewSchema> brewSchemaList = jsonParser.ParseGlobalBrews(jsonArray);
+
+
+                            for (BrewSchema bs : brewSchemaList) {
+                                dbManager.CreateAnExistingBrew(bs);
+                            }
+                            OpenApp();
+                        }
+                        catch (JSONException e) {}
+                    }
+                }
+            };
+
+        GetUserBrewsRequest getBrewRequest = new GetUserBrewsRequest(Long.toString(aUserId), ResponseListener,null);
+        WebController.getInstance().addToRequestQueue(getBrewRequest);
     }
 
     //******************Create****************************
@@ -294,6 +337,17 @@ public class Login extends ActionBarActivity {
                 = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void OpenApp()
+    {
+        //Create and intent which will open next activity UserProfile
+        Intent intent = new Intent(this, UserProfile.class);
+
+        //start next activity
+        startActivity(intent);
+
+        currentUser.getUser().writeString();
     }
 
 }

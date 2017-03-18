@@ -8,16 +8,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Andrew on 7/22/2016.
+ * Created by Andrew on 3/18/2017.
  */
-public class GetBrewRequest extends StringRequest {
-    private static String URL = APPUTILS.WEBAPIRURL+"/getBrew";
-    private Map<String, String>params;
+public class GetUserBrewsRequest extends StringRequest {
+    private static String URL = APPUTILS.WEBAPIRURL+"/getUsersBrew";
+    private Map<String, String> params;
 
-    public GetBrewRequest(String aBrewId, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+    public GetUserBrewsRequest(String aUserId, Response.Listener<String> listener, Response.ErrorListener errorListener) {
         super(Method.POST, URL, listener, errorListener);
         params = new HashMap<>();
-        params.put("BrewId", aBrewId);
+        params.put("UserId", aUserId);
     }
 
     @Override

@@ -15,6 +15,8 @@ import com.dev.town.small.brewtopia.DataClass.FermentablesSchema;
 import com.dev.town.small.brewtopia.DataClass.HopsSchema;
 import com.dev.town.small.brewtopia.DataClass.InventorySchema;
 import com.dev.town.small.brewtopia.DataClass.OtherSchema;
+import com.dev.town.small.brewtopia.DataClass.ScheduledBrewSchema;
+import com.dev.town.small.brewtopia.DataClass.ScheduledEventSchema;
 import com.dev.town.small.brewtopia.DataClass.YeastSchema;
 
 import org.json.JSONArray;
@@ -78,25 +80,27 @@ public class JSONBrewParser {
         BrewSchema brewSchema = new BrewSchema();
 
         try {
-            if(parseType == ParseType.PUSH)
-            {
-                brewSchema.setUserId(Long.parseLong(aBrew.getString("UserId")));
-            }
+
+            brewSchema.setBrewId(Long.parseLong(aBrew.getString("BrewId")));
+            brewSchema.setUserId(Long.parseLong(aBrew.getString("UserId")));
 
             brewSchema.setBrewName(aBrew.getString("BrewName"));
             brewSchema.setBoilTime(Integer.parseInt(aBrew.getString("BoilTime")));
             brewSchema.setPrimary(Integer.parseInt(aBrew.getString("Primary")));
             brewSchema.setSecondary(Integer.parseInt(aBrew.getString("Secondary")));
             brewSchema.setBottle(Integer.parseInt(aBrew.getString("Bottling")));
-            brewSchema.setDescription(aBrew.getString("Description"));
-            brewSchema.setStyle(aBrew.getString("Style"));
             brewSchema.setTargetOG(Double.parseDouble(aBrew.getString("OriginalGravity")));
             brewSchema.setTargetFG(Double.parseDouble(aBrew.getString("FinalGravity")));
             brewSchema.setTargetABV(Double.parseDouble(aBrew.getString("ABV")));
+            brewSchema.setDescription(aBrew.getString("Description"));
+            brewSchema.setFavorite(Integer.parseInt(aBrew.getString("Favorite")));
+            brewSchema.setScheduled(Integer.parseInt(aBrew.getString("Scheduled")));
+            brewSchema.setOnTap(Integer.parseInt(aBrew.getString("OnTap")));
             brewSchema.setIBU(Double.parseDouble(aBrew.getString("IBU")));
-            brewSchema.setMethod(aBrew.getString("Method"));
             brewSchema.setBatchSize(Double.parseDouble(aBrew.getString("BatchSize")));
             brewSchema.setEfficiency(Double.parseDouble(aBrew.getString("Efficiency")));
+            brewSchema.setMethod(aBrew.getString("Method"));
+            brewSchema.setStyle(aBrew.getString("Style"));
             brewSchema.setSRM(Integer.parseInt(aBrew.getString("SRM")));
             brewSchema.setCreatedOn(aBrew.getString("CreatedOn"));
 
@@ -111,6 +115,14 @@ public class JSONBrewParser {
             //Build Brew Notes
             JSONArray brewImages = aBrew.getJSONArray("BrewImages");
             brewSchema.setBrewImageSchemaList(ParseGlobalBrewImages(brewImages));
+
+            //Build Brews Scheduled
+            JSONArray brewsScheduled = aBrew.getJSONArray("BrewsScheduled");
+            brewSchema.setScheduledBrewSchemas(ParseGlobalBrewsScheduled(brewsScheduled));
+
+            //Build Brew events
+            JSONArray brewEvents = aBrew.getJSONArray("ScheduleEvents");
+            brewSchema.setScheduledEventSchemas(ParseGlobalBrewEvents(brewEvents));
 
             //Build Brew InventoryHops
             JSONArray InventoryHops = aBrew.getJSONArray("InventoryHops");
@@ -174,11 +186,9 @@ public class JSONBrewParser {
         BoilAdditionsSchema boilAdditionsSchema = new BoilAdditionsSchema();
 
         try {
-            if(parseType == ParseType.PUSH)
-            {
-                boilAdditionsSchema.setAdditionId(Long.parseLong(aBrew.getString("AdditionId")));
-                boilAdditionsSchema.setBrewId(Long.parseLong(aBrew.getString("BrewId")));
-            }
+
+            boilAdditionsSchema.setAdditionId(Long.parseLong(aBrew.getString("AdditionId")));
+            boilAdditionsSchema.setBrewId(Long.parseLong(aBrew.getString("BrewId")));
 
             boilAdditionsSchema.setAdditionName(aBrew.getString("AdditionName"));
             boilAdditionsSchema.setAdditionTime(Integer.parseInt(aBrew.getString("AdditionTime")));
@@ -226,11 +236,10 @@ public class JSONBrewParser {
         BrewNoteSchema brewNoteSchema = new BrewNoteSchema();
 
         try {
-            if(parseType == ParseType.PUSH)
-            {
-                brewNoteSchema.setNoteId(Long.parseLong(aBrewNote.getString("BrewNoteId")));
-                brewNoteSchema.setBrewId(Long.parseLong(aBrewNote.getString("BrewId")));
-            }
+
+            brewNoteSchema.setNoteId(Long.parseLong(aBrewNote.getString("BrewNoteId")));
+            brewNoteSchema.setBrewId(Long.parseLong(aBrewNote.getString("BrewId")));
+
 
             brewNoteSchema.setBrewNote(aBrewNote.getString("Note"));
             brewNoteSchema.setCreatedOn(aBrewNote.getString("CreatedOn"));
@@ -275,11 +284,9 @@ public class JSONBrewParser {
         BrewImageSchema brewImageSchema = new BrewImageSchema();
 
         try {
-            if(parseType == ParseType.PUSH)
-            {
-                brewImageSchema.setImageId(Long.parseLong(aBrewImage.getString("ImageId")));
-                brewImageSchema.setBrewId(Long.parseLong(aBrewImage.getString("BrewId")));
-            }
+            brewImageSchema.setImageId(Long.parseLong(aBrewImage.getString("ImageId")));
+            brewImageSchema.setBrewId(Long.parseLong(aBrewImage.getString("BrewId")));
+
 
             brewImageSchema.setImage(APPUTILS.GetBitmapFromByteArr(Base64.decode(aBrewImage.getString("Image"), Base64.DEFAULT)));
             brewImageSchema.setCreatedOn(aBrewImage.getString("CreatedOn"));
@@ -290,6 +297,111 @@ public class JSONBrewParser {
         }
 
         return brewImageSchema;
+    }
+
+    /**
+     * Method to Parse All Brews Scheduled
+     * */
+    private List<ScheduledBrewSchema> ParseGlobalBrewsScheduled (JSONArray aSchedule) {
+
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewsScheduled");
+        List<ScheduledBrewSchema> scheduledBrewSchemas = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aSchedule.length(); i++) {
+
+                JSONObject scheudle = (JSONObject) aSchedule.get(i);
+                scheduledBrewSchemas.add(ParseGlobalBrewsSchedule(scheudle));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return scheduledBrewSchemas;
+    }
+
+    /**
+     * Method to Parse one Brew schedule
+     * */
+    private ScheduledBrewSchema ParseGlobalBrewsSchedule (JSONObject aSchedule) {
+
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewsSchedule");
+        ScheduledBrewSchema scheduledBrewSchema = new ScheduledBrewSchema();
+
+        try {
+
+            scheduledBrewSchema.setScheduleId(Long.parseLong(aSchedule.getString("ScheduleId")));
+            scheduledBrewSchema.setBrewId(Long.parseLong(aSchedule.getString("BrewId")));
+            scheduledBrewSchema.setUserId(Long.parseLong(aSchedule.getString("UserId")));
+
+            scheduledBrewSchema.setBrewName(aSchedule.getString("BrewName"));
+            scheduledBrewSchema.setNotes(aSchedule.getString("Note"));
+            scheduledBrewSchema.setColor(aSchedule.getString("StyleColor"));
+            scheduledBrewSchema.setOG(Double.parseDouble(aSchedule.getString("OriginalGravity")));
+            scheduledBrewSchema.setFG(Double.parseDouble(aSchedule.getString("FinalGravity")));
+            scheduledBrewSchema.setABV(Double.parseDouble(aSchedule.getString("ABV")));
+            scheduledBrewSchema.setActive(Integer.parseInt(aSchedule.getString("Active")));
+            scheduledBrewSchema.setStartDate(aSchedule.getString("CreatedOn"));
+            scheduledBrewSchema.setHasStarter(Integer.parseInt(aSchedule.getString("UseStarter")));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return scheduledBrewSchema;
+    }
+
+    /**
+     * Method to Parse All Brews events
+     * */
+    private List<ScheduledEventSchema> ParseGlobalBrewEvents (JSONArray aEvent) {
+
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewEvents");
+        List<ScheduledEventSchema> scheduledEventSchemas = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aEvent.length(); i++) {
+
+                JSONObject event = (JSONObject) aEvent.get(i);
+                scheduledEventSchemas.add(ParseGlobalBrewEvent(event));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return scheduledEventSchemas;
+    }
+
+    /**
+     * Method to Parse one Brew event
+     * */
+    private ScheduledEventSchema ParseGlobalBrewEvent (JSONObject aEvent) {
+
+        if(APPUTILS.isLogging)Log.d(LOG, "Entering: ParseGlobalBrewEvent");
+        ScheduledEventSchema scheduledEventSchema = new ScheduledEventSchema();
+
+        try {
+            scheduledEventSchema.setScheduledEventId(Long.parseLong(aEvent.getString("EventId")));
+            scheduledEventSchema.setScheduleId(Long.parseLong(aEvent.getString("ScheduleId")));
+            scheduledEventSchema.setBrewId(Long.parseLong(aEvent.getString("BrewId")));
+
+
+            scheduledEventSchema.setEventText(aEvent.getString("EventText"));
+            scheduledEventSchema.setEventDate(aEvent.getString("EventDate"));
+            scheduledEventSchema.setEventCalendarId(Long.parseLong(aEvent.getString("EventCalendarId")));
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //Toast.makeText(getApplicationContext(),"Error: " + e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+        return scheduledEventSchema;
     }
 
     /**
@@ -324,12 +436,11 @@ public class JSONBrewParser {
         HopsSchema inventorySchema = new HopsSchema();
 
         try {
-            if(parseType == ParseType.PUSH)
-            {
-                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("HopsId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
-            }
+
+            inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("HopsId")));
+            inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
+            inventorySchema.setUserId(Long.parseLong(aInventory.getString("UserId")));
+
             inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
             inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
             inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
@@ -380,12 +491,11 @@ public class JSONBrewParser {
         FermentablesSchema inventorySchema = new FermentablesSchema();
 
         try {
-            if(parseType == ParseType.PUSH)
-            {
-                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("FermentablesId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
-            }
+
+            inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("FermentablesId")));
+            inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
+            inventorySchema.setUserId(Long.parseLong(aInventory.getString("UserId")));
+
             inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
             inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
             inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
@@ -434,12 +544,10 @@ public class JSONBrewParser {
         YeastSchema inventorySchema = new YeastSchema();
 
         try {
-            if(parseType == ParseType.PUSH)
-            {
-                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("YeastId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
-            }
+            inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("YeastId")));
+            inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
+            inventorySchema.setUserId(Long.parseLong(aInventory.getString("UserId")));
+
             inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
             inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
             inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
@@ -490,12 +598,11 @@ public class JSONBrewParser {
         EquipmentSchema inventorySchema = new EquipmentSchema();
 
         try {
-            if(parseType == ParseType.PUSH)
-            {
-                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("EquipmentId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
-            }
+
+            inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("EquipmentId")));
+            inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
+            inventorySchema.setUserId(Long.parseLong(aInventory.getString("UserId")));
+
             inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
             inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
             inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
@@ -541,12 +648,11 @@ public class JSONBrewParser {
         OtherSchema inventorySchema = new OtherSchema();
 
         try {
-            if(parseType == ParseType.PUSH)
-            {
-                inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("OtherInventoryId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
-                inventorySchema.setBrewId(Long.parseLong(aInventory.getString("UserId")));
-            }
+
+            inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("OtherInventoryId")));
+            inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
+            inventorySchema.setUserId(Long.parseLong(aInventory.getString("UserId")));
+
             inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
             inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
             inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));

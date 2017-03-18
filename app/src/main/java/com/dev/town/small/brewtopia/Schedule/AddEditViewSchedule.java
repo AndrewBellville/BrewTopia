@@ -335,7 +335,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         List<ScheduledEventSchema> templist = new ArrayList<>();
         for(ScheduledEventSchema scheduledEventSchema : gScheduleSchema.getScheduledEventSchemaList())
         {
-            if(sbrew.getStartDate().compareTo(scheduledEventSchema.getEventDate()) >= 0)
+            if(sbrew.getStartDate().compareTo(scheduledEventSchema.getEventDate()) <= 0)
                 templist.add(scheduledEventSchema);
         }
         gScheduleSchema.setScheduledEventSchemaList(templist);
@@ -382,7 +382,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
             try {
                 date3 = APPUTILS.dateFormat.parse(scheduledEventSchema.getEventDate());
 
-                if(!(scheduledEventSchema.getEventCalendarId() == 0))
+                if(!(scheduledEventSchema.getEventCalendarId() == -1))
                     schedulerHelper.updateCalendarEvent(date3,scheduledEventSchema.getEventCalendarId());
                 else
                 {
@@ -393,8 +393,6 @@ public class AddEditViewSchedule extends ActionBarActivity {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
-
         }
     }
 
@@ -473,10 +471,9 @@ public class AddEditViewSchedule extends ActionBarActivity {
         aScheduledEventSchema.setEventDate(eventDate.getText().toString());
         //if getScheduledEventId == 0 then its and update and we dont want to add it to the list
         if(validateScheduleDate(aScheduledEventSchema.getEventDate()) && aScheduledEventSchema.getScheduledEventId() == 0)
-        {
             gScheduleSchema.getScheduledEventSchemaList().add(aScheduledEventSchema);
-            DisplaySchedule(gScheduleSchema);
-        }
+
+        DisplaySchedule(gScheduleSchema);
     }
 
     private void validateDelete(ScheduledEventSchema aScheduledEventSchema)

@@ -520,6 +520,77 @@ public class DataBaseManager extends SQLiteOpenHelper {
         if(!(CreateBrewInventoryHelper(aBrew.getBrewInventorySchemaList())))
             return 0;// 0 failed created
 
+        for (ScheduledBrewSchema sb : aBrew.getScheduledBrewSchemas())
+        {
+            CreateAScheduledBrew(sb);
+        }
+        for (ScheduledEventSchema se : aBrew.getScheduledEventSchemas())
+        {
+            CreateScheduleEvent(se);
+        }
+
+        return brewId; // All create created retrun brew Id
+    }
+
+    /*
+* Creating a Brew
+*/
+    public long CreateAnExistingBrew(BrewSchema aBrew) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        if(APPUTILS.isLogging)Log.e(LOG, "CreateAnExistingBrew: Brew["+aBrew.getBrewName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(BREW_ID, aBrew.getBrewId());
+        values.put(BREW_NAME, aBrew.getBrewName());
+        values.put(USER_ID, aBrew.getUserId());
+        values.put(BOIL_TIME, aBrew.getBoilTime());
+        values.put(PRIMARY, aBrew.getPrimary());
+        values.put(SECONDARY, aBrew.getSecondary());
+        values.put(BOTTLE, aBrew.getBottle());
+        values.put(ORIGINAL_GRAVITY, aBrew.getTargetOG());
+        values.put(FINAL_GRAVITY, aBrew.getTargetFG());
+        values.put(ABV, aBrew.getTargetABV());
+        values.put(DESCRIPTION, aBrew.getDescription());
+        values.put(STYLE, aBrew.getStyle());
+        values.put(FAVORITE, aBrew.getFavorite());
+        values.put(SCHEDULED, aBrew.getScheduled());
+        values.put(ON_TAP, aBrew.getOnTap());
+        values.put(IBU, aBrew.getIBU());
+        values.put(METHOD, aBrew.getMethod());
+        values.put(CREATED_ON, getDateTime());
+        values.put(BATCH_SIZE, aBrew.getBatchSize());
+        values.put(EFFICIENCY, aBrew.getEfficiency());
+        values.put(TOTAL_BREWED, aBrew.getTotalBrewed());
+        values.put(SRM, aBrew.getSRM());
+        //if global brew id is set then mark clean and set local brew id
+        values.put(DIRTY, 0);//MARK BREW AS CLEAN
+
+        long brewId = db.insert(TABLE_BREWS,null,values);
+        if(!(brewId > 0) )
+            return 0; // 0 nothing created
+
+
+        if(!(add_all_boil_additions(aBrew.getBoilAdditionlist())))
+            return 0;// 0 failed created
+        if(!(addAllBrewNotes(aBrew.getBrewNoteSchemaList())))
+            return 0;// 0 failed created
+        if(!(CreateBrewInventoryHelper(aBrew.getBrewInventorySchemaList())))
+            return 0;// 0 failed created
+
+        for (ScheduledBrewSchema sb : aBrew.getScheduledBrewSchemas())
+        {
+            CreateAScheduledBrew(sb);
+        }
+        for (ScheduledEventSchema se : aBrew.getScheduledEventSchemas())
+        {
+            CreateScheduleEvent(se);
+        }
+        for (BrewImageSchema bi : aBrew.getBrewImageSchemaList())
+        {
+            CreateBrewImage(bi);
+        }
+
         return brewId; // All create created retrun brew Id
     }
 
@@ -1200,7 +1271,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(BREW_ID, aSBrew.getBrewId());
         values.put(USER_ID, aSBrew.getUserId());
         values.put(BREW_NAME, aSBrew.getBrewName());
-        values.put(CREATED_ON, getDateTime());//start date
+        values.put(CREATED_ON, aSBrew.getStartDate());//start date
         values.put(ACTIVE, aSBrew.getActive());
         values.put(NOTE, "");
         values.put(STYLE_COLOR, aSBrew.getColor());

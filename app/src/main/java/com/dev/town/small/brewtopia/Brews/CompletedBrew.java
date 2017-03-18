@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -21,6 +22,7 @@ import com.dev.town.small.brewtopia.DataClass.CurrentUser;
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
 import com.dev.town.small.brewtopia.DataClass.ScheduledBrewSchema;
 import com.dev.town.small.brewtopia.R;
+import com.dev.town.small.brewtopia.Schedule.CustomSEListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,7 @@ public class CompletedBrew extends ActionBarActivity {
     private EditText OriginalGravity;
     private EditText FinalGravity;
     private EditText ABV;
+    private ListView ScheduleEventsListView;
 
     private Spinner colorSpinner;
     private CheckBox dateRollUpCheckBox;
@@ -68,6 +71,8 @@ public class CompletedBrew extends ActionBarActivity {
         OriginalGravity = (EditText)findViewById(R.id.ScheduleOGeditText);
         FinalGravity = (EditText)findViewById(R.id.ScheduleFGeditText);
         ABV = (EditText)findViewById(R.id.ScheduleABVeditText);
+
+        ScheduleEventsListView = (ListView)findViewById(R.id.ScheduleEvents);
 
         colorSpinner = (Spinner) findViewById(R.id.Colorspinner);
         dateRollUpCheckBox = (CheckBox)findViewById(R.id.DateRollUpCheckBox);
@@ -114,6 +119,10 @@ public class CompletedBrew extends ActionBarActivity {
         FinalGravity.setText(Double.toString(aScheduleSchema.getFG()));
         ABV.setText(Double.toString(APPUTILS.GetTruncatedABVPercent(aScheduleSchema.getABV())) +"%" );
         usingStater.setChecked(aScheduleSchema.getBooleanHasStarter());
+
+        CustomSEListAdapter adapter = new CustomSEListAdapter(aScheduleSchema.getScheduledEventSchemaList(), getApplicationContext());
+        ScheduleEventsListView.setAdapter(adapter);
+        APPUTILS.setListViewHeightBasedOnChildren(ScheduleEventsListView);
     }
 
     private void setColorSpinner()
@@ -169,6 +178,10 @@ public class CompletedBrew extends ActionBarActivity {
 
         dateRollUpCheckBox.setClickable(false);
         usingStater.setClickable(false);
+
+        ScheduleEventsListView.setClickable(false);
+        ScheduleEventsListView.setEnabled(false);
+        ScheduleEventsListView.setFocusable(false);
     }
 
     @Override
