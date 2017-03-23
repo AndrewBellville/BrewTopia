@@ -103,6 +103,10 @@ public class AddEditViewBoilAdditions extends Fragment {
             public void OnEditClick(BoilAdditionsSchema aBoilAdditionsSchema) {
                 AdditionSelected(aBoilAdditionsSchema);
             }
+            @Override
+            public void OnDuplicateClick(BoilAdditionsSchema aBoilAdditionsSchema) {
+                createBoilAddition(aBoilAdditionsSchema);
+            }
         });
 
         if(!CanEdit || CurrentUser.getInstance().getUser().isTemp())
@@ -243,13 +247,16 @@ public class AddEditViewBoilAdditions extends Fragment {
 
     public void onAddClick(View aView) {
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: onAddClick");
-        createBoilAddition();
+        createBoilAddition(new BoilAdditionsSchema());
     }
 
-    private void createBoilAddition()
+    private void createBoilAddition(BoilAdditionsSchema boilAdditionsSchema)
     {
-        BoilAdditionsSchema ba = new BoilAdditionsSchema();
+        BoilAdditionsSchema ba = boilAdditionsSchema;
+        //make sure Id is 0 for new addition create
+        ba.setAdditionId(0);
         brewData.getInstance().getBaArray().add(ba);
+        AdditionSelected(ba);
         loadAll();
     }
 

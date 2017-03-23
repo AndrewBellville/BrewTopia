@@ -107,6 +107,11 @@ public class AddEditViewOther extends ActionBarActivity {
             otherSchema = (OtherSchema) InventoryActivityData.getInstance().getOtherSchema();
             ifView();
         }
+        //Hide Button if We cant edit
+        if(!BrewActivityData.getInstance().CanEdit()) {
+            editInventoryButton.setVisibility(View.INVISIBLE);
+            deleteInventoryButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void ifAdd()

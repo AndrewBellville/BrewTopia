@@ -117,6 +117,18 @@ public class DataBaseManager extends SQLiteOpenHelper {
     // TABLE_BREWS_STYLES column names
     protected static final String STYLE_NAME = "StyleName";
     protected static final String STYLE_COLOR = "StyleColor";
+    protected static final String OG_MIN = "MinOG";
+    protected static final String OG_MAX = "MaxOG";
+    protected static final String FG_MIN = "MinFG";
+    protected static final String FG_MAX = "MaxFG";
+    protected static final String IBU_MIN = "MinIBU";
+    protected static final String IBU_MAX = "MaxIBU";
+    protected static final String SRM_MIN = "MinSRM";
+    protected static final String SRM_MAX = "MaxSRM";
+    protected static final String ABV_MIN = "MinABV";
+    protected static final String ABV_MAX = "MaxABV";
+    protected static final String STYLE_TYPE = "StyleType";
+
 
     // TABLE_BOIL_ADDITIONS column names
     protected static final String ADDITION_NAME = "AdditionName";
@@ -185,7 +197,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     //CREATE_TABLE_BREWS_STYLES
     protected static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
-            + TABLE_BREWS_STYLES + "(" + STYLE_ID + " INTEGER PRIMARY KEY," + STYLE_NAME + " TEXT," + USER_ID + " INTEGER," + STYLE_COLOR + " TEXT )";
+            + TABLE_BREWS_STYLES + "(" + STYLE_ID + " INTEGER PRIMARY KEY," + STYLE_NAME + " TEXT," + STYLE_TYPE + " TEXT," + USER_ID + " INTEGER," + OG_MIN + " REAL,"
+            + OG_MAX + " REAL,"+ FG_MIN + " REAL,"+ FG_MAX + " REAL,"+ IBU_MIN + " REAL,"+ IBU_MAX + " REAL,"+ SRM_MIN + " REAL,"+ SRM_MAX + " REAL,"+ ABV_MIN + " REAL,"
+            + ABV_MAX + " REAL,"+ STYLE_COLOR + " TEXT )";
 
     //CREATE_TABLE_BOIL_ADDITIONS
     protected static final String CREATE_TABLE_BOIL_ADDITIONS = "CREATE TABLE "
@@ -866,6 +880,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(STYLE_NAME, aBrewStyle.getBrewStyleName());
         values.put(USER_ID, aBrewStyle.getUserId());
         values.put(STYLE_COLOR, aBrewStyle.getBrewStyleColor());
+        values.put(STYLE_TYPE, aBrewStyle.getType());
+        values.put(OG_MIN, aBrewStyle.getMinOG());
+        values.put(OG_MAX, aBrewStyle.getMaxOG());
+        values.put(FG_MIN, aBrewStyle.getMinFG());
+        values.put(FG_MAX, aBrewStyle.getMaxFG());
+        values.put(IBU_MIN, aBrewStyle.getMinIBU());
+        values.put(IBU_MAX, aBrewStyle.getMaxIBU());
+        values.put(SRM_MIN, aBrewStyle.getMinSRM());
+        values.put(SRM_MAX, aBrewStyle.getMaxSRM());
+        values.put(ABV_MIN, aBrewStyle.getMinABV());
+        values.put(ABV_MAX, aBrewStyle.getMaxABV());
 
         //Add brew style
         if(!(db.insert(TABLE_BREWS_STYLES,null,values) > 0) )
@@ -895,6 +920,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 brewStyleSchema.setBrewStyleName(c.getString(c.getColumnIndex(STYLE_NAME)));
                 brewStyleSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
                 brewStyleSchema.setBrewStyleColor(c.getString(c.getColumnIndex(STYLE_COLOR)));
+                brewStyleSchema.setType(c.getString(c.getColumnIndex(STYLE_TYPE)));
+                brewStyleSchema.setMinOG(c.getDouble(c.getColumnIndex(OG_MIN)));
+                brewStyleSchema.setMaxOG(c.getDouble(c.getColumnIndex(OG_MAX)));
+                brewStyleSchema.setMinFG(c.getDouble(c.getColumnIndex(FG_MIN)));
+                brewStyleSchema.setMaxFG(c.getDouble(c.getColumnIndex(FG_MAX)));
+                brewStyleSchema.setMinIBU(c.getDouble(c.getColumnIndex(IBU_MIN)));
+                brewStyleSchema.setMaxIBU(c.getDouble(c.getColumnIndex(IBU_MAX)));
+                brewStyleSchema.setMinSRM(c.getDouble(c.getColumnIndex(SRM_MIN)));
+                brewStyleSchema.setMaxSRM(c.getDouble(c.getColumnIndex(SRM_MAX)));
+                brewStyleSchema.setMinABV(c.getDouble(c.getColumnIndex(ABV_MIN)));
+                brewStyleSchema.setMaxABV(c.getDouble(c.getColumnIndex(ABV_MAX)));
 
                 // adding to brewStyleList
                 brewStyleList.add(brewStyleSchema);
@@ -925,6 +961,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 brewStyleSchema.setBrewStyleName(c.getString(c.getColumnIndex(STYLE_NAME)));
                 brewStyleSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
                 brewStyleSchema.setBrewStyleColor(c.getString(c.getColumnIndex(STYLE_COLOR)));
+                brewStyleSchema.setType(c.getString(c.getColumnIndex(STYLE_TYPE)));
+                brewStyleSchema.setMinOG(c.getDouble(c.getColumnIndex(OG_MIN)));
+                brewStyleSchema.setMaxOG(c.getDouble(c.getColumnIndex(OG_MAX)));
+                brewStyleSchema.setMinFG(c.getDouble(c.getColumnIndex(FG_MIN)));
+                brewStyleSchema.setMaxFG(c.getDouble(c.getColumnIndex(FG_MAX)));
+                brewStyleSchema.setMinIBU(c.getDouble(c.getColumnIndex(IBU_MIN)));
+                brewStyleSchema.setMaxIBU(c.getDouble(c.getColumnIndex(IBU_MAX)));
+                brewStyleSchema.setMinSRM(c.getDouble(c.getColumnIndex(SRM_MIN)));
+                brewStyleSchema.setMaxSRM(c.getDouble(c.getColumnIndex(SRM_MAX)));
+                brewStyleSchema.setMinABV(c.getDouble(c.getColumnIndex(ABV_MIN)));
+                brewStyleSchema.setMaxABV(c.getDouble(c.getColumnIndex(ABV_MAX)));
         }
 
         c.close();

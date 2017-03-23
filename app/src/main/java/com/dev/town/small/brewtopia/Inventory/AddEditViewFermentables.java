@@ -126,6 +126,12 @@ public class AddEditViewFermentables extends ActionBarActivity {
             fermentablesSchema = (FermentablesSchema) InventoryActivityData.getInstance().getFermentablesSchema();
             ifView();
         }
+
+        //Hide Button if We cant edit
+        if(!BrewActivityData.getInstance().CanEdit()) {
+            editInventoryButton.setVisibility(View.INVISIBLE);
+            deleteInventoryButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void ifAdd()

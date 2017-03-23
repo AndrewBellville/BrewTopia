@@ -1,6 +1,7 @@
 package com.dev.town.small.brewtopia.Brews;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -40,6 +42,7 @@ public class AddEditViewBrew extends Fragment {
     // Log cat tag
     private static final String LOG = "AddEditViewBrew";
 
+    private ImageView brewImage;
     private Button startButton;
     private Button editBrewButton;
     private Button uploadButton;
@@ -105,6 +108,7 @@ public class AddEditViewBrew extends Fragment {
 
         dbManager = DataBaseManager.getInstance(getActivity());
 
+        brewImage = (ImageView)mainView.findViewById(R.id.BrewImageView);
         brewName = (EditText)mainView.findViewById(R.id.editTextBrewName);
         primary = (EditText)mainView.findViewById(R.id.editTextPrimary);
         secondary = (EditText)mainView.findViewById(R.id.editTextSecondary);
@@ -291,6 +295,11 @@ public class AddEditViewBrew extends Fragment {
     {
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: DisplayBrew");
         //Reset all fields
+        if(aBrewSchema.getBrewImageSchemaList().size() > 0) {
+            int imageSize = 300;
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(aBrewSchema.getBrewImageSchemaList().get(0).getImage(), imageSize, imageSize, true);
+            brewImage.setImageBitmap(scaledBitmap);
+        }
         brewName.setText(aBrewSchema.getBrewName());
         primary.setText(Integer.toString(aBrewSchema.getPrimary()));
         secondary.setText(Integer.toString(aBrewSchema.getSecondary()));

@@ -96,7 +96,17 @@
         android:layout_height="wrap_content"
         android:text="Edit"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignLeft="@+id/dup_btn"
+        android:layout_alignStart="@+id/dup_btn" />
+    <Button
+        android:id="@+id/dup_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Duplicate"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/edit_btn"/>
 
     <Spinner
         android:layout_width="wrap_content"

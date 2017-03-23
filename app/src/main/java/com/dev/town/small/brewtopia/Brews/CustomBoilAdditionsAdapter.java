@@ -87,6 +87,8 @@ public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapt
         //Handle buttons and add onClickListeners
         Button editButton = (Button)view.findViewById(R.id.edit_btn);
         if(!isEditable) editButton.setVisibility(View.INVISIBLE);
+        Button dupButton = (Button)view.findViewById(R.id.dup_btn);
+        if(!isEditable) dupButton.setVisibility(View.INVISIBLE);
 
 
         Spinner UofMSpinner = (Spinner)view.findViewById(R.id.UofMSpinner);
@@ -115,6 +117,19 @@ public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapt
                 {
                     BoilAdditionsSchema baSchema = list.get(position);
                     eventHandler.OnEditClick(baSchema);
+                }
+
+                notifyDataSetChanged();
+            }
+        });
+
+        dupButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(eventHandler != null)
+                {
+                    BoilAdditionsSchema baSchema = list.get(position);
+                    eventHandler.OnDuplicateClick(baSchema);
                 }
 
                 notifyDataSetChanged();
@@ -158,5 +173,6 @@ public class CustomBoilAdditionsAdapter extends BaseAdapter implements ListAdapt
     public interface EventHandler
     {
         void OnEditClick(BoilAdditionsSchema aBoilAdditionsSchema);
+        void OnDuplicateClick(BoilAdditionsSchema aBoilAdditionsSchema);
     }
 }

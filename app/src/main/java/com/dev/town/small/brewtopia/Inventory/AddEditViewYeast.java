@@ -138,6 +138,11 @@ public class AddEditViewYeast extends ActionBarActivity {
             yeastSchema = (YeastSchema) InventoryActivityData.getInstance().getYeastSchema();
             ifView();
         }
+        //Hide Button if We cant edit
+        if(!BrewActivityData.getInstance().CanEdit()) {
+            editInventoryButton.setVisibility(View.INVISIBLE);
+            deleteInventoryButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void ifAdd()

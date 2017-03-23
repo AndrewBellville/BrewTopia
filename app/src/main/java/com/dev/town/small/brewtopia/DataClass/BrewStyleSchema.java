@@ -12,6 +12,17 @@ public class BrewStyleSchema {
     private long userId =-1;
     private String BrewStyleName;
     private String BrewStyleColor;
+    private String type;
+    private double minOG=0.0;
+    private double maxOG=0.0;
+    private double minFG=0.0;
+    private double maxFG=0.0;
+    private double minIBU=0.0;
+    private double maxIBU=0.0;
+    private double minSRM=0.0;
+    private double maxSRM=0.0;
+    private double minABV=0.0;
+    private double maxABV=0.0;
 
     // constructors
     public BrewStyleSchema() {
@@ -30,6 +41,40 @@ public class BrewStyleSchema {
     public String getBrewStyleColor() {
         return BrewStyleColor;
     }
+    public double getMinFG() {
+        return minFG;
+    }
+    public double getMinIBU() {
+        return minIBU;
+    }
+    public double getMaxFG() {
+        return maxFG;
+    }
+    public double getMaxIBU() {
+        return maxIBU;
+    }
+    public double getMinSRM() {
+        return minSRM;
+    }
+    public double getMaxSRM() {
+        return maxSRM;
+    }
+    public double getMinABV() {
+        return minABV;
+    }
+    public double getMaxABV() {
+        return maxABV;
+    }
+    public double getMaxOG() {
+        return maxOG;
+    }
+    public double getMinOG() {
+        return minOG;
+    }
+    public String getType() {
+        return type;
+    }
+
     // setters
     public void setStyleId(long styleId) {
         this.styleId = styleId;
@@ -42,5 +87,38 @@ public class BrewStyleSchema {
     }
     public void setBrewStyleColor(String brewStyleColor) {
         BrewStyleColor = brewStyleColor;
+    }
+    public void setMinFG(double minFG) {
+        this.minFG = minFG;
+    }
+    public void setMinIBU(double minIBU) {
+        this.minIBU = minIBU;
+    }
+    public void setMaxFG(double maxFG) {
+        this.maxFG = maxFG;
+    }
+    public void setMaxIBU(double maxIBU) {
+        this.maxIBU = maxIBU;
+    }
+    public void setMinSRM(double minSRM) {
+        this.minSRM = minSRM;
+    }
+    public void setMaxSRM(double maxSRM) {
+        this.maxSRM = maxSRM;
+    }
+    public void setMinABV(double minABV) {
+        this.minABV = minABV;
+    }
+    public void setMaxABV(double maxABV) {
+        this.maxABV = maxABV;
+    }
+    public void setMaxOG(double maxOG) {
+        this.maxOG = maxOG;
+    }
+    public void setMinOG(double minOG) {
+        this.minOG = minOG;
+    }
+    public void setType(String type) {
+        this.type = type;
     }
 }

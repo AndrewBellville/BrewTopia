@@ -204,6 +204,7 @@ public class AddEditViewBrewNotes extends Fragment {
     {
         BrewNoteSchema bn = new BrewNoteSchema();
         brewData.getBrewNoteSchemaList().add(bn);
+        NoteSelected(bn);
         LoadBrewNoteView();
     }
 }
