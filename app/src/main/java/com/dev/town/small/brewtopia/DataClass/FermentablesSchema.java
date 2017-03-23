@@ -7,7 +7,9 @@ public class FermentablesSchema extends InventorySchema {
 
     private double poundPerGallon=0.0;
     private double Lovibond=0.0;
-    private double bill=0.0;
+    private String type="";
+    private double yield=0.0;
+    private double potential=0.0;
 
     //Getters
     public double getPoundPerGallon() {
@@ -16,10 +18,15 @@ public class FermentablesSchema extends InventorySchema {
     public double getLovibond() {
         return Lovibond;
     }
-    public double getBill() {
-        return bill;
+    public double getPotential() {
+        return potential;
     }
-
+    public double getYield() {
+        return yield;
+    }
+    public String getType() {
+        return type;
+    }
 
     //Setters
     public void setPoundPerGallon(double poundPerGallon) {
@@ -28,7 +35,13 @@ public class FermentablesSchema extends InventorySchema {
     public void setLovibond(double lovibond) {
         Lovibond = lovibond;
     }
-    public void setBill(double bill) {
-        this.bill = bill;
+    public void setPotential(double potential) {
+        this.potential = potential;
+    }
+    public void setYield(double yield) {
+        this.yield = yield;
+    }
+    public void setType(String type) {
+        this.type = type;
     }
 }

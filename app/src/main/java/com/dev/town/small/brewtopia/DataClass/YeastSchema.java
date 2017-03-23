@@ -10,6 +10,9 @@ public class YeastSchema extends InventorySchema {
     private double optimumTempLow=0.0;
     private double optimumTempHigh=0.0;
     private int starter=0;
+    private String Laboratory="";
+    private String Type="";
+    private String Form="";
 
 
     //Getters
@@ -34,7 +37,15 @@ public class YeastSchema extends InventorySchema {
         else
         return false;
     }
-
+    public String getLaboratory() {
+        return Laboratory;
+    }
+    public String getType() {
+        return Type;
+    }
+    public String getForm() {
+        return Form;
+    }
 
     //Setters
     public void setAttenuation(double attenuation) {
@@ -57,6 +68,15 @@ public class YeastSchema extends InventorySchema {
             this.starter = 1;
         else
             this.starter = 0;
+    }
+    public void setLaboratory(String laboratory) {
+        Laboratory = laboratory;
+    }
+    public void setType(String type) {
+        Type = type;
+    }
+    public void setForm(String form) {
+        Form = form;
     }
 
 }

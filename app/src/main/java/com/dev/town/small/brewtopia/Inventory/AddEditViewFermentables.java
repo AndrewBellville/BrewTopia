@@ -39,21 +39,25 @@ public class AddEditViewFermentables extends ActionBarActivity {
     private ScrollView ScrollView;
     private EditText Name;
     private EditText Qty;
+    private EditText type;
+    private EditText yield;
+    private EditText potential;
     private EditText amount;
     private Spinner editUOfMSpinner;
     private ArrayAdapter<String> UofMAdapter;
 
     private EditText poundPerGallon;
     private EditText Lovibond;
-    private EditText bill;
 
     private KeyListener NameListener;
     private KeyListener amountListener;
     private KeyListener QtyListener;
 
+    private KeyListener typeListener;
+    private KeyListener yieldListener;
+    private KeyListener potentialListener;
     private KeyListener poundPerGallonListener;
     private KeyListener LovibondListener;
-    private KeyListener billListener;
 
     private Button editInventoryButton;
     private Button deleteInventoryButton;
@@ -83,7 +87,10 @@ public class AddEditViewFermentables extends ActionBarActivity {
         Qty = (EditText)findViewById(R.id.QtyEditText);
         poundPerGallon = (EditText)findViewById(R.id.poundPerGallonEditText);
         Lovibond = (EditText)findViewById(R.id.lovibondEditText);
-        bill = (EditText)findViewById(R.id.billEditText);
+        type = (EditText)findViewById(R.id.TypeEditText);
+        yield = (EditText)findViewById(R.id.YieldEditText);
+        potential = (EditText)findViewById(R.id.PotentialEditText);
+
 
         List<String> UOfMs = APPUTILS.UofM;
         UofMAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, UOfMs);
@@ -97,7 +104,9 @@ public class AddEditViewFermentables extends ActionBarActivity {
         QtyListener = Qty.getKeyListener();
         poundPerGallonListener = poundPerGallon.getKeyListener();
         LovibondListener = Lovibond.getKeyListener();
-        billListener = bill.getKeyListener();
+        typeListener = type.getKeyListener();
+        yieldListener = yield.getKeyListener();
+        potentialListener = potential.getKeyListener();
 
 
         editInventoryButton = (Button)findViewById(R.id.inventoryEditButton);
@@ -167,7 +176,9 @@ public class AddEditViewFermentables extends ActionBarActivity {
         amount.setText("");
         poundPerGallon.setText("");
         Lovibond.setText("");
-        bill.setText("");
+        type.setText("");
+        yield.setText("");
+        potential.setText("");
     }
 
     private void DisplayFermentables()
@@ -180,7 +191,9 @@ public class AddEditViewFermentables extends ActionBarActivity {
         amount.setText(Double.toString(fermentablesSchema.getAmount()));
         poundPerGallon.setText(Double.toString(fermentablesSchema.getPoundPerGallon()));
         Lovibond.setText(Double.toString(fermentablesSchema.getLovibond()));
-        bill.setText(Double.toString(fermentablesSchema.getBill()));
+        type.setText((fermentablesSchema.getType()));
+        yield.setText(Double.toString(fermentablesSchema.getYield()));
+        potential.setText(Double.toString(fermentablesSchema.getPotential()));
 
         try
         {
@@ -218,7 +231,8 @@ public class AddEditViewFermentables extends ActionBarActivity {
 
         double ppg=0.0;
         double l=0.0;
-        double b=0.0;
+        double y=0.0;
+        double p=0.0;
 
 
         try
@@ -238,7 +252,12 @@ public class AddEditViewFermentables extends ActionBarActivity {
         catch (Exception e){}
         try
         {
-            b = Double.parseDouble(bill.getText().toString());
+            y = Double.parseDouble(yield.getText().toString());
+        }
+        catch (Exception e){}
+        try
+        {
+            p = Double.parseDouble(potential.getText().toString());
         }
         catch (Exception e){}
         try
@@ -252,7 +271,10 @@ public class AddEditViewFermentables extends ActionBarActivity {
         aFermentablesSchema.setInvetoryQty(qt);
         aFermentablesSchema.setPoundPerGallon(ppg);
         aFermentablesSchema.setLovibond(l);
-        aFermentablesSchema.setBill(b);
+        aFermentablesSchema.setType(type.getText().toString());
+        aFermentablesSchema.setYield(y);
+        aFermentablesSchema.setPotential(p);
+
         aFermentablesSchema.setInventoryUOfM(editUOfMSpinner.getSelectedItem().toString());
 
         // If we are doing any adding we want to always create the base Inventory record
@@ -342,10 +364,20 @@ public class AddEditViewFermentables extends ActionBarActivity {
             poundPerGallon.setEnabled(false);
             //poundPerGallon.setFocusable(false);
 
-            bill.setKeyListener(null);
-            bill.setClickable(false);
-            bill.setEnabled(false);
-            //bill.setFocusable(false);
+            type.setKeyListener(null);
+            type.setClickable(false);
+            type.setEnabled(false);
+            //type.setFocusable(false);
+
+            yield.setKeyListener(null);
+            yield.setClickable(false);
+            yield.setEnabled(false);
+            //yield.setFocusable(false);
+
+            potential.setKeyListener(null);
+            potential.setClickable(false);
+            potential.setEnabled(false);
+            //potential.setFocusable(false);
 
             editUOfMSpinner.setClickable(false);
             editUOfMSpinner.setEnabled(false);
@@ -378,10 +410,20 @@ public class AddEditViewFermentables extends ActionBarActivity {
             poundPerGallon.setEnabled(true);
             //poundPerGallon.setFocusable(true);
 
-            bill.setKeyListener(billListener);
-            bill.setClickable(true);
-            bill.setEnabled(true);
-            //bill.setFocusable(true);
+            type.setKeyListener(typeListener);
+            type.setClickable(true);
+            type.setEnabled(true);
+            //type.setFocusable(true);
+
+            yield.setKeyListener(yieldListener);
+            yield.setClickable(true);
+            yield.setEnabled(true);
+            //yield.setFocusable(true);
+
+            potential.setKeyListener(potentialListener);
+            potential.setClickable(true);
+            potential.setEnabled(true);
+            //potential.setFocusable(true);
 
             editUOfMSpinner.setClickable(true);
             editUOfMSpinner.setEnabled(true);

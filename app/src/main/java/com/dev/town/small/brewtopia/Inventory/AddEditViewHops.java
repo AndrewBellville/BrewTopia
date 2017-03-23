@@ -44,7 +44,6 @@ public class AddEditViewHops extends ActionBarActivity {
     private EditText AA;
     private EditText use;
     private EditText time;
-    private EditText IBU;
     private Spinner editUOfMSpinner;
     private ArrayAdapter<String> UofMAdapter;
 
@@ -54,7 +53,6 @@ public class AddEditViewHops extends ActionBarActivity {
     private KeyListener AAListener;
     private KeyListener useListener;
     private KeyListener timeListener;
-    private KeyListener IBUListener;
     private KeyListener hopsQtyListener;
 
     private Button editInventoryButton;
@@ -86,7 +84,6 @@ public class AddEditViewHops extends ActionBarActivity {
         AA = (EditText)findViewById(R.id.AAEditText);
         use = (EditText)findViewById(R.id.useEditText);
         time = (EditText)findViewById(R.id.timeEditText);
-        IBU = (EditText)findViewById(R.id.IBUEditText);
         hopsQty = (EditText)findViewById(R.id.hopsQtyEditText);
 
         List<String> UOfMs = APPUTILS.UofM;
@@ -102,7 +99,6 @@ public class AddEditViewHops extends ActionBarActivity {
         AAListener = AA.getKeyListener();
         useListener = use.getKeyListener();
         timeListener = time.getKeyListener();
-        IBUListener = IBU.getKeyListener();
         hopsQtyListener = hopsQty.getKeyListener();
 
         editInventoryButton = (Button)findViewById(R.id.inventoryEditButton);
@@ -174,7 +170,6 @@ public class AddEditViewHops extends ActionBarActivity {
         AA.setText("");
         use.setText("");
         time.setText("");
-        IBU.setText("");
     }
 
     private void DisplayHops()
@@ -189,7 +184,6 @@ public class AddEditViewHops extends ActionBarActivity {
         AA.setText(Double.toString(hopsSchema.getAA()));
         use.setText(hopsSchema.getUse());
         time.setText(Integer.toString(hopsSchema.getTime()));
-        IBU.setText(Double.toString(hopsSchema.getIBU()));
 
         try
         {
@@ -223,7 +217,6 @@ public class AddEditViewHops extends ActionBarActivity {
 
         double am=0.0;
         double aa=0.0;
-        double ibu=0.0;
         int t=0;
         int qt=0;
 
@@ -235,11 +228,6 @@ public class AddEditViewHops extends ActionBarActivity {
         try
         {
             aa = Double.parseDouble(AA.getText().toString());
-        }
-        catch (Exception e){}
-        try
-        {
-            ibu = Double.parseDouble(IBU.getText().toString());
         }
         catch (Exception e){}
         try
@@ -256,7 +244,6 @@ public class AddEditViewHops extends ActionBarActivity {
 
         aHops.setAmount(am);
         aHops.setAA(aa);
-        aHops.setIBU(ibu);
         aHops.setTime(t);
         aHops.setInvetoryQty(qt);
         aHops.setInventoryUOfM(editUOfMSpinner.getSelectedItem().toString());
@@ -356,11 +343,6 @@ public class AddEditViewHops extends ActionBarActivity {
             time.setEnabled(false);
             //time.setFocusable(false);
 
-            IBU.setKeyListener(null);
-            IBU.setClickable(false);
-            IBU.setEnabled(false);
-            //IBU.setFocusable(false);
-
             hopsQty.setKeyListener(null);
             hopsQty.setClickable(false);
             hopsQty.setEnabled(false);
@@ -402,10 +384,6 @@ public class AddEditViewHops extends ActionBarActivity {
             time.setEnabled(true);
             //time.setFocusable(true);
 
-            IBU.setKeyListener(IBUListener);
-            IBU.setClickable(true);
-            IBU.setEnabled(true);
-            //IBU.setFocusable(true);
 
             hopsQty.setKeyListener(hopsQtyListener);
             hopsQty.setClickable(true);

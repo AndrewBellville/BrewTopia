@@ -33,9 +33,51 @@ android:orientation="vertical">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Laboratory"
+        android:id="@+id/LaboratoryTextView"
+        android:layout_below="@+id/NameEditText" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/LaboratoryEditText"
+        android:layout_below="@+id/LaboratoryTextView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Type"
+        android:id="@+id/TypeTextView"
+        android:layout_below="@+id/LaboratoryEditText" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/TypeEditText"
+        android:layout_below="@+id/TypeTextView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Form"
+        android:id="@+id/FormTextView"
+        android:layout_below="@+id/TypeEditText" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/FormEditText"
+        android:layout_below="@+id/FormTextView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Qty"
         android:id="@+id/QtyLabeltextView"
-        android:layout_below="@+id/NameEditText" />
+        android:layout_below="@+id/FormEditText" />
 
     <EditText
         android:layout_width="match_parent"
@@ -85,11 +127,11 @@ android:orientation="vertical">
         android:layout_below="@+id/attenuationTextView" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Flocculation"
-        android:id="@+id/flocculationTextView"
-        android:layout_below="@+id/attenuationEditText" />
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Flocculation"
+    android:id="@+id/flocculationTextView"
+    android:layout_below="@+id/attenuationEditText" />
 
     <EditText
         android:layout_width="match_parent"
@@ -97,6 +139,10 @@ android:orientation="vertical">
         android:ems="10"
         android:id="@+id/flocculationEditText"
         android:layout_below="@+id/flocculationTextView"/>
+
+
+
+
 
     <TextView
         android:layout_width="wrap_content"

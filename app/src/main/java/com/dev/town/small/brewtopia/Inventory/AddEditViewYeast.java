@@ -42,6 +42,9 @@ public class AddEditViewYeast extends ActionBarActivity {
     private EditText Qty;
     private EditText amount;
 
+    private EditText laboratory;
+    private EditText type;
+    private EditText form;
     private EditText attenuation;
     private EditText flocculation;
     private EditText optimumTempLow;
@@ -50,6 +53,10 @@ public class AddEditViewYeast extends ActionBarActivity {
     private Spinner editUOfMSpinner;
     private ArrayAdapter<String> UofMAdapter;
 
+
+    private KeyListener LaboratoryListener;
+    private KeyListener TypeListener;
+    private KeyListener FormListener;
     private KeyListener NameListener;
     private KeyListener amountListener;
     private KeyListener QtyListener;
@@ -87,6 +94,9 @@ public class AddEditViewYeast extends ActionBarActivity {
         amount = (EditText)findViewById(R.id.amountEditText);
         Qty = (EditText)findViewById(R.id.QtyEditText);
 
+        laboratory = (EditText)findViewById(R.id.LaboratoryEditText);
+        type = (EditText)findViewById(R.id.TypeEditText);
+        form = (EditText)findViewById(R.id.FormEditText);
         attenuation = (EditText)findViewById(R.id.attenuationEditText);
         flocculation = (EditText)findViewById(R.id.flocculationEditText);
         optimumTempLow = (EditText)findViewById(R.id.optimumTempLowEditText);
@@ -103,6 +113,9 @@ public class AddEditViewYeast extends ActionBarActivity {
         NameListener = Name.getKeyListener();
         amountListener = amount.getKeyListener();
         QtyListener = Qty.getKeyListener();
+        LaboratoryListener = laboratory.getKeyListener();
+        TypeListener = type.getKeyListener();
+        FormListener = form.getKeyListener();
         attenuationListener = attenuation.getKeyListener();
         flocculationListener = flocculation.getKeyListener();
         optimumTempLowListener = optimumTempLow.getKeyListener();
@@ -177,6 +190,9 @@ public class AddEditViewYeast extends ActionBarActivity {
         flocculation.setText("");
         optimumTempLow.setText("");
         optimumTempHigh.setText("");
+        laboratory.setText("");
+        type.setText("");
+        form.setText("");
         starter.setChecked(false);;
     }
 
@@ -193,6 +209,10 @@ public class AddEditViewYeast extends ActionBarActivity {
         optimumTempLow.setText(Double.toString(yeastSchema.getOptimumTempLow()));
         optimumTempHigh.setText(Double.toString(yeastSchema.getOptimumTempHigh()));
         starter.setChecked(yeastSchema.getBooleanStarter());
+
+        laboratory.setText(yeastSchema.getLaboratory());
+        type.setText(yeastSchema.getType());
+        form.setText(yeastSchema.getForm());
 
         try
         {
@@ -267,6 +287,9 @@ public class AddEditViewYeast extends ActionBarActivity {
         aYeastSchema.setOptimumTempLow(otl);
         aYeastSchema.setOptimumTempHigh(oth);
         aYeastSchema.setFlocculation(flocculation.getText().toString());
+        aYeastSchema.setLaboratory(laboratory.getText().toString());
+        aYeastSchema.setType(type.getText().toString());
+        aYeastSchema.setForm(form.getText().toString());
         aYeastSchema.setBooleanStarter(starter.isChecked());
         aYeastSchema.setInventoryUOfM(editUOfMSpinner.getSelectedItem().toString());
 
@@ -368,6 +391,21 @@ public class AddEditViewYeast extends ActionBarActivity {
             optimumTempHigh.setEnabled(false);
             //optimumTempHigh.setFocusable(false);
 
+            laboratory.setKeyListener(null);
+            laboratory.setClickable(false);
+            laboratory.setEnabled(false);
+            //optimumTempLow.setFocusable(false);
+
+            type.setKeyListener(null);
+            type.setClickable(false);
+            type.setEnabled(false);
+            //optimumTempLow.setFocusable(false);
+
+            form.setKeyListener(null);
+            form.setClickable(false);
+            form.setEnabled(false);
+            //optimumTempLow.setFocusable(false);
+
             starter.setClickable(false);
 
             editUOfMSpinner.setClickable(false);
@@ -410,6 +448,21 @@ public class AddEditViewYeast extends ActionBarActivity {
             optimumTempHigh.setClickable(true);
             optimumTempHigh.setEnabled(true);
             //optimumTempHigh.setFocusable(true);
+
+            laboratory.setKeyListener(LaboratoryListener);
+            laboratory.setClickable(true);
+            laboratory.setEnabled(true);
+            //optimumTempLow.setFocusable(false);
+
+            type.setKeyListener(TypeListener);
+            type.setClickable(true);
+            type.setEnabled(true);
+            //optimumTempLow.setFocusable(false);
+
+            form.setKeyListener(FormListener);
+            form.setClickable(true);
+            form.setEnabled(true);
+            //optimumTempLow.setFocusable(false);
 
             starter.setClickable(true);
 

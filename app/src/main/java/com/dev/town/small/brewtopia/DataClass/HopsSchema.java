@@ -9,7 +9,6 @@ public class HopsSchema extends InventorySchema {
     private double AA=0.0;
     private String Use="";
     private int time=0;
-    private double IBU=0.0;
     private double Amount=0.0;
 
 
@@ -25,9 +24,6 @@ public class HopsSchema extends InventorySchema {
     }
     public int getTime() {
         return time;
-    }
-    public double getIBU() {
-        return IBU;
     }
     public double getAmount() {
         return Amount;
@@ -45,9 +41,6 @@ public class HopsSchema extends InventorySchema {
     }
     public void setTime(int time) {
         this.time = time;
-    }
-    public void setIBU(double IBU) {
-        this.IBU = IBU;
     }
     public void setAmount(double amount) {
         Amount = amount;

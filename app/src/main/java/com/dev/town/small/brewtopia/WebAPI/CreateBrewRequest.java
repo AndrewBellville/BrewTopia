@@ -29,7 +29,7 @@ import java.util.Map;
  * Created by Andrew on 7/23/2016.
  */
 public class CreateBrewRequest extends StringRequest {
-    private static String URL = APPUTILS.WEBAPIRURL+"/createBrew";
+    private static String URL = APPUTILS.WEBAPIRURL+"/AddStyles";
     private Map<String, String> params;
 
     public CreateBrewRequest(BrewSchema aBrewSchema, Response.Listener<String> listener, Response.ErrorListener errorListener) {
@@ -180,7 +180,7 @@ public class CreateBrewRequest extends StringRequest {
         params.put("InventoryEquipment", inventoryEquipment.toString());
         params.put("InventoryOther", inventoryOther.toString());
 
-        System.out.println(params.toString());
+        if(APPUTILS.isLogging) System.out.println(params.toString());
     }
 
     @Override
@@ -202,7 +202,6 @@ public class CreateBrewRequest extends StringRequest {
         tempMap.put("InventoryUse",aInventorySchema.getUse());
         tempMap.put("InventoryTime",Integer.toString(aInventorySchema.getTime()));
         tempMap.put("InventoryUofM",aInventorySchema.getInventoryUOfM());
-        tempMap.put("IBU", Double.toString(aInventorySchema.getIBU()));
 
         return tempMap;
     }
@@ -219,7 +218,9 @@ public class CreateBrewRequest extends StringRequest {
         tempMap.put("PPG",Double.toString(aInventorySchema.getPoundPerGallon()));
         tempMap.put("Lovibond",Double.toString(aInventorySchema.getLovibond()));
         tempMap.put("InventoryUofM",aInventorySchema.getInventoryUOfM());
-        tempMap.put("Bill",Double.toString(aInventorySchema.getBill()));
+        tempMap.put("InventoryType",aInventorySchema.getType());
+        tempMap.put("Yield",Double.toString(aInventorySchema.getYield()));
+        tempMap.put("Potential",Double.toString(aInventorySchema.getPotential()));
 
         return tempMap;
     }
@@ -239,6 +240,9 @@ public class CreateBrewRequest extends StringRequest {
         tempMap.put("OTL",Double.toString(aInventorySchema.getOptimumTempLow()));
         tempMap.put("OTH",Double.toString(aInventorySchema.getOptimumTempHigh()));
         tempMap.put("InventoryUofM",aInventorySchema.getInventoryUOfM());
+        tempMap.put("Laboratory",aInventorySchema.getLaboratory());
+        tempMap.put("InventoryType",aInventorySchema.getType());
+        tempMap.put("Form",aInventorySchema.getForm());
 
         return tempMap;
     }
@@ -267,6 +271,7 @@ public class CreateBrewRequest extends StringRequest {
         tempMap.put("InventoryName",aInventorySchema.getInventoryName());
         tempMap.put("InventoryAmount",Double.toString(aInventorySchema.getAmount()));
         tempMap.put("InventoryUofM",aInventorySchema.getInventoryUOfM());
+        tempMap.put("InventoryUse",aInventorySchema.getUse());
 
         return tempMap;
     }

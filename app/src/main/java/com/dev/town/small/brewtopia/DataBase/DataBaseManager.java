@@ -142,6 +142,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     // TABLE_INVENTORY_HOPS column names
     protected static final String INVENTORY_TYPE = "Type";
+    protected static final String INVENTORY_FORM = "Form";
     protected static final String INVENTORY_AA = "AlphaAcid";
     protected static final String INVENTORY_USE = "Use";
     protected static final String INVENTORY_TIME = "Time";
@@ -150,7 +151,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     // TABLE_INVENTORY_FERMENTABLES column names
     protected static final String INVENTORY_PPG = "PoundPerGallon";
     protected static final String INVENTORY_LOV = "Lovibond";
-    protected static final String INVENTORY_BILL = "Bill";
+    protected static final String INVENTORY_YIELD = "Yield";
+    protected static final String INVENTORY_POTENTIAL = "Potential";
 
     // TABLE_INVENTORY_YEAST column names
     protected static final String INVENTORY_ATTENUATION = "Attenuation";
@@ -158,6 +160,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String INVENTORY_OTL = "OptimumTempLow";
     protected static final String INVENTORY_OTH = "OptimumTempHigh";
     protected static final String INVENTORY_STARTER = "Starter";
+    protected static final String INVENTORY_LABORATORY = "Laboratory";
 
     // TABLE_BREW_IMAGES column names
     protected static final String IMAGE = "Image";
@@ -209,19 +212,19 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_INVENTORY_HOPS
     protected static final String CREATE_TABLE_INVENTORY_HOPS = "CREATE TABLE "
             + TABLE_INVENTORY_HOPS + "("+ HOPS_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
-            + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT," + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER," + INVENTORY_UOFM + " TEXT,"
-            + INVENTORY_IBU + " REAL )";
+            + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT," + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER," + INVENTORY_UOFM + " TEXT )";
 
     //CREATE_TABLE_INVENTORY_FERMENTABLES
     protected static final String CREATE_TABLE_INVENTORY_FERMENTABLES = "CREATE TABLE "
             + TABLE_INVENTORY_FERMENTABLES + "(" + FERMENTABLES_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER,"
-            + INVENTORY_NAME + " TEXT," + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_BILL + " REAL )";
+            + INVENTORY_NAME + " TEXT," + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_UOFM + " TEXT,"+ INVENTORY_POTENTIAL + " REAL,"
+            + INVENTORY_TYPE + " TEXT,"+ INVENTORY_YIELD + " REAL )";
 
     //CREATE_TABLE_INVENTORY_YEAST
     protected static final String CREATE_TABLE_INVENTORY_YEAST = "CREATE TABLE "
             + TABLE_INVENTORY_YEAST + "(" + YEAST_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_AMOUNT + " REAL," + INVENTORY_FLOCCULATION + " TEXT," + INVENTORY_STARTER + " INTEGER," + INVENTORY_ATTENUATION + " REAL,"
-            + INVENTORY_OTL + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_OTH + " REAL )";
+            + INVENTORY_OTL + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_LABORATORY + " TEXT,"+ INVENTORY_TYPE + " TEXT,"+ INVENTORY_FORM+ " TEXT," + INVENTORY_OTH + " REAL )";
 
     //CREATE_TABLE_INVENTORY_EQUIPMENT
     protected static final String CREATE_TABLE_INVENTORY_EQUIPMENT = "CREATE TABLE "
@@ -231,7 +234,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_INVENTORY_OTHER
     protected static final String CREATE_TABLE_INVENTORY_OTHER = "CREATE TABLE "
             + TABLE_INVENTORY_OTHER + "(" + OTHER_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
-            + INVENTORY_UOFM + " TEXT," + INVENTORY_AMOUNT + " REAL )";
+            + INVENTORY_UOFM + " TEXT," + INVENTORY_USE + " TEXT," + INVENTORY_AMOUNT + " REAL )";
 
     //CREATE_TABLE_BREW_IMAGES
     protected static final String CREATE_TABLE_BREW_IMAGES = "CREATE TABLE "
@@ -1771,7 +1774,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_AMOUNT, aHopsSchema.getAmount());
         values.put(INVENTORY_TYPE, aHopsSchema.getType());
         values.put(INVENTORY_USE, aHopsSchema.getUse());
-        values.put(INVENTORY_IBU, aHopsSchema.getIBU());
         values.put(INVENTORY_AA, aHopsSchema.getAA());
         values.put(INVENTORY_TIME, aHopsSchema.getTime());
 
@@ -1826,7 +1828,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
             hopsSchema.setInventoryUOfM(c.getString(c.getColumnIndex(INVENTORY_UOFM)));
             hopsSchema.setType(c.getString(c.getColumnIndex(INVENTORY_TYPE)));
             hopsSchema.setUse(c.getString(c.getColumnIndex(INVENTORY_USE)));
-            hopsSchema.setIBU(c.getDouble(c.getColumnIndex(INVENTORY_IBU)));
             hopsSchema.setAA(c.getDouble(c.getColumnIndex(INVENTORY_AA)));
             hopsSchema.setTime(c.getInt(c.getColumnIndex(INVENTORY_TIME)));
         }
@@ -1911,7 +1912,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_UOFM, aHopsSchema.getInventoryUOfM());
         values.put(INVENTORY_TYPE, aHopsSchema.getType());
         values.put(INVENTORY_USE, aHopsSchema.getUse());
-        values.put(INVENTORY_IBU, aHopsSchema.getIBU());
         values.put(INVENTORY_AA, aHopsSchema.getAA());
         values.put(INVENTORY_TIME, aHopsSchema.getTime());
 
@@ -1985,7 +1985,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_UOFM, aFermentablesSchema.getInventoryUOfM());
         values.put(INVENTORY_PPG, aFermentablesSchema.getPoundPerGallon());
         values.put(INVENTORY_LOV, aFermentablesSchema.getLovibond());
-        values.put(INVENTORY_BILL, aFermentablesSchema.getBill());
+        values.put(INVENTORY_TYPE, aFermentablesSchema.getType());
+        values.put(INVENTORY_YIELD, aFermentablesSchema.getYield());
+        values.put(INVENTORY_POTENTIAL, aFermentablesSchema.getPotential());
 
         //Add Fermentables
         if(aFermentablesSchema.getInventoryId() == 0)
@@ -2038,7 +2040,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
             fermentablesSchema.setInventoryUOfM(c.getString(c.getColumnIndex(INVENTORY_UOFM)));
             fermentablesSchema.setPoundPerGallon(c.getDouble(c.getColumnIndex(INVENTORY_PPG)));
             fermentablesSchema.setLovibond(c.getDouble(c.getColumnIndex(INVENTORY_LOV)));
-            fermentablesSchema.setBill(c.getDouble(c.getColumnIndex(INVENTORY_BILL)));
+            fermentablesSchema.setType(c.getString(c.getColumnIndex(INVENTORY_TYPE)));
+            fermentablesSchema.setYield(c.getDouble(c.getColumnIndex(INVENTORY_YIELD)));
+            fermentablesSchema.setPotential(c.getDouble(c.getColumnIndex(INVENTORY_POTENTIAL)));
 
         }
 
@@ -2122,7 +2126,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_UOFM, aFermentablesSchema.getInventoryUOfM());
         values.put(INVENTORY_PPG, aFermentablesSchema.getPoundPerGallon());
         values.put(INVENTORY_LOV, aFermentablesSchema.getLovibond());
-        values.put(INVENTORY_BILL, aFermentablesSchema.getBill());
+        values.put(INVENTORY_TYPE, aFermentablesSchema.getType());
+        values.put(INVENTORY_YIELD, aFermentablesSchema.getYield());
+        values.put(INVENTORY_POTENTIAL, aFermentablesSchema.getPotential());
 
 
         // updating row
@@ -2198,6 +2204,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_OTL, aYeastSchema.getOptimumTempLow());
         values.put(INVENTORY_OTH, aYeastSchema.getOptimumTempHigh());
         values.put(INVENTORY_STARTER, aYeastSchema.getStarter());
+        values.put(INVENTORY_LABORATORY, aYeastSchema.getLaboratory());
+        values.put(INVENTORY_TYPE, aYeastSchema.getType());
+        values.put(INVENTORY_FORM, aYeastSchema.getForm());
 
         //Add Yeast
         if(aYeastSchema.getInventoryId() == 0)
@@ -2253,6 +2262,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
             yeastSchema.setOptimumTempLow(c.getDouble(c.getColumnIndex(INVENTORY_OTL)));
             yeastSchema.setOptimumTempHigh(c.getDouble(c.getColumnIndex(INVENTORY_OTH)));
             yeastSchema.setStarter(c.getInt(c.getColumnIndex(INVENTORY_STARTER)));
+            yeastSchema.setLaboratory(c.getString(c.getColumnIndex(INVENTORY_LABORATORY)));
+            yeastSchema.setType(c.getString(c.getColumnIndex(INVENTORY_TYPE)));
+            yeastSchema.setForm(c.getString(c.getColumnIndex(INVENTORY_FORM)));
 
         }
 
@@ -2339,6 +2351,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_OTL, aYeastSchema.getOptimumTempLow());
         values.put(INVENTORY_OTH, aYeastSchema.getOptimumTempHigh());
         values.put(INVENTORY_STARTER, aYeastSchema.getStarter());
+        values.put(INVENTORY_LABORATORY, aYeastSchema.getLaboratory());
+        values.put(INVENTORY_TYPE, aYeastSchema.getType());
+        values.put(INVENTORY_FORM, aYeastSchema.getForm());
 
         // updating row
         int retVal = db.update(TABLE_INVENTORY_YEAST, values, YEAST_ID + " = ?",
@@ -2607,6 +2622,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_QTY, aOtherSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aOtherSchema.getAmount());
         values.put(INVENTORY_UOFM, aOtherSchema.getInventoryUOfM());
+        values.put(INVENTORY_USE, aOtherSchema.getUse());
 
         //Add Other
         if(aOtherSchema.getInventoryId() == 0)
@@ -2657,6 +2673,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             otherSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             otherSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
             otherSchema.setInventoryUOfM(c.getString(c.getColumnIndex(INVENTORY_UOFM)));
+            otherSchema.setUse(c.getString(c.getColumnIndex(INVENTORY_USE)));
         }
 
         c.close();
@@ -2737,6 +2754,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_QTY, aOtherSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aOtherSchema.getAmount());
         values.put(INVENTORY_UOFM, aOtherSchema.getInventoryUOfM());
+        values.put(INVENTORY_USE, aOtherSchema.getUse());
 
         // updating row
         int retVal = db.update(TABLE_INVENTORY_OTHER, values, OTHER_ID + " = ?",

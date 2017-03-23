@@ -33,9 +33,23 @@ android:orientation="vertical">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Type"
+        android:id="@+id/TypeTextView"
+        android:layout_below="@+id/NameEditText" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/TypeEditText"
+        android:layout_below="@+id/TypeTextView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Qty"
         android:id="@+id/QtyLabeltextView"
-        android:layout_below="@+id/NameEditText" />
+        android:layout_below="@+id/TypeEditText" />
 
     <EditText
         android:layout_width="match_parent"
@@ -70,9 +84,38 @@ android:orientation="vertical">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Yield"
+        android:id="@+id/YieldTextView"
+        android:layout_below="@+id/UofMSpinner" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/YieldEditText"
+        android:layout_below="@+id/YieldTextView"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Potential"
+        android:id="@+id/PotentialTextView"
+        android:layout_below="@+id/YieldEditText" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/PotentialEditText"
+        android:layout_below="@+id/PotentialTextView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Pound Per Gallon (PPG)"
         android:id="@+id/poundPerGallonTextView"
-        android:layout_below="@+id/UofMSpinner"
+        android:layout_below="@+id/PotentialEditText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -98,21 +141,6 @@ android:orientation="vertical">
         android:ems="10"
         android:id="@+id/lovibondEditText"
         android:layout_below="@+id/lovibondTextView"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Bill"
-        android:id="@+id/billTextView"
-        android:layout_below="@+id/lovibondEditText" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        android:ems="10"
-        android:id="@+id/billEditText"
-        android:layout_below="@+id/billTextView" />
 
     </RelativeLayout>
 

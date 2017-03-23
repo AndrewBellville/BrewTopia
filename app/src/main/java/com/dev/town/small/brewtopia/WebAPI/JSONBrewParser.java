@@ -449,7 +449,6 @@ public class JSONBrewParser {
             inventorySchema.setUse(aInventory.getString("InventoryUse"));
             inventorySchema.setTime(Integer.parseInt(aInventory.getString("InventoryTime")));
             inventorySchema.setInventoryUOfM(aInventory.getString("InventoryUofM"));
-            inventorySchema.setIBU(Double.parseDouble(aInventory.getString("IBU")));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -502,7 +501,9 @@ public class JSONBrewParser {
             inventorySchema.setPoundPerGallon(Double.parseDouble(aInventory.getString("PPG")));
             inventorySchema.setLovibond(Double.parseDouble(aInventory.getString("Lovibond")));
             inventorySchema.setInventoryUOfM(aInventory.getString("InventoryUofM"));
-            inventorySchema.setBill(Double.parseDouble(aInventory.getString("Bill")));
+            inventorySchema.setType(aInventory.getString("InventoryType"));
+            inventorySchema.setYield(Double.parseDouble(aInventory.getString("Yield")));
+            inventorySchema.setPotential(Double.parseDouble(aInventory.getString("Potential")));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -557,6 +558,9 @@ public class JSONBrewParser {
             inventorySchema.setOptimumTempLow(Double.parseDouble(aInventory.getString("OTL")));
             inventorySchema.setOptimumTempHigh(Double.parseDouble(aInventory.getString("OTH")));
             inventorySchema.setInventoryUOfM(aInventory.getString("InventoryUofM"));
+            inventorySchema.setLaboratory(aInventory.getString("Laboratory"));
+            inventorySchema.setType(aInventory.getString("InventoryType"));
+            inventorySchema.setForm(aInventory.getString("Form"));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -657,6 +661,7 @@ public class JSONBrewParser {
             inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
             inventorySchema.setAmount(Double.parseDouble(aInventory.getString("InventoryAmount")));
             inventorySchema.setInventoryUOfM(aInventory.getString("InventoryUofM"));
+            inventorySchema.setUse(aInventory.getString("InventoryUse"));
 
         } catch (JSONException e) {
             e.printStackTrace();

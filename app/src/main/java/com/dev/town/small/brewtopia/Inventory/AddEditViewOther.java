@@ -40,12 +40,14 @@ public class AddEditViewOther extends ActionBarActivity {
     private EditText Name;
     private EditText Qty;
     private EditText amount;
+    private EditText Use;
     private Spinner editUOfMSpinner;
     private ArrayAdapter<String> UofMAdapter;
 
     private KeyListener NameListener;
     private KeyListener amountListener;
     private KeyListener QtyListener;
+    private KeyListener UseListener;
 
 
     private Button editInventoryButton;
@@ -60,7 +62,7 @@ public class AddEditViewOther extends ActionBarActivity {
 
         //Add add edit layout default
         LayoutInflater inflater =  (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.activity_add_edit_view_equipment, null);
+        View view = inflater.inflate(R.layout.activity_add_edit_view_other, null);
 
         ScrollView = (ScrollView)findViewById(R.id.inventoryScrollView);
         ScrollView.addView(view);
@@ -74,6 +76,7 @@ public class AddEditViewOther extends ActionBarActivity {
         Name = (EditText)findViewById(R.id.NameEditText);
         amount = (EditText)findViewById(R.id.amountEditText);
         Qty = (EditText)findViewById(R.id.QtyEditText);
+        Use = (EditText)findViewById(R.id.UseEditText);
 
         List<String> UOfMs = APPUTILS.UofM;
         UofMAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, UOfMs);
@@ -85,6 +88,7 @@ public class AddEditViewOther extends ActionBarActivity {
         NameListener = Name.getKeyListener();
         amountListener = amount.getKeyListener();
         QtyListener = Qty.getKeyListener();
+        UseListener = Use.getKeyListener();
 
         editInventoryButton = (Button)findViewById(R.id.inventoryEditButton);
         deleteInventoryButton = (Button)findViewById(R.id.inventoryDeleteButton);
@@ -151,6 +155,7 @@ public class AddEditViewOther extends ActionBarActivity {
         Name.setText("");
         Qty.setText("");
         amount.setText("");
+        Use.setText("");
     }
 
     private void DisplayOther()
@@ -161,6 +166,7 @@ public class AddEditViewOther extends ActionBarActivity {
         Name.setText(otherSchema.getInventoryName());
         Qty.setText(Integer.toString(otherSchema.getInvetoryQty()));
         amount.setText(Double.toString(otherSchema.getAmount()));
+        Use.setText(otherSchema.getUse());
 
         try
         {
@@ -191,6 +197,7 @@ public class AddEditViewOther extends ActionBarActivity {
         aOtherSchema.setInventoryId(aOtherSchema.getInventoryId());
         aOtherSchema.setInventoryName(Name.getText().toString());
         aOtherSchema.setUserId(CurrentUser.getInstance().getUser().getUserId());
+        aOtherSchema.setUse(Use.getText().toString());
 
         double am=0.0;
         int qt=0;
@@ -287,6 +294,11 @@ public class AddEditViewOther extends ActionBarActivity {
             Qty.setEnabled(false);
             //Qty.setFocusable(false);
 
+            Use.setKeyListener(null);
+            Use.setClickable(false);
+            Use.setEnabled(false);
+            //Qty.setFocusable(false);
+
             editUOfMSpinner.setClickable(false);
             editUOfMSpinner.setEnabled(false);
         }
@@ -307,6 +319,11 @@ public class AddEditViewOther extends ActionBarActivity {
             Qty.setClickable(true);
             Qty.setEnabled(true);
             //Qty.setFocusable(true);
+
+            Use.setKeyListener(UseListener);
+            Use.setClickable(true);
+            Use.setEnabled(true);
+            //Qty.setFocusable(false);
 
             editUOfMSpinner.setClickable(true);
             editUOfMSpinner.setEnabled(true);
