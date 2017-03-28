@@ -11,6 +11,7 @@ public class BrewImageSchema {
     private long brewId=0;
     private Bitmap image;
     private String CreatedOn;
+    private int isNew = 1;//1=new 0=not new
 
     // constructors
     public BrewImageSchema() {
@@ -29,6 +30,9 @@ public class BrewImageSchema {
     public String getCreatedOn() {
         return CreatedOn;
     }
+    public int getIsNew() {
+        return isNew;
+    }
 
     //Setters
     public void setImageId(long imageId) {
@@ -42,5 +46,8 @@ public class BrewImageSchema {
     }
     public void setCreatedOn(String createdOn) {
         CreatedOn = createdOn;
+    }
+    public void setIsNew(int isNew) {
+        this.isNew = isNew;
     }
 }

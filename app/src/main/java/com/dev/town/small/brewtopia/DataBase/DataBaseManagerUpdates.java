@@ -31,24 +31,7 @@ public class DataBaseManagerUpdates {
 
     protected void updateAllTables(SQLiteDatabase aSQLiteDatabase, int aOldVersion)
     {
-        // Started maintaining data at DB 35
-        if(aOldVersion < 35)
-            dropAllTables(aSQLiteDatabase);
-
-        if(aOldVersion < 36)
-        {
-            //aSQLiteDatabase.execSQL("ALTER TABLE foo ADD COLUMN new_column INTEGER DEFAULT 0");
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_INVENTORY_HOPS +" ADD COLUMN "+ dbm.INVENTORY_UOFM +" TEXT DEFAULT '' ");
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_INVENTORY_FERMENTABLES +" ADD COLUMN "+ dbm.INVENTORY_UOFM +" TEXT DEFAULT '' ");
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_INVENTORY_YEAST +" ADD COLUMN "+ dbm.INVENTORY_UOFM +" TEXT DEFAULT '' ");
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_INVENTORY_EQUIPMENT +" ADD COLUMN "+ dbm.INVENTORY_UOFM +" TEXT DEFAULT '' ");
-        }
-
-        if(aOldVersion < 37)
-        {
-            aSQLiteDatabase.execSQL(dbm.CREATE_TABLE_INVENTORY_OTHER);
-        }
-
+        /*
         if(aOldVersion < 38)
         {
             aSQLiteDatabase.execSQL("DELETE FROM "+ dbm.TABLE_BREWS_CALCULATIONS +" ");
@@ -67,68 +50,13 @@ public class DataBaseManagerUpdates {
             aSQLiteDatabase.execSQL("DROP TABLE "+ dbm.TABLE_BOIL_ADDITIONS );
             aSQLiteDatabase.execSQL("ALTER TABLE TempAdditions RENAME TO "+ dbm.TABLE_BOIL_ADDITIONS );
         }
-        if(aOldVersion < 40)
-        {
-            String tempUser = "CREATE TABLE "
-                    + "TempUser" + "(" + dbm.USER_ID + " INTEGER PRIMARY KEY,"
-                    + dbm.USER_NAME + " TEXT,"+ dbm.PASSWORD + " TEXT," + dbm.CREATED_ON + " DATETIME )";
-            aSQLiteDatabase.execSQL(tempUser);
-
-            aSQLiteDatabase.execSQL("INSERT INTO TempUser ("+ dbm.USER_ID+","+ dbm.USER_NAME+","+ dbm.PASSWORD+","+ dbm.CREATED_ON+") " +
-                    "SELECT "+ dbm.ROW_ID+","+ dbm.USER_NAME+","+ dbm.PASSWORD+","+ dbm.CREATED_ON+" FROM "+ dbm.TABLE_USERS );
-
-            aSQLiteDatabase.execSQL("DROP TABLE "+ dbm.TABLE_USERS );
-            aSQLiteDatabase.execSQL("ALTER TABLE TempUser RENAME TO "+ dbm.TABLE_USERS );
-        }
         if(aOldVersion < 41)
         {
             aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.TOTAL_BREWED +" INTEGER DEFAULT 0 ");
             aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS_SCHEDULED +" ADD COLUMN "+ dbm.USING_STARTER +" INTEGER DEFAULT 0 ");
         }
-        if(aOldVersion < 42)
-        {
-            //aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.GLOBAL_BREW_ID +" INTEGER DEFAULT -1 ");
-        }
-        if(aOldVersion < 43)
-        {
-            //aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BOIL_ADDITIONS +" ADD COLUMN "+ dbm.GLOBAL_ADDITION_ID +" INTEGER DEFAULT -1 ");
-        }
-        if(aOldVersion < 44)
-        {
-            //aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS_NOTES +" ADD COLUMN "+ dbm.GLOBAL_BREW_NOTE_ID +" INTEGER DEFAULT -1 ");
-        }
-        if(aOldVersion < 45)
-        {
-            aSQLiteDatabase.execSQL(dbm.CREATE_TABLE_BREW_IMAGES);
-        }
-        if(aOldVersion < 46)
-        {
-            aSQLiteDatabase.execSQL(dbm.CREATE_TABLE_SCHEDULED_EVENT);
-        }
-        if(aOldVersion < 47 || aOldVersion < 48)
-        {
-            dpl.PreLoadBrewStyles(aSQLiteDatabase);
-        }
-        if(aOldVersion < 49)
-        {
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.SRM +" INTEGER DEFAULT 0 ");
-        }
-        if(aOldVersion < 50)
-        {
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.DIRTY +" INTEGER DEFAULT 1 ");
-        }
-        if(aOldVersion < 51)
-        {
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.GLOBAL +" INTEGER DEFAULT 0 ");
-        }
-        if(aOldVersion < 52)
-        {
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_BREWS +" ADD COLUMN "+ dbm.BREW_ID +" INTEGER DEFAULT 0 ");
-        }
-        if(aOldVersion < 53)
-        {
-            aSQLiteDatabase.execSQL("ALTER TABLE "+ dbm.TABLE_USERS +" ADD COLUMN "+ dbm.ROLE +" INTEGER DEFAULT 1 ");
-        }
+        */
+
     }
 
     private void dropAllTables(SQLiteDatabase aSQLiteDatabase)

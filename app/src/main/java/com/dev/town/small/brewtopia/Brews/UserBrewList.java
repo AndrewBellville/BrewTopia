@@ -20,6 +20,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
 import com.dev.town.small.brewtopia.Login;
 import com.dev.town.small.brewtopia.R;
@@ -27,7 +28,8 @@ import com.dev.town.small.brewtopia.R;
 import java.util.*;
 
 import com.dev.town.small.brewtopia.DataClass.*;
-
+import com.dev.town.small.brewtopia.WebAPI.DeleteBrewRequest;
+import com.dev.town.small.brewtopia.WebAPI.WebController;
 
 
 public class UserBrewList extends Fragment {
@@ -152,7 +154,7 @@ public class UserBrewList extends Fragment {
             adapter.setEventHandler(new CustomBListAdapter.EventHandler() {
                 @Override
                 public void OnDeleteClickListener(BrewSchema aBrewSchema) {
-                    dbManager.DeleteBrew(aBrewSchema.getBrewId(), userId);
+                    DeleteBrew(aBrewSchema.getBrewId(),aBrewSchema.getIsNew());
                 }
             });
             BrewListView.setAdapter(adapter);
@@ -187,7 +189,7 @@ public class UserBrewList extends Fragment {
             adapter.setEventHandler(new CustomBListAdapter.EventHandler() {
                 @Override
                 public void OnDeleteClickListener(BrewSchema aBrewSchema) {
-                    dbManager.DeleteBrew(aBrewSchema.getBrewId(), userId);
+                    DeleteBrew(aBrewSchema.getBrewId(),aBrewSchema.getIsNew());
                 }
             });
             BrewListView.setAdapter(adapter);
@@ -228,5 +230,42 @@ public class UserBrewList extends Fragment {
         isDelete = !isDelete;
 
         LoadBrews();
+    }
+
+    private void DeleteBrew(Long aBrewId, int IsNew)
+    {
+        if(IsNew == 1)
+        {
+            dbManager.DeleteBrew(aBrewId,CurrentUser.getInstance().getUser().getUserId());
+            LoadBrews();
+            return;
+        }
+
+        if(!APPUTILS.HasInternet(getActivity())) {
+            Toast.makeText(getActivity(), "Need Internet To Perform", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Response.Listener<String> ResponseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if(APPUTILS.isLogging)Log.e(LOG, response);
+                if (!response.equals("Error"))// no match for user exists
+                {
+                    dbManager.DeleteBrew(Long.parseLong(response.trim()),CurrentUser.getInstance().getUser().getUserId());
+                    Toast.makeText(getActivity(),"Delete Successful", Toast.LENGTH_SHORT).show();
+                    LoadBrews();
+                }
+                else
+                {
+                    Toast.makeText(getActivity(),"Delete Failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+
+        DeleteBrewRequest deleteBrewRequest = new DeleteBrewRequest(Long.toString(aBrewId), ResponseListener,null);
+        WebController.getInstance().addToRequestQueue(deleteBrewRequest);
+
     }
 }

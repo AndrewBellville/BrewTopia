@@ -178,7 +178,7 @@ public class Login extends ActionBarActivity {
 
                             //Parse response into BrewShcema list
                             JSONArray jsonArray = new JSONArray(response);
-                            JSONBrewParser jsonParser = new JSONBrewParser(getApplication(),JSONBrewParser.ParseType.PULL);
+                            JSONBrewParser jsonParser = new JSONBrewParser(getApplication());
                             List<BrewSchema> brewSchemaList = jsonParser.ParseGlobalBrews(jsonArray);
 
 
@@ -201,7 +201,7 @@ public class Login extends ActionBarActivity {
     {
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreateClick");
 
-        if(!HasInternet()) {
+        if(!APPUTILS.HasInternet(this)) {
             message.setText("Internet Connection Needed");
             return;
         }
@@ -329,14 +329,6 @@ public class Login extends ActionBarActivity {
                 .setTitle("Disclaimer")
                 .setPositiveButton("I Accept", dialogClickListener)
                 .setNegativeButton("Cancel", dialogClickListener).show();
-    }
-
-    private boolean HasInternet()
-    {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void OpenApp()

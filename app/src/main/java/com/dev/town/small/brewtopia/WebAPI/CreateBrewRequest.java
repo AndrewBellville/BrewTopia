@@ -29,7 +29,7 @@ import java.util.Map;
  * Created by Andrew on 7/23/2016.
  */
 public class CreateBrewRequest extends StringRequest {
-    private static String URL = APPUTILS.WEBAPIRURL+"/AddStyles";
+    private static String URL = APPUTILS.WEBAPIRURL+"/createBrew";
     private Map<String, String> params;
 
     public CreateBrewRequest(BrewSchema aBrewSchema, Response.Listener<String> listener, Response.ErrorListener errorListener) {
@@ -57,6 +57,7 @@ public class CreateBrewRequest extends StringRequest {
         params.put("TotalBrewed", Integer.toString(aBrewSchema.getTotalBrewed()));
         params.put("SRM", Integer.toString(aBrewSchema.getSRM()));
         params.put("IsGlobal", Integer.toString(aBrewSchema.getIsGlobal()));
+        params.put("IsNew", Integer.toString(aBrewSchema.getIsNew()));
         params.put("CreatedOn", APPUTILS.dateFormat.format(new Date()));
 
         //*******************Boil Additions***********************************
@@ -69,6 +70,7 @@ public class CreateBrewRequest extends StringRequest {
             tempMap.put("AdditionTime",Integer.toString(ba.getAdditionTime()));
             tempMap.put("AdditionQty",Double.toString(ba.getAdditionQty()));
             tempMap.put("AdditionUofM",ba.getUOfM());
+            tempMap.put("IsNew", Integer.toString(ba.getIsNew()));
             JSONObject jsonObject = new JSONObject(tempMap);
             additions.add( jsonObject.toString());
 
@@ -83,6 +85,7 @@ public class CreateBrewRequest extends StringRequest {
             tempMap.put("BrewId",Long.toString(bn.getBrewId()));
             tempMap.put("Note",bn.getBrewNote());
             tempMap.put("CreatedOn",bn.getCreatedOn());
+            tempMap.put("IsNew", Integer.toString(bn.getIsNew()));
             JSONObject jsonObject = new JSONObject(tempMap);
             notes.add( jsonObject.toString());
 
@@ -97,6 +100,7 @@ public class CreateBrewRequest extends StringRequest {
             tempMap.put("BrewId",Long.toString(bi.getBrewId()));
             tempMap.put("Image", Base64.encodeToString(APPUTILS.GetBitmapByteArray(bi.getImage()), Base64.DEFAULT));
             tempMap.put("CreatedOn",bi.getCreatedOn());
+            tempMap.put("IsNew", Integer.toString(bi.getIsNew()));
             JSONObject jsonObject = new JSONObject(tempMap);
             images.add( jsonObject.toString());
 
@@ -120,6 +124,7 @@ public class CreateBrewRequest extends StringRequest {
             tempMap.put("Active",Integer.toString(bs.getActive()));
             tempMap.put("CreatedOn",bs.getStartDate());
             tempMap.put("UseStarter",Integer.toString(bs.getHasStarter()));
+            tempMap.put("IsNew", Integer.toString(bs.getIsNew()));
             JSONObject jsonObject = new JSONObject(tempMap);
             schedule.add( jsonObject.toString());
         }
@@ -135,6 +140,7 @@ public class CreateBrewRequest extends StringRequest {
             tempMap.put("EventText",se.getEventText());
             tempMap.put("EventDate",se.getEventDate());
             tempMap.put("EventCalendarId",Long.toString(se.getEventCalendarId()));
+            tempMap.put("IsNew", Integer.toString(se.getIsNew()));
             JSONObject jsonObject = new JSONObject(tempMap);
             scheduleEvents.add( jsonObject.toString());
         }
@@ -202,6 +208,7 @@ public class CreateBrewRequest extends StringRequest {
         tempMap.put("InventoryUse",aInventorySchema.getUse());
         tempMap.put("InventoryTime",Integer.toString(aInventorySchema.getTime()));
         tempMap.put("InventoryUofM",aInventorySchema.getInventoryUOfM());
+        tempMap.put("IsNew", Integer.toString(aInventorySchema.getIsNew()));
 
         return tempMap;
     }
@@ -221,6 +228,7 @@ public class CreateBrewRequest extends StringRequest {
         tempMap.put("InventoryType",aInventorySchema.getType());
         tempMap.put("Yield",Double.toString(aInventorySchema.getYield()));
         tempMap.put("Potential",Double.toString(aInventorySchema.getPotential()));
+        tempMap.put("IsNew", Integer.toString(aInventorySchema.getIsNew()));
 
         return tempMap;
     }
@@ -243,6 +251,7 @@ public class CreateBrewRequest extends StringRequest {
         tempMap.put("Laboratory",aInventorySchema.getLaboratory());
         tempMap.put("InventoryType",aInventorySchema.getType());
         tempMap.put("Form",aInventorySchema.getForm());
+        tempMap.put("IsNew", Integer.toString(aInventorySchema.getIsNew()));
 
         return tempMap;
     }
@@ -257,6 +266,7 @@ public class CreateBrewRequest extends StringRequest {
         tempMap.put("InventoryName",aInventorySchema.getInventoryName());
         tempMap.put("InventoryAmount",Double.toString(aInventorySchema.getAmount()));
         tempMap.put("InventoryUofM",aInventorySchema.getInventoryUOfM());
+        tempMap.put("IsNew", Integer.toString(aInventorySchema.getIsNew()));
 
         return tempMap;
     }
@@ -272,6 +282,7 @@ public class CreateBrewRequest extends StringRequest {
         tempMap.put("InventoryAmount",Double.toString(aInventorySchema.getAmount()));
         tempMap.put("InventoryUofM",aInventorySchema.getInventoryUOfM());
         tempMap.put("InventoryUse",aInventorySchema.getUse());
+        tempMap.put("IsNew", Integer.toString(aInventorySchema.getIsNew()));
 
         return tempMap;
     }

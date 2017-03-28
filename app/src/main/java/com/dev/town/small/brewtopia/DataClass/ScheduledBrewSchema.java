@@ -29,6 +29,7 @@ public class ScheduledBrewSchema {
     private String color;
     private int hasStarter=0; //0 = no 1 = yes
     private List<ScheduledEventSchema> scheduledEventSchemaList = new ArrayList<>();
+    private int isNew = 1;//1=new 0=not new
 
     //visual
     private boolean showAsAlert = false;
@@ -234,6 +235,9 @@ public class ScheduledBrewSchema {
         else
             return APPUTILS.dateFormatCompare.format(new Date());
     }
+    public int getIsNew() {
+        return isNew;
+    }
 
     //Setters
     public void setUserId(long userId) {
@@ -287,5 +291,8 @@ public class ScheduledBrewSchema {
     }
     public void setScheduledEventSchemaList(List<ScheduledEventSchema> scheduledEventSchemaList) {
         this.scheduledEventSchemaList = scheduledEventSchemaList;
+    }
+    public void setIsNew(int isNew) {
+        this.isNew = isNew;
     }
 }

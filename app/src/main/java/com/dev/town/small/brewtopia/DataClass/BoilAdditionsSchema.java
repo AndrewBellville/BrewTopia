@@ -11,6 +11,7 @@ public class BoilAdditionsSchema {
     private int additionTime = 0;
     private double additionQty = 0.0;
     private String uOfM;
+    private int isNew = 1;//1=new 0=not new
 
     public BoilAdditionsSchema() {
     }
@@ -34,6 +35,9 @@ public class BoilAdditionsSchema {
     public long getAdditionId() {
         return additionId;
     }
+    public int getIsNew() {
+        return isNew;
+    }
 
 
     //setters
@@ -54,6 +58,9 @@ public class BoilAdditionsSchema {
     }
     public void setAdditionId(long additionId) {
         this.additionId = additionId;
+    }
+    public void setIsNew(int isNew) {
+        this.isNew = isNew;
     }
 
 

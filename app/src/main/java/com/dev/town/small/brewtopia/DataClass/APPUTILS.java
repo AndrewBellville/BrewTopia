@@ -1,7 +1,10 @@
 package com.dev.town.small.brewtopia.DataClass;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
@@ -142,6 +145,15 @@ public class APPUTILS {
         }
         catch (Exception e){}
         return bArray;
+    }
+
+    ///********************Check for internet**********************
+    public static boolean HasInternet(Context context)
+    {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     /**** Method for Setting the Height of the ListView dynamically.

@@ -11,6 +11,7 @@ public class ScheduledEventSchema {
     private String eventDate;
     private long eventCalendarId=-1;
     private String eventText;
+    private int isNew = 1;//1=new 0=not new
 
     //Getters
     public long getScheduledEventId() {
@@ -31,6 +32,9 @@ public class ScheduledEventSchema {
     public String getEventText() {
         return eventText;
     }
+    public int getIsNew() {
+        return isNew;
+    }
 
     //Setters
     public void setScheduledEventId(long scheduledEventId) {
@@ -50,5 +54,8 @@ public class ScheduledEventSchema {
     }
     public void setEventText(String eventText) {
         this.eventText = eventText;
+    }
+    public void setIsNew(int isNew) {
+        this.isNew = isNew;
     }
 }

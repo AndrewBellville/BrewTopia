@@ -113,7 +113,7 @@ public class UserGlobal extends Fragment {
             public void onResponse(JSONArray response) {
                 if(APPUTILS.isLogging)Log.d(LOG, response.toString());
                 //Get respose and  parse JSON into BrewSchema
-                LoadGlobalBrews(new JSONBrewParser(getActivity(), JSONBrewParser.ParseType.PUSH).ParseGlobalBrews(response));
+                LoadGlobalBrews(new JSONBrewParser(getActivity()).ParseGlobalBrews(response));
                 // Now we call setRefreshing(false) to signal refresh has finished
                 swipeContainer.setRefreshing(false);
             }

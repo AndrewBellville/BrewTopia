@@ -187,7 +187,6 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
         {
             BrewSchema brewSchema = list.get(position);
             eventHandler.OnDeleteClickListener(brewSchema);
-            list.remove(position);
             notifyDataSetChanged();
         }
     }

@@ -34,15 +34,9 @@ public class JSONBrewParser {
     private static final String LOG = "JSONParser";
     DataBaseManager dataBaseManager;
 
-    public enum ParseType {
-        PUSH, PULL
-    };
-    private ParseType parseType;
-
-    public JSONBrewParser(Context aContext, ParseType aParseType)
+    public JSONBrewParser(Context aContext)
     {
         dataBaseManager = DataBaseManager.getInstance(aContext);
-        parseType = aParseType;
     }
 
     /**

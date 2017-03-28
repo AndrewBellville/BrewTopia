@@ -145,9 +145,10 @@ public class AddEditViewBrew extends Fragment {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SyncToGlobal();
                 if(brewActivityData.getAddEditViewState() == BrewActivityData.DisplayMode.GLOBAL)
                     PullFromGlobal();
+                else
+                    SyncToGlobal();
             }
         });
 
@@ -727,33 +728,42 @@ public class AddEditViewBrew extends Fragment {
         Response.Listener<String> ResponseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                if(APPUTILS.isLogging)Log.e(LOG, response);
+                if(APPUTILS.isLogging)Log.e(LOG, "response: "+response);
                 if (response.equals("Error"))// no match for user exists
                 {
-                    //If we fail the upload then create local
-                    //long brewId = dbManager.CreateABrew(brewSchema);
-                    //brewSchema = dbManager.getBrew(brewId);
-                } else {
-                    try {
-                        //get response brew id and update brew and create local
-                        Toast.makeText(getActivity(), response.toString().trim(), Toast.LENGTH_LONG).show();
-                        //long brewId = Long.getLong(response.toString().trim());
-                        //brewSchema.setBrewId(brewId);
-                        //dbManager.CreateABrew(brewSchema);
 
-                        //brewSchema = dbManager.getBrew(brewId);
+                } else {
+                    //Pase response
+                    try {
+
+                        //Parse response into BrewShcema list
+                        JSONArray jsonArray = new JSONArray(response);
+                        JSONBrewParser jsonParser = new JSONBrewParser(getActivity());
+                        List<BrewSchema> brewSchemaList = jsonParser.ParseGlobalBrews(jsonArray);
+
+                        if(brewSchemaList.size() == 1) {
+                            dbManager.DeleteBrew(brewSchema.getBrewId(),brewSchema.getUserId());
+                            for (BrewSchema bs : brewSchemaList) {
+                                dbManager.CreateAnExistingBrew(bs);
+                                brewSchema = dbManager.getBrew(bs.getBrewId());
+                            }
+                            BrewActivityData.getInstance().setAddEditViewBrew(brewSchema);
+                            DisplayBrew(brewSchema);
+                        }
                     }
-                    catch (Exception e) {
-                        //If we fail to cast response just then create local
-                        //long brewId = dbManager.CreateABrew(brewSchema);
-                        //brewSchema = dbManager.getBrew(brewId);
-                    }
+                    catch (JSONException e) {}
                 }
             }
         };
 
-        CreateBrewRequest createBrewRequest = new CreateBrewRequest(brewSchema, ResponseListener,null);
-        WebController.getInstance().addToRequestQueue(createBrewRequest);
+        if(!APPUTILS.HasInternet(getActivity())) {
+            Toast.makeText(getActivity(), "Need Internet To Perform", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            CreateBrewRequest createBrewRequest = new CreateBrewRequest(brewSchema, ResponseListener,null);
+            WebController.getInstance().addToRequestQueue(createBrewRequest);
+        }
     }
 
     private void PullFromGlobal()
@@ -771,7 +781,7 @@ public class AddEditViewBrew extends Fragment {
 
                         //Parse response into BrewShcema list
                         JSONArray jsonArray = new JSONArray(response);
-                        JSONBrewParser jsonParser = new JSONBrewParser(getActivity(),JSONBrewParser.ParseType.PULL);
+                        JSONBrewParser jsonParser = new JSONBrewParser(getActivity());
                         List<BrewSchema> brewSchemaList = jsonParser.ParseGlobalBrews(jsonArray);
 
                         //For each brew schema up it SHOULD ONLY BE 1

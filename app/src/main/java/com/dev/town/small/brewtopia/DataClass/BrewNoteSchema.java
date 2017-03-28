@@ -12,6 +12,7 @@ public class BrewNoteSchema {
     private long BrewId=0;
     private String CreatedOn;
     private String BrewNote;
+    private int isNew = 1;//1=new 0=not new
 
     // constructors
     public BrewNoteSchema() {
@@ -30,6 +31,9 @@ public class BrewNoteSchema {
     public long getNoteId() {
         return noteId;
     }
+    public int getIsNew() {
+        return isNew;
+    }
 
     //Setters
     public void setBrewId(long brewId) {
@@ -43,5 +47,8 @@ public class BrewNoteSchema {
     }
     public void setNoteId(long noteId) {
         this.noteId = noteId;
+    }
+    public void setIsNew(int isNew) {
+        this.isNew = isNew;
     }
 }

@@ -12,6 +12,7 @@ public class InventorySchema {
     private int InvetoryQty=0;
     private double amount=0.0;
     private String InventoryUOfM="";
+    private int isNew = 1;//1=new 0=not new
 
 
     //Getters
@@ -36,6 +37,9 @@ public class InventorySchema {
     public String getInventoryUOfM() {
         return InventoryUOfM;
     }
+    public int getIsNew() {
+        return isNew;
+    }
 
     //Setters
     public void setInventoryId(long inventoryId) {
@@ -58,6 +62,9 @@ public class InventorySchema {
     }
     public void setInventoryUOfM(String inventoryUOfM) {
         InventoryUOfM = inventoryUOfM;
+    }
+    public void setIsNew(int isNew) {
+        this.isNew = isNew;
     }
 
 }

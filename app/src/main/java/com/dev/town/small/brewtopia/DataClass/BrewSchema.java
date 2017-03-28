@@ -45,6 +45,7 @@ public class BrewSchema {
     private int SRM=0;
     private int isDirty=0; //0 = no 1 = yes
     private int isGlobal=0; //0 = no 1 = yes
+    private int isNew = 1;//1=new 0=not new
 
     // constructors
     public BrewSchema() {
@@ -201,7 +202,9 @@ public class BrewSchema {
         else
             return false;
     }
-
+    public int getIsNew() {
+        return isNew;
+    }
 
     //setters
     public void setBrewId(long id) {
@@ -327,5 +330,8 @@ public class BrewSchema {
             this.isGlobal = 1;
         else
             this.isGlobal = 0;
+    }
+    public void setIsNew(int isNew) {
+        this.isNew = isNew;
     }
 }

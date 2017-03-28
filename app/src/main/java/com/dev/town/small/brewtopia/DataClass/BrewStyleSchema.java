@@ -23,6 +23,7 @@ public class BrewStyleSchema {
     private double maxSRM=0.0;
     private double minABV=0.0;
     private double maxABV=0.0;
+    private int isNew = 1;//1=new 0=not new
 
     // constructors
     public BrewStyleSchema() {
@@ -74,6 +75,9 @@ public class BrewStyleSchema {
     public String getType() {
         return type;
     }
+    public int getIsNew() {
+        return isNew;
+    }
 
     // setters
     public void setStyleId(long styleId) {
@@ -120,5 +124,8 @@ public class BrewStyleSchema {
     }
     public void setType(String type) {
         this.type = type;
+    }
+    public void setIsNew(int isNew) {
+        this.isNew = isNew;
     }
 }

@@ -82,6 +82,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String ORIGINAL_GRAVITY = "OriginalGravity";
     protected static final String FINAL_GRAVITY = "FinalGravity";
     protected static final String ABV = "ABV";
+    protected static final String IS_NEW = "IsNew";
+
     //Common column names across Inventory tables
     protected static final String INVENTORY_NAME = "InventoryName";
     protected static final String INVENTORY_QTY = "InventoryQty";
@@ -193,23 +195,24 @@ public class DataBaseManager extends SQLiteOpenHelper {
             + TABLE_BREWS + "(" + BREW_ID + " INTEGER PRIMARY KEY," + BREW_NAME + " TEXT," + USER_ID + " INTEGER," + BOIL_TIME + " INTEGER," + PRIMARY + " INTEGER," + SECONDARY + " INTEGER,"
             + BOTTLE + " INTEGER," + DESCRIPTION + " TEXT," + STYLE + " TEXT," + CREATED_ON + " DATETIME," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL,"
             + FAVORITE + " INTEGER," + SCHEDULED + " INTEGER," + ON_TAP + " INTEGER,"+ IBU + " REAL,"+ METHOD + " TEXT,"+ BATCH_SIZE + " REAL,"+ EFFICIENCY + " REAL,"
-            + TOTAL_BREWED + " INTEGER," + SRM + " INTEGER," + DIRTY + " INTEGER," + GLOBAL + " INTEGER )";
+            + TOTAL_BREWED + " INTEGER," + SRM + " INTEGER," + DIRTY + " INTEGER," + IS_NEW + " INTEGER," + GLOBAL + " INTEGER )";
 
     //CREATE_TABLE_BREWS_STYLES
     protected static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
             + TABLE_BREWS_STYLES + "(" + STYLE_ID + " INTEGER PRIMARY KEY," + STYLE_NAME + " TEXT," + STYLE_TYPE + " TEXT," + USER_ID + " INTEGER," + OG_MIN + " REAL,"
             + OG_MAX + " REAL,"+ FG_MIN + " REAL,"+ FG_MAX + " REAL,"+ IBU_MIN + " REAL,"+ IBU_MAX + " REAL,"+ SRM_MIN + " REAL,"+ SRM_MAX + " REAL,"+ ABV_MIN + " REAL,"
-            + ABV_MAX + " REAL,"+ STYLE_COLOR + " TEXT )";
+            + ABV_MAX + " REAL,"+ IS_NEW + " INTEGER,"+ STYLE_COLOR + " TEXT )";
 
     //CREATE_TABLE_BOIL_ADDITIONS
     protected static final String CREATE_TABLE_BOIL_ADDITIONS = "CREATE TABLE "
             + TABLE_BOIL_ADDITIONS + "("+ ADDITION_ID + " INTEGER PRIMARY KEY," + BREW_ID + " INTEGER," + ADDITION_NAME + " TEXT," + ADDITION_TIME + " INTEGER,"
-            +  ADDITION_QTY + " REAL," +  ADDITION_UOFM + " TEXT )";
+            +  ADDITION_QTY + " REAL,"+ IS_NEW + " INTEGER," +  ADDITION_UOFM + " TEXT )";
 
     //CREATE_TABLE_BREWS_SCHEDULED
     protected static final String CREATE_TABLE_BREWS_SCHEDULED = "CREATE TABLE "
             + TABLE_BREWS_SCHEDULED + "(" + SCHEDULE_ID + " INTEGER PRIMARY KEY," + BREW_ID + " INTEGER," + USER_ID + " INTEGER," + BREW_NAME + " TEXT," + CREATED_ON + " DATETIME,"
-            +  ACTIVE + " INTEGER," +  NOTE + " TEXT," +  STYLE_COLOR + " TEXT," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL," +  USING_STARTER + " INTEGER )";
+            +  ACTIVE + " INTEGER," +  NOTE + " TEXT," +  STYLE_COLOR + " TEXT," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL,"+ IS_NEW + " INTEGER,"
+            +  USING_STARTER + " INTEGER )";
 
     //CREATE_TABLE_BREWS_CALCULATIONS
     protected static final String CREATE_TABLE_BREWS_CALCULATIONS = "CREATE TABLE "
@@ -217,7 +220,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     //CREATE_TABLE_BREWS_NOTES
     protected static final String CREATE_TABLE_BREWS_NOTES = "CREATE TABLE "
-            + TABLE_BREWS_NOTES + "(" + BREW_NOTE_ID + " INTEGER PRIMARY KEY," + BREW_ID + " INTEGER," + " INTEGER," + NOTE + " TEXT," + CREATED_ON + " DATETIME )";
+            + TABLE_BREWS_NOTES + "(" + BREW_NOTE_ID + " INTEGER PRIMARY KEY," + BREW_ID + " INTEGER," + " INTEGER," + NOTE + " TEXT,"+ IS_NEW + " INTEGER," + CREATED_ON + " DATETIME )";
 
     //CREATE_TABLE_APP_SETTINGS
     protected static final String CREATE_TABLE_APP_SETTINGS = "CREATE TABLE "
@@ -226,38 +229,40 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_INVENTORY_HOPS
     protected static final String CREATE_TABLE_INVENTORY_HOPS = "CREATE TABLE "
             + TABLE_INVENTORY_HOPS + "("+ HOPS_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
-            + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT," + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER," + INVENTORY_UOFM + " TEXT )";
+            + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT," + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER,"+ IS_NEW + " INTEGER,"
+            + INVENTORY_UOFM + " TEXT )";
 
     //CREATE_TABLE_INVENTORY_FERMENTABLES
     protected static final String CREATE_TABLE_INVENTORY_FERMENTABLES = "CREATE TABLE "
             + TABLE_INVENTORY_FERMENTABLES + "(" + FERMENTABLES_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER,"
             + INVENTORY_NAME + " TEXT," + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_UOFM + " TEXT,"+ INVENTORY_POTENTIAL + " REAL,"
-            + INVENTORY_TYPE + " TEXT,"+ INVENTORY_YIELD + " REAL )";
+            + INVENTORY_TYPE + " TEXT,"+ IS_NEW + " INTEGER,"+ INVENTORY_YIELD + " REAL )";
 
     //CREATE_TABLE_INVENTORY_YEAST
     protected static final String CREATE_TABLE_INVENTORY_YEAST = "CREATE TABLE "
             + TABLE_INVENTORY_YEAST + "(" + YEAST_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_AMOUNT + " REAL," + INVENTORY_FLOCCULATION + " TEXT," + INVENTORY_STARTER + " INTEGER," + INVENTORY_ATTENUATION + " REAL,"
-            + INVENTORY_OTL + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_LABORATORY + " TEXT,"+ INVENTORY_TYPE + " TEXT,"+ INVENTORY_FORM+ " TEXT," + INVENTORY_OTH + " REAL )";
+            + INVENTORY_OTL + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_LABORATORY + " TEXT,"+ INVENTORY_TYPE + " TEXT,"+ INVENTORY_FORM+ " TEXT,"+ IS_NEW + " INTEGER,"
+            + INVENTORY_OTH + " REAL )";
 
     //CREATE_TABLE_INVENTORY_EQUIPMENT
     protected static final String CREATE_TABLE_INVENTORY_EQUIPMENT = "CREATE TABLE "
             + TABLE_INVENTORY_EQUIPMENT + "(" + EQUIPMENT_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER,"
-            + INVENTORY_NAME + " TEXT," + INVENTORY_UOFM + " TEXT," + INVENTORY_AMOUNT + " REAL )";
+            + INVENTORY_NAME + " TEXT," + INVENTORY_UOFM + " TEXT,"+ IS_NEW + " INTEGER," + INVENTORY_AMOUNT + " REAL )";
 
     //CREATE_TABLE_INVENTORY_OTHER
     protected static final String CREATE_TABLE_INVENTORY_OTHER = "CREATE TABLE "
             + TABLE_INVENTORY_OTHER + "(" + OTHER_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
-            + INVENTORY_UOFM + " TEXT," + INVENTORY_USE + " TEXT," + INVENTORY_AMOUNT + " REAL )";
+            + INVENTORY_UOFM + " TEXT," + INVENTORY_USE + " TEXT,"+ IS_NEW + " INTEGER," + INVENTORY_AMOUNT + " REAL )";
 
     //CREATE_TABLE_BREW_IMAGES
     protected static final String CREATE_TABLE_BREW_IMAGES = "CREATE TABLE "
-            + TABLE_BREW_IMAGES + "(" + IMAGE_ID + " INTEGER PRIMARY KEY," + BREW_ID + " INTEGER," + IMAGE + " BLOB," + CREATED_ON + " DATETIME )";
+            + TABLE_BREW_IMAGES + "(" + IMAGE_ID + " INTEGER PRIMARY KEY," + BREW_ID + " INTEGER," + IMAGE + " BLOB,"+ IS_NEW + " INTEGER," + CREATED_ON + " DATETIME )";
 
     //CREATE_TABLE_SCHEDULED_EVENT
     protected static final String CREATE_TABLE_SCHEDULED_EVENT = "CREATE TABLE "
             + TABLE_SCHEDULED_EVENT + "(" + EVENT_ID + " INTEGER PRIMARY KEY," + SCHEDULE_ID + " INTEGER," + BREW_ID + " INTEGER," + EVENT_DATE + " DATETIME," + EVENT_CALENDAR_ID + " INTEGER,"
-            + EVENT_TEXT + " TEXT )";
+            + IS_NEW + " INTEGER," + EVENT_TEXT + " TEXT )";
 
 
     //DatabaseHelpers
@@ -497,20 +502,15 @@ public class DataBaseManager extends SQLiteOpenHelper {
         {
             //If brew id from global is not set add to local db and set id as -rowid
             values.put(DIRTY, 1);//MARK BREW AS DIRTY
+            values.put(IS_NEW, 1);//MARK BREW NEW
             // create the local brew and get row id
             brewId = db.insert(TABLE_BREWS,null,values);
-            // update the brew we just created Brew Id with a -rowid
-            long rowId = UpdateBrewId(brewId);
-            //verify if we have updated the same row in DB if so set brewId to the new -rowId we jsut updated to
-            if(rowId == brewId)
-                brewId = -brewId;
-            else
-                return 0; // 0 nothing created
         }
         else
         {
             //if global brew id is set then mark clean and set local brew id
             values.put(DIRTY, 0);//MARK BREW AS CLEAN
+            values.put(IS_NEW, 0);//MARK BREW NOT NEW
             values.put(BREW_ID, aBrew.getBrewId());
             db.insert(TABLE_BREWS,null,values);
             brewId = aBrew.getBrewId();
@@ -582,6 +582,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(SRM, aBrew.getSRM());
         //if global brew id is set then mark clean and set local brew id
         values.put(DIRTY, 0);//MARK BREW AS CLEAN
+        values.put(IS_NEW, 0);//MARK BREW NOT NEW
 
         long brewId = db.insert(TABLE_BREWS,null,values);
         if(!(brewId > 0) )
@@ -654,6 +655,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             brew.setSRM(c.getInt(c.getColumnIndex(SRM)));
             brew.setIsDirty(c.getInt(c.getColumnIndex(DIRTY)));
             brew.setIsGlobal(c.getInt(c.getColumnIndex(GLOBAL)));
+            brew.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
 
             //set boil additions
             brew.setBoilAdditionlist(get_all_boil_additions_by_brew_name(aBrewId));
@@ -750,6 +752,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(SRM, aBrew.getSRM());
         values.put(DIRTY, 1);//BREW IS NOW DIRTY
         values.put(GLOBAL, aBrew.getIsGlobal());
+        values.put(IS_NEW, aBrew.getIsNew());
         //values.put(CREATED_ON, getDateTime());
 
         // updating row
@@ -848,24 +851,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
         deleteAllBrewImages(aBrewId);
     }
 
-    /*
-* Update a Brew Id
-* Used for local create we want to get brew by row id and set the brew id to be -rowId until we can sync with global
-*/
-    private long UpdateBrewId(long aRowId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(APPUTILS.isLogging)Log.e(LOG, "UpdateBrewId row Id["+aRowId+"]");
-
-        ContentValues values = new ContentValues();
-        values.put(BREW_ID, -aRowId);
-
-        // updating row
-        long retVal = db.update(TABLE_BREWS, values, ROW_ID + " = ?",
-                new String[] { Long.toString(aRowId) });
-
-        return retVal;
-    }
-
     //******************************Brews Style Table function*********************************
     /*
     * Creating a Brew styles
@@ -891,6 +876,15 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(SRM_MAX, aBrewStyle.getMaxSRM());
         values.put(ABV_MIN, aBrewStyle.getMinABV());
         values.put(ABV_MAX, aBrewStyle.getMaxABV());
+
+        if(aBrewStyle.getStyleId() > 0)
+        {
+            values.put(IS_NEW, 1);
+        }
+        else
+        {
+            values.put(IS_NEW, 0);
+        }
 
         //Add brew style
         if(!(db.insert(TABLE_BREWS_STYLES,null,values) > 0) )
@@ -931,6 +925,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 brewStyleSchema.setMaxSRM(c.getDouble(c.getColumnIndex(SRM_MAX)));
                 brewStyleSchema.setMinABV(c.getDouble(c.getColumnIndex(ABV_MIN)));
                 brewStyleSchema.setMaxABV(c.getDouble(c.getColumnIndex(ABV_MAX)));
+                brewStyleSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
 
                 // adding to brewStyleList
                 brewStyleList.add(brewStyleSchema);
@@ -972,6 +967,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 brewStyleSchema.setMaxSRM(c.getDouble(c.getColumnIndex(SRM_MAX)));
                 brewStyleSchema.setMinABV(c.getDouble(c.getColumnIndex(ABV_MIN)));
                 brewStyleSchema.setMaxABV(c.getDouble(c.getColumnIndex(ABV_MAX)));
+                brewStyleSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
         }
 
         c.close();
@@ -1009,24 +1005,14 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Add brew note
         if(aBrewNote.getNoteId() == 0)
         {
-            //If brew note id from global is not set add to local db and set id as -rowid
-
-            // create the local brew note and get row id
-            long noteId = db.insert(TABLE_BREWS_NOTES,null,values);
-            // update the brew note we just created Brew note Id with a -rowid
-            long rowId = UpdateBrewNoteId(noteId);
-            //verify if we have updated the same row in DB if so set brew note Id to the new -rowId we just updated to
-            if(!(rowId == noteId))
-                return false; // 0 nothing created
+            values.put(IS_NEW, 1);
         }
         else
         {
-            //if global brew note id is set then mark clean and set local brew note id
             values.put(BREW_NOTE_ID, aBrewNote.getNoteId());
-            // insert row
-            return db.insert(TABLE_BREWS_NOTES,null,values) > 0;
+            values.put(IS_NEW, 0);
         }
-        return true;
+        return db.insert(TABLE_BREWS_NOTES,null,values) > 0;
     }
 
     /*
@@ -1073,6 +1059,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 brewNoteSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
                 brewNoteSchema.setBrewNote(c.getString(c.getColumnIndex(NOTE)));
                 brewNoteSchema.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
+                brewNoteSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
 
                 // adding to boilList
                 brewNoteSchemaList.add(brewNoteSchema);
@@ -1094,6 +1081,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(BREW_ID, aBrewNoteSchema.getBrewId());
         values.put(CREATED_ON, getDateTime());
         values.put(NOTE, aBrewNoteSchema.getBrewNote());
+        values.put(IS_NEW, aBrewNoteSchema.getIsNew());
 
         // updating row
         int retVal = db.update(TABLE_BREWS_NOTES, values, BREW_NOTE_ID + " = ?",
@@ -1128,25 +1116,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 new String[] { Long.toString(brewNoteId) });
     }
 
-    /*
-* Update a Brew Note Id
-* Used for local create we want to get brew note by row id and set the brew note id to be -rowId until we can sync with global
-*/
-    private long UpdateBrewNoteId(long aRowId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(APPUTILS.isLogging)Log.e(LOG, "UpdateBrewNoteId row Id["+aRowId+"]");
-
-        ContentValues values = new ContentValues();
-        values.put(BREW_NOTE_ID, -aRowId);
-
-        // updating row
-        long retVal = db.update(TABLE_BREWS_NOTES, values, ROW_ID + " = ?",
-                new String[] { Long.toString(aRowId) });
-
-        return retVal;
-    }
-
-
     //********************Boil Additions Table function*************
         /*
 * add Boil additions
@@ -1166,24 +1135,16 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Add brew addition
         if(aBoilAddition.getAdditionId() == 0)
         {
-            //If brew note id from global is not set add to local db and set id as -rowid
-
-            // create the local brew addition and get row id
-            long additionId = db.insert(TABLE_BOIL_ADDITIONS,null,values);
-            // update the brew addition we just created Brew addition Id with a -rowid
-            long rowId = UpdateBrewAdditionId(additionId);
-            //verify if we have updated the same row in DB if so set brew addition Id to the new -rowId we just updated to
-            if(!(rowId == additionId))
-                return false; // 0 nothing created
+            values.put(IS_NEW, 1);
         }
         else
         {
+            values.put(IS_NEW, 0);
             //if global brew addition id is set then mark clean and set local brew addition id
             values.put(ADDITION_ID, aBoilAddition.getAdditionId());
-            // insert row
-            return db.insert(TABLE_BOIL_ADDITIONS,null,values) > 0;
         }
-        return true;
+        // insert row
+        return db.insert(TABLE_BOIL_ADDITIONS,null,values) > 0;
     }
 
     /*
@@ -1222,6 +1183,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(ADDITION_TIME, aBoilAddition.getAdditionTime());
         values.put(ADDITION_QTY, aBoilAddition.getAdditionQty());
         values.put(ADDITION_UOFM, aBoilAddition.getUOfM());
+        values.put(IS_NEW, aBoilAddition.getIsNew());
 
         // updating row
         int retVal = db.update(TABLE_BOIL_ADDITIONS, values, ADDITION_ID + " = ?",
@@ -1257,6 +1219,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 baSchema.setAdditionTime(c.getInt(c.getColumnIndex(ADDITION_TIME)));
                 baSchema.setAdditionQty(c.getDouble(c.getColumnIndex(ADDITION_QTY)));
                 baSchema.setUOfM(c.getString(c.getColumnIndex(ADDITION_UOFM)));
+                baSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
 
                 // adding to boilList
                 boilList.add(baSchema);
@@ -1290,24 +1253,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 new String[] { Long.toString(boilAdditionId) });
     }
 
-    /*
-* Update a Brew Addition Id
-* Used for local create we want to get brew Addition by row id and set the brew Addition id to be -rowId until we can sync with global
-*/
-    private long UpdateBrewAdditionId(long aRowId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(APPUTILS.isLogging) Log.e(LOG, "UpdateBrewAdditionId row Id["+aRowId+"]");
-
-        ContentValues values = new ContentValues();
-        values.put(ADDITION_ID, -aRowId);
-
-        // updating row
-        long retVal = db.update(TABLE_BOIL_ADDITIONS, values, ROW_ID + " = ?",
-                new String[] { Long.toString(aRowId) });
-
-        return retVal;
-    }
-
 //******************************Scheduled Table function*********************************
 /*
 * Create A Scheduled Brew
@@ -1334,31 +1279,24 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Add brew schedule
         if(aSBrew.getScheduleId() == 0)
         {
-            //If brew schedule id from global is not set add to local db and set id as -rowid
-
-            // create the local brew schedule and get row id
-            long scheduleId = db.insert(TABLE_BREWS_SCHEDULED,null,values);
-            // update the brew schedule we just created Brew schedule Id with a -rowid
-            long rowId = UpdateBrewScheduleId(scheduleId);
-            //verify if we have updated the same row in DB if so set brew schedule Id to the new -rowId we just updated to
-            if(!(rowId == scheduleId))
-                return false; // 0 nothing created
-            else
-                aSBrew.setScheduleId(-scheduleId);
+            values.put(IS_NEW, 1);
         }
         else
         {
+            values.put(IS_NEW, 0);
             //if global brew schedule id is set then mark clean and set local brew schedule id
             values.put(SCHEDULE_ID, aSBrew.getScheduleId());
-            // insert row
-            if(!(db.insert(TABLE_BREWS_SCHEDULED,null,values) > 0) )
-                return false; // nothing created
         }
+
+        long scheduleId = db.insert(TABLE_BREWS_SCHEDULED,null,values);
+
+        if(!(scheduleId > 0) )
+            return false; // nothing created
 
         //Add schedule events
         for(ScheduledEventSchema scheduledEventSchema: aSBrew.getScheduledEventSchemaList()) {
             //set the newly created schedule id
-            scheduledEventSchema.setScheduleId(aSBrew.getScheduleId());
+            scheduledEventSchema.setScheduleId(scheduleId);
             CreateScheduleEvent(scheduledEventSchema);
         }
 
@@ -1392,6 +1330,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
             sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
             sBrew.setHasStarter((c.getInt(c.getColumnIndex(USING_STARTER))));
+            sBrew.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
 
             sBrew.setScheduledEventSchemaList(getAllScheduleEventsById(sBrew.getScheduleId()));
 
@@ -1553,6 +1492,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(FINAL_GRAVITY, aSBrew.getFG());
         values.put(ABV, aSBrew.getABV());
         values.put(USING_STARTER, aSBrew.getHasStarter());
+        values.put(IS_NEW, aSBrew.getIsNew());
 
         // updating row
         int retVal = db.update(TABLE_BREWS_SCHEDULED, values, SCHEDULE_ID + " = ?",
@@ -1611,24 +1551,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 new String[] { Long.toString(aBrewId)});
 
         deleteScheduleEventByBrewId(aBrewId);
-    }
-
-    /*
-* Update a Brew Schedule Id
-* Used for local create we want to get brew Schedule by row id and set the brew Schedule id to be -rowId until we can sync with global
-*/
-    private long UpdateBrewScheduleId(long aRowId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(APPUTILS.isLogging)Log.e(LOG, "UpdateBrewScheduleId row Id["+aRowId+"] to ["+ -aRowId +"]");
-
-        ContentValues values = new ContentValues();
-        values.put(SCHEDULE_ID, -aRowId);
-
-        // updating row
-        long retVal = db.update(TABLE_BREWS_SCHEDULED, values, ROW_ID + " = ?",
-                new String[] { Long.toString(aRowId) });
-
-        return retVal;
     }
 
     //************************************Calculations Table functions***************
@@ -1827,25 +1749,16 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Add hops
         if(aHopsSchema.getInventoryId() == 0)
         {
-            //If hops id from global is not set add to local db and set id as -rowid
-
-            // create the local hops and get row id
-            long hopsId = db.insert(TABLE_INVENTORY_HOPS,null,values);
-            // update the hops we just created hops Id with a -rowid
-            long rowId = UpdateHopsId(hopsId);
-            //verify if we have updated the same row in DB if so set hops Id to the new -rowId we just updated to
-            if(!(rowId == hopsId))
-                return 0; // 0 nothing created
-            else
-                return -hopsId;
+            values.put(IS_NEW, 1);
         }
         else
         {
+            values.put(IS_NEW, 0);
             //if global hops id is set then mark clean and set local hops id
             values.put(HOPS_ID, aHopsSchema.getInventoryId());
-            // insert row
-            return db.insert(TABLE_INVENTORY_HOPS,null,values);
         }
+        // insert row
+        return db.insert(TABLE_INVENTORY_HOPS,null,values);
     }
 
 
@@ -1877,6 +1790,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             hopsSchema.setUse(c.getString(c.getColumnIndex(INVENTORY_USE)));
             hopsSchema.setAA(c.getDouble(c.getColumnIndex(INVENTORY_AA)));
             hopsSchema.setTime(c.getInt(c.getColumnIndex(INVENTORY_TIME)));
+            hopsSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
         }
 
         c.close();
@@ -1961,6 +1875,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_USE, aHopsSchema.getUse());
         values.put(INVENTORY_AA, aHopsSchema.getAA());
         values.put(INVENTORY_TIME, aHopsSchema.getTime());
+        values.put(IS_NEW, aHopsSchema.getIsNew());
 
         // updating row
         int retVal = db.update(TABLE_INVENTORY_HOPS, values, HOPS_ID + " = ?",
@@ -1996,24 +1911,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 new String[] { Long.toString(aHopsId) });
     }
 
-    /*
-* Update a Hops Id
-* Used for local create we want to get Hops by row id and set the Hops id to be -rowId until we can sync with global
-*/
-    private long UpdateHopsId(long aRowId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(APPUTILS.isLogging) Log.e(LOG, "UpdateHopsId row Id["+aRowId+"] to ["+ -aRowId +"]");
-
-        ContentValues values = new ContentValues();
-        values.put(HOPS_ID, -aRowId);
-
-        // updating row
-        long retVal = db.update(TABLE_INVENTORY_HOPS, values, ROW_ID + " = ?",
-                new String[] { Long.toString(aRowId) });
-
-        return retVal;
-    }
-
     //************************************Fermentables functions***************
     /*
     * add Fermentables
@@ -2039,25 +1936,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Add Fermentables
         if(aFermentablesSchema.getInventoryId() == 0)
         {
-            //If hops id from global is not set add to local db and set id as -rowid
-
-            // create the local Fermentables and get row id
-            long fermentablesId = db.insert(TABLE_INVENTORY_FERMENTABLES,null,values);
-            // update the Fermentables we just created Fermentables Id with a -rowid
-            long rowId = UpdateFermentableId(fermentablesId);
-            //verify if we have updated the same row in DB if so set Fermentables Id to the new -rowId we just updated to
-            if(!(rowId == fermentablesId))
-                return 0; // 0 nothing created
-            else
-                return -fermentablesId;
+            values.put(IS_NEW, 1);
         }
         else
         {
+            values.put(IS_NEW, 0);
             //if global Fermentables id is set then mark clean and set local Fermentables id
             values.put(FERMENTABLES_ID, aFermentablesSchema.getInventoryId());
-            // insert row
-            return db.insert(TABLE_INVENTORY_FERMENTABLES,null,values);
+
         }
+        // insert row
+        return db.insert(TABLE_INVENTORY_FERMENTABLES,null,values);
     }
 
 
@@ -2090,6 +1979,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             fermentablesSchema.setType(c.getString(c.getColumnIndex(INVENTORY_TYPE)));
             fermentablesSchema.setYield(c.getDouble(c.getColumnIndex(INVENTORY_YIELD)));
             fermentablesSchema.setPotential(c.getDouble(c.getColumnIndex(INVENTORY_POTENTIAL)));
+            fermentablesSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
 
         }
 
@@ -2176,7 +2066,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_TYPE, aFermentablesSchema.getType());
         values.put(INVENTORY_YIELD, aFermentablesSchema.getYield());
         values.put(INVENTORY_POTENTIAL, aFermentablesSchema.getPotential());
-
+        values.put(IS_NEW, aFermentablesSchema.getIsNew());
 
         // updating row
         int retVal = db.update(TABLE_INVENTORY_FERMENTABLES, values, FERMENTABLES_ID + " = ?",
@@ -2212,24 +2102,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 new String[] { Long.toString(aFermentableId) });
     }
 
-    /*
-* Update a Fermentable Id
-* Used for local create we want to get Fermentable by row id and set the Fermentable id to be -rowId until we can sync with global
-*/
-    private long UpdateFermentableId(long aRowId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(APPUTILS.isLogging)Log.e(LOG, "UpdateFermentableId row Id["+aRowId+"] to ["+ -aRowId +"]");
-
-        ContentValues values = new ContentValues();
-        values.put(FERMENTABLES_ID, -aRowId);
-
-        // updating row
-        long retVal = db.update(TABLE_INVENTORY_FERMENTABLES, values, ROW_ID + " = ?",
-                new String[] { Long.toString(aRowId) });
-
-        return retVal;
-    }
-
     //************************************Yeast functions***************
     /*
     * add Yeast
@@ -2258,25 +2130,16 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Add Yeast
         if(aYeastSchema.getInventoryId() == 0)
         {
-            //If Yeast id from global is not set add to local db and set id as -rowid
-
-            // create the local Yeast and get row id
-            long YeastId = db.insert(TABLE_INVENTORY_YEAST,null,values);
-            // update the Yeast we just created Yeast Id with a -rowid
-            long rowId = UpdateYeastId(YeastId);
-            //verify if we have updated the same row in DB if so set Yeast Id to the new -rowId we just updated to
-            if(!(rowId == YeastId))
-                return 0; // 0 nothing created
-            else
-                return -YeastId;
+            values.put(IS_NEW, 1);
         }
         else
         {
+            values.put(IS_NEW, 0);
             //if global Yeast id is set then mark clean and set local Yeast id
             values.put(YEAST_ID, aYeastSchema.getInventoryId());
-            // insert row
-            return db.insert(TABLE_INVENTORY_YEAST,null,values);
         }
+        // insert row
+        return db.insert(TABLE_INVENTORY_YEAST,null,values);
     }
 
 
@@ -2312,7 +2175,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             yeastSchema.setLaboratory(c.getString(c.getColumnIndex(INVENTORY_LABORATORY)));
             yeastSchema.setType(c.getString(c.getColumnIndex(INVENTORY_TYPE)));
             yeastSchema.setForm(c.getString(c.getColumnIndex(INVENTORY_FORM)));
-
+            yeastSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
         }
 
         c.close();
@@ -2401,6 +2264,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_LABORATORY, aYeastSchema.getLaboratory());
         values.put(INVENTORY_TYPE, aYeastSchema.getType());
         values.put(INVENTORY_FORM, aYeastSchema.getForm());
+        values.put(IS_NEW, aYeastSchema.getIsNew());
 
         // updating row
         int retVal = db.update(TABLE_INVENTORY_YEAST, values, YEAST_ID + " = ?",
@@ -2436,24 +2300,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 new String[] { Long.toString(aYeastId) });
     }
 
-    /*
-* Update a Yeast Id
-* Used for local create we want to get Yeast by row id and set the Yeast id to be -rowId until we can sync with global
-*/
-    private long UpdateYeastId(long aRowId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(APPUTILS.isLogging) Log.e(LOG, "UpdateYeastId row Id["+aRowId+"] to ["+ -aRowId +"]");
-
-        ContentValues values = new ContentValues();
-        values.put(YEAST_ID, -aRowId);
-
-        // updating row
-        long retVal = db.update(TABLE_INVENTORY_YEAST, values, ROW_ID + " = ?",
-                new String[] { Long.toString(aRowId) });
-
-        return retVal;
-    }
-
     //************************************Equipment functions***************
     /*
     * add Equipment
@@ -2474,25 +2320,16 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Add Equipment
         if(aEquipmentSchema.getInventoryId() == 0)
         {
-            //If Equipment id from global is not set add to local db and set id as -rowid
-
-            // create the local Equipment and get row id
-            long EquipmentId = db.insert(TABLE_INVENTORY_EQUIPMENT,null,values);
-            // update the Equipment we just created Equipment Id with a -rowid
-            long rowId = UpdateEquipmentId(EquipmentId);
-            //verify if we have updated the same row in DB if so set Equipment Id to the new -rowId we just updated to
-            if(!(rowId == EquipmentId))
-                return 0; // 0 nothing created
-            else
-                return -EquipmentId;
+            values.put(IS_NEW, 1);
         }
         else
         {
+            values.put(IS_NEW, 0);
             //if global Equipment id is set then mark clean and set local Equipment id
             values.put(EQUIPMENT_ID, aEquipmentSchema.getInventoryId());
-            // insert row
-            return db.insert(TABLE_INVENTORY_EQUIPMENT,null,values);
         }
+        // insert row
+        return db.insert(TABLE_INVENTORY_EQUIPMENT,null,values);
     }
 
 
@@ -2520,6 +2357,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             equipmentSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             equipmentSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
             equipmentSchema.setInventoryUOfM(c.getString(c.getColumnIndex(INVENTORY_UOFM)));
+            equipmentSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
         }
 
         c.close();
@@ -2600,6 +2438,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_QTY, aEquipmentSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aEquipmentSchema.getAmount());
         values.put(INVENTORY_UOFM, aEquipmentSchema.getInventoryUOfM());
+        values.put(IS_NEW, aEquipmentSchema.getIsNew());
 
         // updating row
         int retVal = db.update(TABLE_INVENTORY_EQUIPMENT, values, EQUIPMENT_ID + " = ?",
@@ -2635,24 +2474,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 new String[] { Long.toString(aEquipmentId) });
     }
 
-    /*
-* Update a Equipment Id
-* Used for local create we want to get Equipment by row id and set the Equipment id to be -rowId until we can sync with global
-*/
-    private long UpdateEquipmentId(long aRowId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(APPUTILS.isLogging) Log.e(LOG, "UpdateEquipmentId row Id["+aRowId+"] to ["+ -aRowId +"]");
-
-        ContentValues values = new ContentValues();
-        values.put(EQUIPMENT_ID, -aRowId);
-
-        // updating row
-        long retVal = db.update(TABLE_INVENTORY_EQUIPMENT, values, ROW_ID + " = ?",
-                new String[] { Long.toString(aRowId) });
-
-        return retVal;
-    }
-
     //************************************Other functions***************
     /*
     * add Other
@@ -2674,25 +2495,16 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Add Other
         if(aOtherSchema.getInventoryId() == 0)
         {
-            //If Other id from global is not set add to local db and set id as -rowid
-
-            // create the local Other and get row id
-            long OtherId = db.insert(TABLE_INVENTORY_OTHER,null,values);
-            // update the Other we just created Other Id with a -rowid
-            long rowId = UpdateOtherId(OtherId);
-            //verify if we have updated the same row in DB if so set Other Id to the new -rowId we just updated to
-            if(!(rowId == OtherId))
-                return 0; // 0 nothing created
-            else
-                return -OtherId;
+            values.put(IS_NEW, 1);
         }
         else
         {
+            values.put(IS_NEW, 0);
             //if global Other id is set then mark clean and set local Other id
             values.put(OTHER_ID, aOtherSchema.getInventoryId());
-            // insert row
-            return db.insert(TABLE_INVENTORY_OTHER,null,values);
         }
+        // insert row
+        return db.insert(TABLE_INVENTORY_OTHER,null,values);
     }
 
 
@@ -2721,6 +2533,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             otherSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
             otherSchema.setInventoryUOfM(c.getString(c.getColumnIndex(INVENTORY_UOFM)));
             otherSchema.setUse(c.getString(c.getColumnIndex(INVENTORY_USE)));
+            otherSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
         }
 
         c.close();
@@ -2802,6 +2615,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(INVENTORY_AMOUNT, aOtherSchema.getAmount());
         values.put(INVENTORY_UOFM, aOtherSchema.getInventoryUOfM());
         values.put(INVENTORY_USE, aOtherSchema.getUse());
+        values.put(IS_NEW, aOtherSchema.getIsNew());
 
         // updating row
         int retVal = db.update(TABLE_INVENTORY_OTHER, values, OTHER_ID + " = ?",
@@ -2837,24 +2651,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 new String[] { Long.toString(aOtherId) });
     }
 
-    /*
-* Update a Other Id
-* Used for local create we want to get Other by row id and set the Other id to be -rowId until we can sync with global
-*/
-    private long UpdateOtherId(long aRowId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(APPUTILS.isLogging) Log.e(LOG, "UpdateOtherId row Id["+aRowId+"] to ["+ -aRowId +"]");
-
-        ContentValues values = new ContentValues();
-        values.put(OTHER_ID, -aRowId);
-
-        // updating row
-        long retVal = db.update(TABLE_INVENTORY_OTHER, values, ROW_ID + " = ?",
-                new String[] { Long.toString(aRowId) });
-
-        return retVal;
-    }
-
     //******************************Brew Images Table function*********************************
     /*
     * add Image
@@ -2872,24 +2668,16 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Add Image
         if(aBrewImageSchema.getImageId() == 0)
         {
-            //If Image id from global is not set add to local db and set id as -rowid
-
-            // create the local Image and get row id
-            long ImageId = db.insert(TABLE_BREW_IMAGES,null,values);
-            // update the Image we just created Image Id with a -rowid
-            long rowId = UpdateImageId(ImageId);
-            //verify if we have updated the same row in DB if so set Image Id to the new -rowId we just updated to
-            if(!(rowId == ImageId))
-                return false; // 0 nothing created
+            values.put(IS_NEW, 1);
         }
         else
         {
+            values.put(IS_NEW, 0);
             //if global Image id is set then mark clean and set local Image id
             values.put(IMAGE_ID, aBrewImageSchema.getImageId());
-            // insert row
-            return db.insert(TABLE_BREW_IMAGES,null,values) > 0;
         }
-        return true;
+        // insert row
+        return db.insert(TABLE_BREW_IMAGES,null,values) > 0;
     }
 
     /*
@@ -2916,6 +2704,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                     imageSchema.setBrewId(c.getInt(c.getColumnIndex(BREW_ID)));
                     imageSchema.setImage(APPUTILS.GetBitmapFromByteArr(c.getBlob((c.getColumnIndex(IMAGE)))));
                     imageSchema.setCreatedOn(c.getString(c.getColumnIndex(CREATED_ON)));
+                    imageSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
 
                     imageList.add(imageSchema);
                 } while (c.moveToNext());
@@ -2959,6 +2748,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(BREW_ID, aBrewImageSchema.getBrewId());
         //values.put(CREATED_ON, getDateTime());
         values.put(IMAGE,  APPUTILS.GetBitmapByteArray(aBrewImageSchema.getImage()));
+        values.put(IS_NEW, aBrewImageSchema.getIsNew());
 
         // updating row
         int retVal = db.update(TABLE_BREW_IMAGES, values, IMAGE_ID + " = ?",
@@ -2993,24 +2783,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 new String[] { Long.toString(brewImageId) });
     }
 
-    /*
-* Update a Image Id
-* Used for local create we want to get Image by row id and set the Image id to be -rowId until we can sync with global
-*/
-    private long UpdateImageId(long aRowId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(APPUTILS.isLogging) Log.e(LOG, "UpdateImageId row Id["+aRowId+"] to ["+ -aRowId +"]");
-
-        ContentValues values = new ContentValues();
-        values.put(IMAGE_ID, -aRowId);
-
-        // updating row
-        long retVal = db.update(TABLE_BREW_IMAGES, values, ROW_ID + " = ?",
-                new String[] { Long.toString(aRowId) });
-
-        return retVal;
-    }
-
     //******************************Schedule Event Table function*********************************
     /*
     * add Schedule Event
@@ -3030,24 +2802,16 @@ public class DataBaseManager extends SQLiteOpenHelper {
         //Add Event
         if(aScheduledEventSchema.getScheduledEventId() == 0)
         {
-            //If Event id from global is not set add to local db and set id as -rowid
-
-            // create the local Event and get row id
-            long EventId = db.insert(TABLE_SCHEDULED_EVENT,null,values);
-            // update the Event we just created Event Id with a -rowid
-            long rowId = UpdateEventId(EventId);
-            //verify if we have updated the same row in DB if so set Event Id to the new -rowId we just updated to
-            if(!(rowId == EventId))
-                return false; // 0 nothing created
+            values.put(IS_NEW, 1);
         }
         else
         {
+            values.put(IS_NEW, 0);
             //if global Event id is set then mark clean and set local Event id
             values.put(EVENT_ID, aScheduledEventSchema.getScheduledEventId());
-            // insert row
-            return db.insert(TABLE_SCHEDULED_EVENT,null,values) > 0;
         }
-        return true;
+        // insert row
+        return db.insert(TABLE_SCHEDULED_EVENT,null,values) > 0;
     }
 
     /*
@@ -3075,6 +2839,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                     eventSchema.setEventCalendarId(c.getInt(c.getColumnIndex(EVENT_CALENDAR_ID)));
                     eventSchema.setEventDate(c.getString(c.getColumnIndex(EVENT_DATE)));
                     eventSchema.setEventText(c.getString(c.getColumnIndex(EVENT_TEXT)));
+                    eventSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
 
                     scheduledEventSchemas.add(eventSchema);
                 } while (c.moveToNext());
@@ -3109,6 +2874,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                     eventSchema.setEventCalendarId(c.getInt(c.getColumnIndex(EVENT_CALENDAR_ID)));
                     eventSchema.setEventDate(c.getString(c.getColumnIndex(EVENT_DATE)));
                     eventSchema.setEventText(c.getString(c.getColumnIndex(EVENT_TEXT)));
+                    eventSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
 
                     scheduledEventSchemas.add(eventSchema);
                 } while (c.moveToNext());
@@ -3149,6 +2915,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(EVENT_CALENDAR_ID, aScheduledEventSchema.getEventCalendarId());
         values.put(EVENT_DATE, aScheduledEventSchema.getEventDate());
         values.put(EVENT_TEXT, aScheduledEventSchema.getEventText());
+        values.put(IS_NEW, aScheduledEventSchema.getIsNew());
 
         // updating row
         int retVal = db.update(TABLE_SCHEDULED_EVENT, values, EVENT_ID + " = ?",
@@ -3194,24 +2961,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         db.delete(TABLE_SCHEDULED_EVENT, BREW_ID + " = ?",
                 new String[] { Long.toString(aBrewId) });
-    }
-
-    /*
-* Update a event Id
-* Used for local create we want to get event by row id and set the event id to be -rowId until we can sync with global
-*/
-    private long UpdateEventId(long aRowId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if(APPUTILS.isLogging) Log.e(LOG, "UpdateEventId row Id["+aRowId+"] to ["+ -aRowId +"]");
-
-        ContentValues values = new ContentValues();
-        values.put(EVENT_ID, -aRowId);
-
-        // updating row
-        long retVal = db.update(TABLE_SCHEDULED_EVENT, values, ROW_ID + " = ?",
-                new String[] { Long.toString(aRowId) });
-
-        return retVal;
     }
 
     //************************************Helper functions***************
