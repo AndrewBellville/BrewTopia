@@ -73,7 +73,10 @@ public class UserCompletedBrewList extends Fragment {
     private void LoadCompletedBrews() {
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadCompletedBrews");
 
-        completedbrewList = dbManager.getAllNonActiveScheduledBrews(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
+        if(BrewActivityData.getInstance().getAddEditViewState() != BrewActivityData.DisplayMode.GLOBAL)
+            completedbrewList = dbManager.getAllNonActiveScheduledBrews(BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
+        else
+            completedbrewList = new ArrayList<ScheduledBrewSchema>();
 
         if (completedbrewList.size() > 0) {
             //instantiate custom adapter

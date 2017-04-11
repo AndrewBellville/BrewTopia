@@ -105,7 +105,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String SECONDARY = "Secondary";
     protected static final String BOTTLE = "Bottle";
     protected static final String DESCRIPTION = "Description";
-    protected static final String STYLE = "Style";
     protected static final String FAVORITE = "Favorite";
     protected static final String SCHEDULED = "Scheduled";
     protected static final String ON_TAP = "OnTap";
@@ -160,7 +159,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
     protected static final String INVENTORY_AA = "AlphaAcid";
     protected static final String INVENTORY_USE = "Use";
     protected static final String INVENTORY_TIME = "Time";
-    protected static final String INVENTORY_IBU = "IBU";
 
     // TABLE_INVENTORY_FERMENTABLES column names
     protected static final String INVENTORY_PPG = "PoundPerGallon";
@@ -193,9 +191,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_BREWS
     protected static final String CREATE_TABLE_BREWS = "CREATE TABLE "
             + TABLE_BREWS + "(" + BREW_ID + " INTEGER PRIMARY KEY," + BREW_NAME + " TEXT," + USER_ID + " INTEGER," + BOIL_TIME + " INTEGER," + PRIMARY + " INTEGER," + SECONDARY + " INTEGER,"
-            + BOTTLE + " INTEGER," + DESCRIPTION + " TEXT," + STYLE + " TEXT," + CREATED_ON + " DATETIME," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL,"
+            + BOTTLE + " INTEGER," + DESCRIPTION + " TEXT," + STYLE_TYPE + " TEXT," + CREATED_ON + " DATETIME," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL,"
             + FAVORITE + " INTEGER," + SCHEDULED + " INTEGER," + ON_TAP + " INTEGER,"+ IBU + " REAL,"+ METHOD + " TEXT,"+ BATCH_SIZE + " REAL,"+ EFFICIENCY + " REAL,"
-            + TOTAL_BREWED + " INTEGER," + SRM + " INTEGER," + DIRTY + " INTEGER," + IS_NEW + " INTEGER," + GLOBAL + " INTEGER )";
+            + TOTAL_BREWED + " INTEGER," + SRM + " INTEGER," + STYLE_ID + " INTEGER," + DIRTY + " INTEGER," + IS_NEW + " INTEGER," + GLOBAL + " INTEGER )";
 
     //CREATE_TABLE_BREWS_STYLES
     protected static final String CREATE_TABLE_BREWS_STYLES = "CREATE TABLE "
@@ -211,7 +209,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     //CREATE_TABLE_BREWS_SCHEDULED
     protected static final String CREATE_TABLE_BREWS_SCHEDULED = "CREATE TABLE "
             + TABLE_BREWS_SCHEDULED + "(" + SCHEDULE_ID + " INTEGER PRIMARY KEY," + BREW_ID + " INTEGER," + USER_ID + " INTEGER," + BREW_NAME + " TEXT," + CREATED_ON + " DATETIME,"
-            +  ACTIVE + " INTEGER," +  NOTE + " TEXT," +  STYLE_COLOR + " TEXT," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL,"+ IS_NEW + " INTEGER,"
+            +  ACTIVE + " INTEGER," +  NOTE + " TEXT," +  STYLE_TYPE + " TEXT," + ORIGINAL_GRAVITY + " REAL," + FINAL_GRAVITY + " REAL," + ABV + " REAL,"+ IS_NEW + " INTEGER,"
             +  USING_STARTER + " INTEGER )";
 
     //CREATE_TABLE_BREWS_CALCULATIONS
@@ -482,7 +480,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(FINAL_GRAVITY, aBrew.getTargetFG());
         values.put(ABV, aBrew.getTargetABV());
         values.put(DESCRIPTION, aBrew.getDescription());
-        values.put(STYLE, aBrew.getStyle());
+        values.put(STYLE_TYPE, aBrew.getStyleType());
+        values.put(STYLE_ID, aBrew.getStyleId());
         values.put(FAVORITE, aBrew.getFavorite());
         values.put(SCHEDULED, aBrew.getScheduled());
         values.put(ON_TAP, aBrew.getOnTap());
@@ -493,8 +492,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(EFFICIENCY, aBrew.getEfficiency());
         values.put(TOTAL_BREWED, aBrew.getTotalBrewed());
         values.put(SRM, aBrew.getSRM());
-
-        values.put(GLOBAL, 0);//BREW SHOULD NOT BE GLOBAL ON CREATE
+        values.put(GLOBAL, aBrew.getIsGlobal());
 
         //Add brew
         long brewId=0;
@@ -569,7 +567,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(FINAL_GRAVITY, aBrew.getTargetFG());
         values.put(ABV, aBrew.getTargetABV());
         values.put(DESCRIPTION, aBrew.getDescription());
-        values.put(STYLE, aBrew.getStyle());
+        values.put(STYLE_TYPE, aBrew.getStyleType());
+        values.put(STYLE_ID, aBrew.getStyleId());
         values.put(FAVORITE, aBrew.getFavorite());
         values.put(SCHEDULED, aBrew.getScheduled());
         values.put(ON_TAP, aBrew.getOnTap());
@@ -580,6 +579,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(EFFICIENCY, aBrew.getEfficiency());
         values.put(TOTAL_BREWED, aBrew.getTotalBrewed());
         values.put(SRM, aBrew.getSRM());
+        values.put(GLOBAL, aBrew.getIsGlobal());
         //if global brew id is set then mark clean and set local brew id
         values.put(DIRTY, 0);//MARK BREW AS CLEAN
         values.put(IS_NEW, 0);//MARK BREW NOT NEW
@@ -642,7 +642,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
             brew.setTargetFG((c.getDouble(c.getColumnIndex(FINAL_GRAVITY))));
             brew.setTargetABV((c.getDouble(c.getColumnIndex(ABV))));
             brew.setDescription((c.getString(c.getColumnIndex(DESCRIPTION))));
-            brew.setStyle((c.getString(c.getColumnIndex(STYLE))));
+            brew.setStyleType((c.getString(c.getColumnIndex(STYLE_TYPE))));
+            brew.setStyleId(c.getLong(c.getColumnIndex(STYLE_ID)));
             brew.setFavorite((c.getInt(c.getColumnIndex(FAVORITE))));
             brew.setScheduled((c.getInt(c.getColumnIndex(SCHEDULED))));
             brew.setOnTap((c.getInt(c.getColumnIndex(ON_TAP))));
@@ -661,7 +662,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             brew.setBoilAdditionlist(get_all_boil_additions_by_brew_name(aBrewId));
 
             //set style
-            brew.setStyleSchema(getBrewsStylesByName(brew.getStyle()));
+            brew.setStyleSchema(getBrewsStylesById(brew.getStyleId()));
 
             //set notes
             brew.setBrewNoteSchemaList(getAllBrewNotes(aBrewId));
@@ -740,7 +741,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(FINAL_GRAVITY, aBrew.getTargetFG());
         values.put(ABV, aBrew.getTargetABV());
         values.put(DESCRIPTION, aBrew.getDescription());
-        values.put(STYLE, aBrew.getStyle());
+        values.put(STYLE_TYPE, aBrew.getStyleType());
+        values.put(STYLE_ID, aBrew.getStyleId());
         values.put(FAVORITE, aBrew.getFavorite());
         values.put(SCHEDULED, aBrew.getScheduled());
         values.put(ON_TAP, aBrew.getOnTap());
@@ -894,6 +896,62 @@ public class DataBaseManager extends SQLiteOpenHelper {
     }
 
     /*
+* update All brew styles
+*/
+    public boolean updateAllBrewStyles(List <BrewStyleSchema> aBrewStyleSchema) {
+        if(APPUTILS.isLogging) Log.e(LOG, "Insert: updateAllBrewStyles");
+
+        if(aBrewStyleSchema.size() < 1)
+            return true;
+
+        // for each brew style try to update if fail try to add it to the DB
+        for(Iterator<BrewStyleSchema> i = aBrewStyleSchema.iterator(); i.hasNext(); )
+        {
+            BrewStyleSchema brewStyleSchema = i.next();
+            //Try  to update if that fails try to add
+            if(!updateBrewStyle(brewStyleSchema))
+                if(!CreateABrewStyle(brewStyleSchema))
+                    return false;
+        }
+
+        return true;
+    }
+
+    /*
+* Update Brew style
+*/
+    public boolean updateBrewStyle(BrewStyleSchema aBrewStyle) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        if(APPUTILS.isLogging)Log.e(LOG, "updateBrewStyle Name["+aBrewStyle.getBrewStyleName()+"]");
+
+        ContentValues values = new ContentValues();
+        values.put(STYLE_ID, aBrewStyle.getStyleId());
+        values.put(STYLE_NAME, aBrewStyle.getBrewStyleName());
+        values.put(USER_ID, aBrewStyle.getUserId());
+        values.put(STYLE_COLOR, aBrewStyle.getBrewStyleColor());
+        values.put(STYLE_TYPE, aBrewStyle.getType());
+        values.put(OG_MIN, aBrewStyle.getMinOG());
+        values.put(OG_MAX, aBrewStyle.getMaxOG());
+        values.put(FG_MIN, aBrewStyle.getMinFG());
+        values.put(FG_MAX, aBrewStyle.getMaxFG());
+        values.put(IBU_MIN, aBrewStyle.getMinIBU());
+        values.put(IBU_MAX, aBrewStyle.getMaxIBU());
+        values.put(SRM_MIN, aBrewStyle.getMinSRM());
+        values.put(SRM_MAX, aBrewStyle.getMaxSRM());
+        values.put(ABV_MIN, aBrewStyle.getMinABV());
+        values.put(ABV_MAX, aBrewStyle.getMaxABV());
+
+        // updating row
+        int retVal = db.update(TABLE_BREWS_STYLES, values, STYLE_ID + " = ?",
+                new String[] { Long.toString(aBrewStyle.getStyleId()) });
+
+        if(!(retVal > 0) )
+            return false;
+
+        return true;
+    }
+
+    /*
 * getting all Brews styles
 */
     public List<BrewStyleSchema> getAllBrewsStyles() {
@@ -939,9 +997,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
 * getting a Brews styles
 */
-    public BrewStyleSchema getBrewsStylesByName(String aStyleName) {
+    public BrewStyleSchema getBrewsStylesById(Long aStyleId) {
         String selectQuery = "SELECT  * FROM " + TABLE_BREWS_STYLES + " WHERE "
-                + STYLE_NAME + " = '" + aStyleName+"'";
+                + STYLE_ID + " = " + aStyleId;
 
         if(APPUTILS.isLogging)Log.e(LOG, selectQuery);
 
@@ -1269,7 +1327,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(CREATED_ON, aSBrew.getStartDate());//start date
         values.put(ACTIVE, aSBrew.getActive());
         values.put(NOTE, "");
-        values.put(STYLE_COLOR, aSBrew.getColor());
+        values.put(STYLE_TYPE, aSBrew.getStyleType());
         values.put(ORIGINAL_GRAVITY, aSBrew.getOG());
         values.put(FINAL_GRAVITY, aSBrew.getFG());
         values.put(ABV, aSBrew.getABV());
@@ -1328,7 +1386,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             sBrew.setABV((c.getDouble(c.getColumnIndex(ABV))));
             sBrew.setActive((c.getInt(c.getColumnIndex(ACTIVE))));
             sBrew.setNotes((c.getString(c.getColumnIndex(NOTE))));
-            sBrew.setColor((c.getString(c.getColumnIndex(STYLE_COLOR))));
+            sBrew.setStyleType((c.getString(c.getColumnIndex(STYLE_TYPE))));
             sBrew.setHasStarter((c.getInt(c.getColumnIndex(USING_STARTER))));
             sBrew.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
 
@@ -1487,7 +1545,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(CREATED_ON, aSBrew.getStartDate());
         values.put(ACTIVE, aSBrew.getActive());
         values.put(NOTE, aSBrew.getNotes());
-        values.put(STYLE_COLOR, aSBrew.getColor());
+        values.put(STYLE_TYPE, aSBrew.getStyleType());
         values.put(ORIGINAL_GRAVITY, aSBrew.getOG());
         values.put(FINAL_GRAVITY, aSBrew.getFG());
         values.put(ABV, aSBrew.getABV());

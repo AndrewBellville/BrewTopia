@@ -78,7 +78,7 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
             colorLayout.setMinimumHeight(290);
             colorLayout.setMinimumWidth(80);
             try{
-                colorLayout.setBackgroundColor(Color.parseColor(brewSchema.getStyleSchema().getBrewStyleColor()));
+                colorLayout.setBackgroundColor(Color.parseColor(APPUTILS.StyleMap.get(brewSchema.getStyleType()).toString()));
             }
             catch (Exception e)
             {
@@ -116,7 +116,7 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
         listItemText.setText(truncatedString);
 
         TextView listItemText1 = (TextView)view.findViewById(R.id.list_item_string1);
-        listItemText1.setText(brewSchema.getStyle() +" - "+ APPUTILS.GetTruncatedABVPercent(brewSchema.getTargetABV())+"%");
+        listItemText1.setText(brewSchema.getStyleType() +" - "+ APPUTILS.GetTruncatedABVPercent(brewSchema.getTargetABV())+"%");
 
         TextView listItemText2 = (TextView)view.findViewById(R.id.list_item_string2);
         /*if(brewSchema.getDescription().length() >= 25)

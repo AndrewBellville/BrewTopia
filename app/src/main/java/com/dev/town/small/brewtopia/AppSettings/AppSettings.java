@@ -116,12 +116,19 @@ public class AppSettings extends ActionBarActivity {
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: SettingSelected " + selectedRow.getSettingName());
         if(selectedRow.getSettingName().equals(AppSettingsHelper.OTHER_DELETE_USER ))
             Verify();
+        if(selectedRow.getSettingName().equals(AppSettingsHelper.OTHER_CHANGE_USER_INFO ))
+            UpdateUserInfo();
     }
 
 
     private void DeleteUser()
     {
         if(APPUTILS.isLogging)Log.i(LOG, "Entering: DeleteUser");
+
+        if(!APPUTILS.HasInternet(this)) {
+            Toast.makeText(this, "Need Internet To Perform", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Response.Listener<String> ResponseListener = new Response.Listener<String>() {
             @Override
@@ -169,6 +176,12 @@ public class AppSettings extends ActionBarActivity {
         builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
 
+    }
+
+    private void UpdateUserInfo() {
+        Intent intent = new Intent(getApplication(), UpdateUserInfo.class);
+        //start next activity
+        startActivity(intent);
     }
 
 

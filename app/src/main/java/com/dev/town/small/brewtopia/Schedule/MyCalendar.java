@@ -360,7 +360,7 @@ public class MyCalendar extends LinearLayout
         private int EventColor(ScheduledBrewSchema eventDate)
         {
             try {
-                return Color.parseColor(eventDate.getColor());
+                return Color.parseColor(APPUTILS.StyleMap.get(eventDate.getStyleType()).toString());
             }
             catch (Exception e){return Color.BLUE;}
         }

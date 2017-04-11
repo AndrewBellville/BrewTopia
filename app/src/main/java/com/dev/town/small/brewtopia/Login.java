@@ -9,8 +9,12 @@ import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,14 +25,17 @@ import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
 import com.dev.town.small.brewtopia.DataClass.*;
 import com.dev.town.small.brewtopia.WebAPI.CreateUserRequest;
 import com.dev.town.small.brewtopia.WebAPI.GetBrewRequest;
+import com.dev.town.small.brewtopia.WebAPI.GetStylesRequest;
 import com.dev.town.small.brewtopia.WebAPI.GetUserBrewsRequest;
 import com.dev.town.small.brewtopia.WebAPI.JSONBrewParser;
+import com.dev.town.small.brewtopia.WebAPI.JSONStyleParser;
 import com.dev.town.small.brewtopia.WebAPI.JSONUserParser;
 import com.dev.town.small.brewtopia.WebAPI.LoginRequest;
 import com.dev.town.small.brewtopia.WebAPI.WebController;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -37,7 +44,7 @@ public class Login extends ActionBarActivity {
 
     // Log cat tag
     private static final String LOG = "Login";
-    private static final String VERSION = "v0.1.1.0";
+    private static final String VERSION = "v0.1.1.1";
 
     private EditText userName;
     private EditText password;
@@ -46,7 +53,11 @@ public class Login extends ActionBarActivity {
     private TextView noLogin;
     private DataBaseManager dbManager;
     private CurrentUser currentUser;
-    AppSettingsHelper  appSettingsHelper;
+    private AppSettingsHelper  appSettingsHelper;
+    private AlertDialog loadingDialog;
+    private TextView loadingText;
+    private ProgressBar loadingProgressBar;
+    private boolean localLogin=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +81,8 @@ public class Login extends ActionBarActivity {
     public void onLoginClick(View aView)
     {
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: onLoginClick");
+
+        loading();
         validateUserLogin();
     }
 
@@ -82,13 +95,13 @@ public class Login extends ActionBarActivity {
         Response.Listener<String> ResponseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.e(LOG, response);
+                if(APPUTILS.isLogging)Log.e(LOG, response);
                 if (response.equals("Error"))// no match for user password
                 {
                     performLogIn(false,null);
                 } else {
                     try{
-                        //Parse response into BrewShcema list
+                        //Parse response into user list
                         JSONArray jsonArray = new JSONArray(response);
                         JSONUserParser jsonParser = new JSONUserParser();
                         UserSchema userSchema = jsonParser.ParseUser(jsonArray);
@@ -108,11 +121,12 @@ public class Login extends ActionBarActivity {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(LOG, error.toString());
+                if(APPUTILS.isLogging)Log.e(LOG, error.toString());
                 performLogIn(false, null); // try to login from local DB
             }
         };
 
+        updateLoading("User Data",25);
         LoginRequest loginRequest = new LoginRequest(userName.getText().toString(),password.getText().toString(),ResponseListener,errorListener);
         WebController.getInstance().addToRequestQueue(loginRequest);
     }
@@ -154,6 +168,7 @@ public class Login extends ActionBarActivity {
             long userId =  dbManager.DoesUserLoginExist(userName.getText().toString(),password.getText().toString());
             if(userId > 0){
                 performLogIn(true, dbManager.getUser(userId));
+                localLogin = true;
                 Toast.makeText(this, "Local Login", Toast.LENGTH_SHORT).show();
             }
             else
@@ -192,6 +207,7 @@ public class Login extends ActionBarActivity {
                 }
             };
 
+        updateLoading("Brew Data",50);
         GetUserBrewsRequest getBrewRequest = new GetUserBrewsRequest(Long.toString(aUserId), ResponseListener,null);
         WebController.getInstance().addToRequestQueue(getBrewRequest);
     }
@@ -218,13 +234,13 @@ public class Login extends ActionBarActivity {
         Response.Listener<String> ResponseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.e(LOG, response);
+                if(APPUTILS.isLogging)Log.e(LOG, response);
                 if (response.equals("Error"))// no match for user exists
                 {
                     performCreate(false, null);
                 } else {
                     try{
-                        //Parse response into BrewShcema list
+                        //Parse response into user list
                         JSONArray jsonArray = new JSONArray(response);
                         JSONUserParser jsonParser = new JSONUserParser();
                         UserSchema userSchema = jsonParser.ParseUser(jsonArray);
@@ -243,6 +259,7 @@ public class Login extends ActionBarActivity {
         UserSchema userSchema = new UserSchema(userName.getText().toString(),password.getText().toString());
         userSchema.setAppSettingsSchemas(appSettingsHelper.CreateAppSettings());
 
+        updateLoading("Creating User", 0);
         CreateUserRequest createUserRequest = new CreateUserRequest(userSchema,ResponseListener,null);
         WebController.getInstance().addToRequestQueue(createUserRequest);
     }
@@ -264,8 +281,10 @@ public class Login extends ActionBarActivity {
 
         if (isSuccess)
         {
-            if(CreateLocalUser(aUserSchema))
-                message.setText("Successfully Created");
+            if(CreateLocalUser(aUserSchema)) {
+                Toast.makeText(this, "User "+ aUserSchema.getUserName() +" Successfully Created", Toast.LENGTH_SHORT).show();
+                performLogIn(true,aUserSchema);
+            }
             else
                 message.setText("Local User Create Failed");
         }
@@ -311,6 +330,7 @@ public class Login extends ActionBarActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
+                        loading();
                         validateUserCreate();
                         break;
 
@@ -333,13 +353,80 @@ public class Login extends ActionBarActivity {
 
     private void OpenApp()
     {
+        //Load update / load data needed
+        //If we are logining in with local aka no internet dont try and load data
+        if(!localLogin)
+        {
+            getStyles();
+        }
+
         //Create and intent which will open next activity UserProfile
         Intent intent = new Intent(this, UserProfile.class);
 
         //start next activity
         startActivity(intent);
 
-        currentUser.getUser().writeString();
+        if(loadingDialog != null) loadingDialog.cancel();
     }
 
+    private void loading()
+    {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.loading_dialog, null);
+        alertDialogBuilder.setView(dialogView);
+
+        loadingText = (TextView) dialogView.findViewById(R.id.LoadingTextView);
+        loadingProgressBar =(ProgressBar) dialogView.findViewById(R.id.LoadingProgressBar);
+
+        loadingDialog = alertDialogBuilder.create();
+
+        loadingDialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        loadingDialog.show();
+    }
+
+    private void updateLoading(String displayText, int loadingProgress)
+    {
+        if(loadingText != null && loadingProgressBar != null)
+        {
+            loadingText.setText("Loading "+displayText);
+            loadingProgressBar.setProgress(loadingProgress);
+        }
+    }
+
+    private void getStyles()
+    {
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: getStyles");
+
+        Response.Listener<String> ResponseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if(APPUTILS.isLogging)Log.e(LOG, response);
+                try{
+                    JSONArray jsonArray = new JSONArray("["+response+"]");
+                    JSONObject JSONResponse = (JSONObject) jsonArray.get(0);
+                    if (JSONResponse.getString("status").equals("Error"))// no match for user exists
+                    {
+
+                    } else {
+                        //Parse response into style list
+                        JSONStyleParser jsonParser = new JSONStyleParser();
+                        List<BrewStyleSchema> brewStyleSchemas = jsonParser.ParseStyles(new JSONArray(JSONResponse.getString("message")));
+                        //add or update the styles
+                        dbManager.updateAllBrewStyles(brewStyleSchemas);
+                    }
+                }
+                catch (JSONException e) {
+
+                }
+            }
+        };
+
+        updateLoading("Style Data",75);
+        GetStylesRequest getStylesRequest = new GetStylesRequest(ResponseListener,null);
+        WebController.getInstance().addToRequestQueue(getStylesRequest);
+    }
 }

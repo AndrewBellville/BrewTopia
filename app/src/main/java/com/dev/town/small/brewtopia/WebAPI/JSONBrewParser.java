@@ -87,16 +87,24 @@ public class JSONBrewParser {
             brewSchema.setTargetFG(Double.parseDouble(aBrew.getString("FinalGravity")));
             brewSchema.setTargetABV(Double.parseDouble(aBrew.getString("ABV")));
             brewSchema.setDescription(aBrew.getString("Description"));
-            brewSchema.setFavorite(Integer.parseInt(aBrew.getString("Favorite")));
-            brewSchema.setScheduled(Integer.parseInt(aBrew.getString("Scheduled")));
-            brewSchema.setOnTap(Integer.parseInt(aBrew.getString("OnTap")));
             brewSchema.setIBU(Double.parseDouble(aBrew.getString("IBU")));
             brewSchema.setBatchSize(Double.parseDouble(aBrew.getString("BatchSize")));
             brewSchema.setEfficiency(Double.parseDouble(aBrew.getString("Efficiency")));
             brewSchema.setMethod(aBrew.getString("Method"));
-            brewSchema.setStyle(aBrew.getString("Style"));
+            brewSchema.setStyleType(aBrew.getString("Style"));
+            brewSchema.setStyleId(Long.parseLong(aBrew.getString("StyleId")));
             brewSchema.setSRM(Integer.parseInt(aBrew.getString("SRM")));
-            brewSchema.setCreatedOn(aBrew.getString("CreatedOn"));
+
+            // if global display we want to field to be blak so ignore if missing
+            try {
+
+                brewSchema.setFavorite(Integer.parseInt(aBrew.getString("Favorite")));
+                brewSchema.setScheduled(Integer.parseInt(aBrew.getString("Scheduled")));
+                brewSchema.setOnTap(Integer.parseInt(aBrew.getString("OnTap")));
+                brewSchema.setIsGlobal(Integer.parseInt(aBrew.getString("IsGlobal")));
+                brewSchema.setCreatedOn(aBrew.getString("CreatedOn"));
+            }catch (JSONException ex){}
+
 
             //Build Boil Additions
             JSONArray boilAdditions = aBrew.getJSONArray("BoilAdditions");
@@ -138,7 +146,7 @@ public class JSONBrewParser {
             JSONArray InventoryOther = aBrew.getJSONArray("InventoryOther");
             brewSchema.getBrewInventorySchemaList().addAll(ParseGlobalBrewOthers(InventoryOther));
 
-            brewSchema.setStyleSchema(dataBaseManager.getBrewsStylesByName(brewSchema.getStyle()));
+            brewSchema.setStyleSchema(dataBaseManager.getBrewsStylesById(brewSchema.getStyleId()));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -332,7 +340,7 @@ public class JSONBrewParser {
 
             scheduledBrewSchema.setBrewName(aSchedule.getString("BrewName"));
             scheduledBrewSchema.setNotes(aSchedule.getString("Note"));
-            scheduledBrewSchema.setColor(aSchedule.getString("StyleColor"));
+            scheduledBrewSchema.setStyleType(aSchedule.getString("StyleType"));
             scheduledBrewSchema.setOG(Double.parseDouble(aSchedule.getString("OriginalGravity")));
             scheduledBrewSchema.setFG(Double.parseDouble(aSchedule.getString("FinalGravity")));
             scheduledBrewSchema.setABV(Double.parseDouble(aSchedule.getString("ABV")));

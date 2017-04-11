@@ -322,7 +322,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Style"
+            android:text="Style Type"
             android:id="@+id/StyleTextView"
             android:layout_below="@+id/scheduledCheckBox"
             android:layout_alignParentLeft="true"

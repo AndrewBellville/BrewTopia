@@ -35,7 +35,9 @@ import com.dev.town.small.brewtopia.WebAPI.WebController;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class AddEditViewBrew extends Fragment {
 
@@ -83,7 +85,6 @@ public class AddEditViewBrew extends Fragment {
     private KeyListener targetOGListener;
     private KeyListener targetFGListener;
     private KeyListener targetABVListener;
-    private KeyListener methodListener;
     private KeyListener IBUListener;
     private KeyListener BatchSizeListener;
     private KeyListener EfficiencyListener;
@@ -268,13 +269,13 @@ public class AddEditViewBrew extends Fragment {
 
     private void setBrewStyleSpinner()
     {
-        int MAX_STYLES = dbManager.getBrewStyleCount();
-        String[] brewStyles = new String[MAX_STYLES];
-        List<BrewStyleSchema> bs = dbManager.getAllBrewsStyles();
+        String[] brewStyles = new String[ APPUTILS.StyleMap.size()];
 
-        for(int i=0;i < bs.size();i++)
-        {
-            brewStyles[i]= bs.get(i).getBrewStyleName();
+        Iterator it = APPUTILS.StyleMap.entrySet().iterator();
+        int i=0;
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            brewStyles[i++]= pair.getKey().toString();
         }
         styleAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, brewStyles); //selected item will look like a spinner set from XML
         // Specify the layout to use when the list of choices appears
@@ -341,7 +342,7 @@ public class AddEditViewBrew extends Fragment {
         // set to brew Style this might be deleted if its user created
         try
         {
-            styleSpinner.setSelection(styleAdapter.getPosition(aBrewSchema.getStyle()));
+            styleSpinner.setSelection(styleAdapter.getPosition(aBrewSchema.getStyleType()));
         }
         catch (Exception e)
         {
@@ -484,7 +485,7 @@ public class AddEditViewBrew extends Fragment {
         //brew.setTargetABV(abv);
         brew.setDescription(description.getText().toString());
         brew.setBoilTime(bt);
-        brew.setStyle(styleSpinner.getSelectedItem().toString());
+        brew.setStyleType(styleSpinner.getSelectedItem().toString());
         brew.setMethod(method.getSelectedItem().toString());
         brew.setIBU(ibu);
         brew.setBooleanFavorite(favorite.isChecked());
@@ -725,6 +726,12 @@ public class AddEditViewBrew extends Fragment {
 
     private void SyncToGlobal()
     {
+
+        if(!APPUTILS.HasInternet(getActivity())) {
+            Toast.makeText(getActivity(), "Need Internet To Perform", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Response.Listener<String> ResponseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -749,6 +756,8 @@ public class AddEditViewBrew extends Fragment {
                             }
                             BrewActivityData.getInstance().setAddEditViewBrew(brewSchema);
                             DisplayBrew(brewSchema);
+
+                            Toast.makeText(getActivity(), brewSchema.getBrewName() + " Synced", Toast.LENGTH_SHORT).show();
                         }
                     }
                     catch (JSONException e) {}
@@ -756,14 +765,8 @@ public class AddEditViewBrew extends Fragment {
             }
         };
 
-        if(!APPUTILS.HasInternet(getActivity())) {
-            Toast.makeText(getActivity(), "Need Internet To Perform", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            CreateBrewRequest createBrewRequest = new CreateBrewRequest(brewSchema, ResponseListener,null);
-            WebController.getInstance().addToRequestQueue(createBrewRequest);
-        }
+        CreateBrewRequest createBrewRequest = new CreateBrewRequest(brewSchema, ResponseListener,null);
+        WebController.getInstance().addToRequestQueue(createBrewRequest);
     }
 
     private void PullFromGlobal()

@@ -70,6 +70,7 @@ public class JSONUserParser {
         try {
             userSchema.setUserId(Long.parseLong(aUser.getString("UserId")));
             userSchema.setUserName(aUser.getString("UserName"));
+            userSchema.setPassword(aUser.getString("Password"));
             userSchema.setRole(Integer.parseInt(aUser.getString("Role")));
             userSchema.setCreatedOn(aUser.getString("CreatedOn"));
 

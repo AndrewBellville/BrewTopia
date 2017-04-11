@@ -344,7 +344,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         updateUserCalendar();
 
         if(colorSpinner.getSelectedItem().toString() == "Blue")
-            sbrew.setColor("#0000FF");
+            sbrew.setStyleType("#0000FF");
 
 
         sbrew.setNotes(Notes.getText().toString());

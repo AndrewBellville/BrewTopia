@@ -47,7 +47,7 @@ public class SchedulerHelper {
         //Create Schedule for Brew
         ScheduledBrewSchema sBrew = new ScheduledBrewSchema(aBrew.getBrewId(), CurrentUser.getInstance().getUser().getUserId());
         sBrew.setBrewName(aBrew.getBrewName());
-        sBrew.setColor(aBrew.getStyleSchema().getBrewStyleColor());
+        sBrew.setStyleType(APPUTILS.StyleMap.get(aBrew.getStyleType()).toString());
         sBrew.setStartDate(APPUTILS.dateFormat.format(new Date()));
 
         //secondary

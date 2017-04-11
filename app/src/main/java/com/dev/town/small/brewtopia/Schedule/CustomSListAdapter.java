@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.dev.town.small.brewtopia.DataClass.APPUTILS;
 import com.dev.town.small.brewtopia.DataClass.ScheduledBrewSchema;
 import com.dev.town.small.brewtopia.R;
 
@@ -70,7 +71,7 @@ public class CustomSListAdapter extends BaseAdapter implements ListAdapter  {
             colorLayout.setMinimumHeight(150);
             colorLayout.setMinimumWidth(70);
             try{
-                colorLayout.setBackgroundColor(Color.parseColor(sBrew.getColor()));
+                colorLayout.setBackgroundColor(Color.parseColor(APPUTILS.StyleMap.get(sBrew.getStyleType()).toString()));
             }
             catch (Exception e)
             {

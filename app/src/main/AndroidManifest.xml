@@ -84,7 +84,10 @@
             android:name=".Brews.CompletedBrew"
             android:icon="@drawable/beer_dark"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".Brews.BrewImageView"></activity>
+
+        <activity android:name=".Brews.BrewImageView" />
+
+        <activity android:name=".AppSettings.UpdateUserInfo" />
     </application>
 
 </manifest>

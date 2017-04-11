@@ -41,10 +41,9 @@ public class DataBasePreLoad {
     protected void PreLoadData(SQLiteDatabase aSQLiteDatabase)
     {
         PreLoadAdminUser(aSQLiteDatabase);
-        PreLoadBrewStyles(aSQLiteDatabase);
+        //PreLoadBrewStyles(aSQLiteDatabase);
         PreLoadCalculations(aSQLiteDatabase);
     }
-
 
     private void PreLoadAdminUser(SQLiteDatabase aSQLiteDatabase)
     {

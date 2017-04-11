@@ -19,14 +19,14 @@ public class ScheduledBrewSchema {
     private long BrewId=0;
     private long UserId=-1;
     private String brewName = "";
-    private String StartDate;
+    private String StartDate="";
     private String Notes;
     private Double OG=0.0;
     private Double FG=0.0;
     private Double ABV=0.0;
     private int Active=1;
     private int displayLevel = 0;
-    private String color;
+    private String styleType;
     private int hasStarter=0; //0 = no 1 = yes
     private List<ScheduledEventSchema> scheduledEventSchemaList = new ArrayList<>();
     private int isNew = 1;//1=new 0=not new
@@ -188,8 +188,8 @@ public class ScheduledBrewSchema {
     public String getNotes() {
         return Notes;
     }
-    public String getColor() {
-        return color;
+    public String getStyleType() {
+        return styleType;
     }
     public long getScheduleId() {
         return scheduleId;
@@ -258,8 +258,8 @@ public class ScheduledBrewSchema {
     public void setNotes(String notes) {
         Notes = notes;
     }
-    public void setColor(String color) {
-        this.color = color;
+    public void setStyleType(String styleType) {
+        this.styleType = styleType;
     }
     public void setScheduleId(long scheduleId) {
         this.scheduleId = scheduleId;

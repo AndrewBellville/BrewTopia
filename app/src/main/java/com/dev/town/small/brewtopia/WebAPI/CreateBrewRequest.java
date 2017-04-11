@@ -53,7 +53,8 @@ public class CreateBrewRequest extends StringRequest {
         params.put("BatchSize", Double.toString(aBrewSchema.getBatchSize()));
         params.put("Efficiency", Double.toString(aBrewSchema.getEfficiency()));
         params.put("Method", aBrewSchema.getMethod());
-        params.put("Style", aBrewSchema.getStyle());
+        params.put("Style", aBrewSchema.getStyleType());
+        params.put("StyleId", Long.toString(aBrewSchema.getStyleId()));
         params.put("TotalBrewed", Integer.toString(aBrewSchema.getTotalBrewed()));
         params.put("SRM", Integer.toString(aBrewSchema.getSRM()));
         params.put("IsGlobal", Integer.toString(aBrewSchema.getIsGlobal()));
@@ -117,7 +118,7 @@ public class CreateBrewRequest extends StringRequest {
             tempMap.put("BrewName",bs.getBrewName());
             tempMap.put("EndBrewDate",bs.getEndBrewDate());
             tempMap.put("Note",bs.getNotes());
-            tempMap.put("StyleColor",bs.getColor());
+            tempMap.put("StyleType",bs.getStyleType());
             tempMap.put("OriginalGravity",Double.toString(bs.getOG()));
             tempMap.put("FinalGravity",Double.toString(bs.getFG()));
             tempMap.put("ABV",Double.toString(bs.getABV()));

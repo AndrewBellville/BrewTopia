@@ -39,7 +39,8 @@ public class BrewSchema {
     private List<BrewImageSchema> brewImageSchemaList = new ArrayList<BrewImageSchema>();
     private List<ScheduledBrewSchema> scheduledBrewSchemas = new ArrayList<ScheduledBrewSchema>();
     private List<ScheduledEventSchema> scheduledEventSchemas = new ArrayList<ScheduledEventSchema>();
-    private String Style;
+    private String StyleType;
+    private long styleId = 0;
     private BrewStyleSchema StyleSchema;
     private int totalBrewed=0;
     private int SRM=0;
@@ -109,8 +110,8 @@ public class BrewSchema {
     public List<BoilAdditionsSchema> getBoilAdditionlist() {
         return boilAdditionlist;
     }
-    public String getStyle() {
-        return Style;
+    public String getStyleType() {
+        return StyleType;
     }
     public BrewStyleSchema getStyleSchema() {
         return StyleSchema;
@@ -205,6 +206,9 @@ public class BrewSchema {
     public int getIsNew() {
         return isNew;
     }
+    public long getStyleId() {
+        return styleId;
+    }
 
     //setters
     public void setBrewId(long id) {
@@ -237,8 +241,8 @@ public class BrewSchema {
     public void setBoilAdditionlist(List<BoilAdditionsSchema> boilAdditionlist) {
         this.boilAdditionlist = boilAdditionlist;
     }
-    public void setStyle(String style) {
-        Style = style;
+    public void setStyleType(String styleType) {
+        StyleType = styleType;
     }
     public void setStyleSchema(BrewStyleSchema styleSchema) {
         StyleSchema = styleSchema;
@@ -333,5 +337,8 @@ public class BrewSchema {
     }
     public void setIsNew(int isNew) {
         this.isNew = isNew;
+    }
+    public void setStyleId(long styleId) {
+        this.styleId = styleId;
     }
 }

@@ -69,7 +69,7 @@ public class CustomCompListAdapter extends BaseAdapter implements ListAdapter  {
             colorLayout.setMinimumHeight(290);
             colorLayout.setMinimumWidth(80);
             try{
-                colorLayout.setBackgroundColor(Color.parseColor(sbrewSchema.getColor()));
+                colorLayout.setBackgroundColor(Color.parseColor(APPUTILS.StyleMap.get(sbrewSchema.getStyleType()).toString()));
             }
             catch (Exception e)
             {

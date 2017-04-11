@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by Andrew on 4/3/2016.
@@ -42,7 +43,7 @@ public class APPUTILS {
     }
 
     //********************Brew Style Hash Map Name/Color**********************
-    public static final HashMap StyleMap = new HashMap(){
+    public static final Map StyleMap = new HashMap(){
         {
             put("None","");
             put("Amber","#330000");
