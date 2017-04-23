@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,9 +38,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public class AddEditViewSchedule extends ActionBarActivity {
+public class AddEditViewSchedule extends Fragment {
 
     // Log cat tag
     private static final String LOG = "AddEditViewSchedule";
@@ -74,6 +79,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
     private Button addScheduleEventButton;
     private Button editScheduleButton;
+    private Button deleteScheduleButton;
     private Spinner colorSpinner;
     private CheckBox dateRollUpCheckBox;
     private CheckBox usingStater;
@@ -93,40 +99,52 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        View returnView = inflater.inflate(R.layout.schedule_view,container,false);
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
-        setContentView(R.layout.schedule_view);
 
         //Add add edit layout default
-        LayoutInflater inflater =  (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.activity_add_edit_view_schedule, null);
+        View mainView = inflater.inflate(R.layout.activity_add_edit_view_schedule, null);
 
-        ScrollView = (ScrollView)findViewById(R.id.ScheduleScrollView);
-        ScrollView.addView(view);
+        ScrollView = (ScrollView)returnView.findViewById(R.id.ScheduleScrollView);
+        ScrollView.addView(mainView);
 
         datesList = new EditText[4];
-        brewName = (EditText)findViewById(R.id.ScheduleBNameeditText);
-        StartDate = (EditText)findViewById(R.id.ScheduleStarteditText);
+        brewName = (EditText)mainView.findViewById(R.id.ScheduleBNameEditText);
+        StartDate = (EditText)mainView.findViewById(R.id.ScheduleStarteditText);
         datesList[0] = StartDate;
-        Notes = (EditText)findViewById(R.id.ScheduleNoteseditText);
-        OriginalGravity = (EditText)findViewById(R.id.ScheduleOGeditText);
-        FinalGravity = (EditText)findViewById(R.id.ScheduleFGeditText);
-        ABV = (EditText)findViewById(R.id.ScheduleABVeditText);
+        Notes = (EditText)mainView.findViewById(R.id.ScheduleNoteseditText);
+        OriginalGravity = (EditText)mainView.findViewById(R.id.ScheduleOGeditText);
+        FinalGravity = (EditText)mainView.findViewById(R.id.ScheduleFGeditText);
+        ABV = (EditText)mainView.findViewById(R.id.ScheduleABVeditText);
 
-        colorSpinner = (Spinner) findViewById(R.id.Colorspinner);
-        dateRollUpCheckBox = (CheckBox)findViewById(R.id.DateRollUpCheckBox);
-        usingStater = (CheckBox)findViewById(R.id.HasStaterCheckBox);
+        colorSpinner = (Spinner) mainView.findViewById(R.id.Colorspinner);
+        dateRollUpCheckBox = (CheckBox)mainView.findViewById(R.id.DateRollUpCheckBox);
+        usingStater = (CheckBox)mainView.findViewById(R.id.HasStaterCheckBox);
 
-        editScheduleButton = (Button)findViewById(R.id.EditScheduleButton);
-        addScheduleEventButton = (Button)findViewById(R.id.AddEventButton);
+        editScheduleButton = (Button)returnView.findViewById(R.id.EditScheduleButton);
+        editScheduleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ifEdit();
+            }
+        });
+        deleteScheduleButton = (Button)returnView.findViewById(R.id.DeleteButton);
+        deleteScheduleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onDeleteClick();
+            }
+        });
+        addScheduleEventButton = (Button)mainView.findViewById(R.id.AddEventButton);
         addScheduleEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AddScheduleEvent();
             }
         });
-        ScheduleEventsListView = (ListView)findViewById(R.id.ScheduleEvents);
+        ScheduleEventsListView = (ListView)mainView.findViewById(R.id.ScheduleEvents);
         ScheduleEventsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -140,25 +158,25 @@ public class AddEditViewSchedule extends ActionBarActivity {
         OriginalGravityListener = OriginalGravity.getKeyListener();
         FinalGravityListener = FinalGravity.getKeyListener();
 
-
-        toolbar=(Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle("Schedule");
-        dbManager = DataBaseManager.getInstance(getApplicationContext());
+        dbManager = DataBaseManager.getInstance(getActivity());
 
         userId = CurrentUser.getInstance().getUser().getUserId();
 
         scheduleActivityData = ScheduleActivityData.getInstance();
         gScheduleSchema = scheduleActivityData.getScheduledBrewSchema();
-        schedulerHelper = new SchedulerHelper(this);
+        schedulerHelper = new SchedulerHelper(getActivity());
 
         ToggleFieldEditable(false);
         setColorSpinner();
 
+        if(scheduleActivityData.getAddEditViewState() == ScheduleActivityData.DisplayMode.COMPLETE) {
+            deleteScheduleButton.setVisibility(View.GONE);
+        }
+
         ifView();
 
+
+        return returnView;
     }
 
     public void ifAdd()
@@ -202,18 +220,42 @@ public class AddEditViewSchedule extends ActionBarActivity {
         ABV.setText(Double.toString(APPUTILS.GetTruncatedABVPercent(aScheduleSchema.getABV())) +"%" );
         usingStater.setChecked(aScheduleSchema.getBooleanHasStarter());
 
-        CustomSEListAdapter adapter = new CustomSEListAdapter(aScheduleSchema.getScheduledEventSchemaList(), getApplicationContext());
+        // set to brew Style this might be deleted if its user created
+        try
+        {
+            colorSpinner.setSelection(colorAdapter.getPosition(aScheduleSchema.getStyleType()));
+        }
+        catch (Exception e)
+        {
+            //if we are here user must have deleted brew style try to set to None
+            try
+            {
+                colorSpinner.setSelection(colorAdapter.getPosition("None"));
+            }
+            catch (Exception ex)
+            {
+                // if all else fails set to index 0
+                colorSpinner.setSelection(0);
+            }
+        }
+
+        CustomSEListAdapter adapter = new CustomSEListAdapter(aScheduleSchema.getScheduledEventSchemaList(), getActivity());
         ScheduleEventsListView.setAdapter(adapter);
         APPUTILS.setListViewHeightBasedOnChildren(ScheduleEventsListView);
     }
 
     private void setColorSpinner()
     {
-        List<String> colors = new ArrayList<String>();
-        colors.add("Default");
-        colors.add("Blue");
+        String[] brewStyles = new String[ APPUTILS.StyleMap.size()];
 
-        colorAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, colors); //selected item will look like a spinner set from XML
+        Iterator it = APPUTILS.StyleMap.entrySet().iterator();
+        int i=0;
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            brewStyles[i++]= pair.getKey().toString();
+        }
+
+        colorAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, brewStyles); //selected item will look like a spinner set from XML
         // Specify the layout to use when the list of choices appears
         colorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
@@ -232,7 +274,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         DateToEdit = (EditText)view;
 
         // show the date picker
-        showDialog(DIALOG_ID);
+        getActivity().showDialog(DIALOG_ID);
 
     }
 
@@ -282,13 +324,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         }
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id)
-    {
-        if(id == DIALOG_ID)
-            return new DatePickerDialog(this,dPickerListener, dialogYear,dialogMonth,dialogDay);
-        return null;
-    }
+
 
     private DatePickerDialog.OnDateSetListener dPickerListener =
             new DatePickerDialog.OnDateSetListener(){
@@ -308,9 +344,11 @@ public class AddEditViewSchedule extends ActionBarActivity {
         //Create Brew schedule
         ScheduledBrewSchema sbrew = gScheduleSchema;
         sbrew.setScheduleId(gScheduleSchema.getScheduleId());
+        sbrew.setBrewId(gScheduleSchema.getBrewId());
         sbrew.setBrewName(brewName.getText().toString());
         sbrew.setUserId(userId);
         sbrew.setBooleanHasStarter(usingStater.isChecked());
+        sbrew.setStyleType(colorSpinner.getSelectedItem().toString());
 
         double og=0.0;
         double fg=0.0;
@@ -343,13 +381,9 @@ public class AddEditViewSchedule extends ActionBarActivity {
         //update user calendar
         updateUserCalendar();
 
-        if(colorSpinner.getSelectedItem().toString() == "Blue")
-            sbrew.setStyleType("#0000FF");
-
 
         sbrew.setNotes(Notes.getText().toString());
-        sbrew.setActive(1);
-
+        sbrew.setActive(gScheduleSchema.getActive());
 
         gScheduleSchema = sbrew;
 
@@ -358,9 +392,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
         ifView();
     }
 
-    public void onEditClick(View aView){ifEdit();}
-
-    public void onDeleteClick(View aView)
+    public void onDeleteClick()
     {
         for(ScheduledEventSchema  scheduledEventSchema: gScheduleSchema.getScheduledEventSchemaList())
         {
@@ -370,7 +402,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
 
         // then delete brew
         dbManager.deleteBrewScheduledById(gScheduleSchema.getScheduleId());
-        this.finish();
+        getActivity().finish();
     }
 
     private void updateUserCalendar()
@@ -411,10 +443,10 @@ public class AddEditViewSchedule extends ActionBarActivity {
     {
         editScheduledEventSchema = aScheduledEventSchema;
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setTitle("Schedule Event");
 
-        LayoutInflater inflater = this.getLayoutInflater();
+        LayoutInflater inflater = getActivity().getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.custom_schedule_event_dialog, null);
         alertDialogBuilder.setView(dialogView);
 
@@ -494,7 +526,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
                 gScheduleSchema.getEndBrewDate().compareTo(aEventDate) >= 0)
             return true;
         else
-            Toast.makeText(getApplicationContext(), "Invalid Date", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Invalid Date", Toast.LENGTH_LONG).show();
 
         return false;
     }
@@ -508,7 +540,7 @@ public class AddEditViewSchedule extends ActionBarActivity {
             brewName.setKeyListener(null);
             brewName.setClickable(false);
             brewName.setEnabled(false);
-            brewName.setFocusable(false);
+            //brewName.setFocusable(false);
 
             StartDate.setKeyListener(null);
             StartDate.setClickable(false);
@@ -549,51 +581,49 @@ public class AddEditViewSchedule extends ActionBarActivity {
         }
         else
         {
-            //addEditButton.setVisibility(View.VISIBLE);
-            //if(brewActivityDataData.getAddEditViewState() == BrewActivityData.DisplayMode.ADD)
-            //   brewName.setKeyListener(brewNameListener);
+            if(scheduleActivityData.getAddEditViewState() != ScheduleActivityData.DisplayMode.COMPLETE) {
 
-            //StartDate.setKeyListener(StartDateListener);
-            StartDate.setClickable(true);
-            StartDate.setEnabled(true);
+                brewName.setKeyListener(brewNameListener);
+                brewName.setClickable(true);
+                brewName.setEnabled(true);
+                brewName.setFocusable(true);
 
-            OriginalGravity.setKeyListener(OriginalGravityListener);
-            OriginalGravity.setClickable(true);
-            OriginalGravity.setEnabled(true);
-            OriginalGravity.setFocusable(true);
+                //StartDate.setKeyListener(StartDateListener);
+                //StartDate.setClickable(true);
+                //StartDate.setEnabled(true);
 
-            FinalGravity.setKeyListener(FinalGravityListener);
-            FinalGravity.setClickable(true);
-            FinalGravity.setEnabled(true);
-            FinalGravity.setFocusable(true);
+                OriginalGravity.setKeyListener(OriginalGravityListener);
+                OriginalGravity.setClickable(true);
+                OriginalGravity.setEnabled(true);
+                OriginalGravity.setFocusable(true);
 
-            ABV.setKeyListener(null);
-            ABV.setClickable(false);
-            ABV.setEnabled(false);
-            ABV.setFocusable(false);
+                FinalGravity.setKeyListener(FinalGravityListener);
+                FinalGravity.setClickable(true);
+                FinalGravity.setEnabled(true);
+                FinalGravity.setFocusable(true);
+
+                ABV.setKeyListener(null);
+                ABV.setClickable(false);
+                ABV.setEnabled(false);
+                ABV.setFocusable(false);
+
+                colorSpinner.setClickable(true);
+                colorSpinner.setEnabled(true);
+
+                dateRollUpCheckBox.setClickable(true);
+                usingStater.setClickable(true);
+
+                addScheduleEventButton.setClickable(true);
+                addScheduleEventButton.setEnabled(true);
+
+                ScheduleEventsListView.setEnabled(true);
+                ScheduleEventsListView.setClickable(true);
+            }
 
             Notes.setKeyListener(NotesListener);
             Notes.setClickable(true);
             Notes.setEnabled(true);
             Notes.setFocusable(true);
-
-            colorSpinner.setClickable(true);
-            colorSpinner.setEnabled(true);
-
-            dateRollUpCheckBox.setClickable(true);
-            usingStater.setClickable(true);
-
-            addScheduleEventButton.setClickable(true);
-            addScheduleEventButton.setEnabled(true);
-
-            ScheduleEventsListView.setEnabled(true);
-            ScheduleEventsListView.setClickable(true);
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        onBackPressed();
-        return true;
     }
 }

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -20,6 +21,7 @@ import com.dev.town.small.brewtopia.DataClass.BrewStyleSchema;
 import com.dev.town.small.brewtopia.R;
 import com.dev.town.small.brewtopia.Utilites.RangeBar.RangeSeekBar;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,11 +34,17 @@ public class AddEditViewBrewStyle extends Fragment {
     private static final String LOG = "AddEditViewBrewStyle";
 
     private Spinner styleTypeSpinner;
-    ArrayAdapter<String> styleTypeAdapter;
+    private ArrayAdapter<String> styleTypeAdapter;
     private Spinner styleSpinner;
-    ArrayAdapter<String> styleAdapter;
+    private ArrayAdapter<BrewStyleSchema> styleAdapter;
 
     private DataBaseManager dbManager;
+
+    private RangeSeekBar<Double> rangeSeekBarOG;
+    private RangeSeekBar<Double> rangeSeekBarFG;
+    private RangeSeekBar<Double> rangeSeekBarABV;
+    private RangeSeekBar<Integer> rangeSeekBarIBU;
+    private RangeSeekBar<Integer> rangeSeekBarSRM;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,67 +58,80 @@ public class AddEditViewBrewStyle extends Fragment {
         dbManager = DataBaseManager.getInstance(getActivity());
 
         // *************** OG *********************
-        RangeSeekBar<Integer> rangeSeekBar = new RangeSeekBar<>(getActivity());
+        rangeSeekBarOG = new RangeSeekBar<>(getActivity());
         // Set the range
-        rangeSeekBar.setRangeValues(15, 90);
-        rangeSeekBar.setSelectedMinValue(50);
-        rangeSeekBar.setSelectedMaxValue(88);
-        rangeSeekBar.setCurrentValue(20);
+        rangeSeekBarOG.setRangeValues(0.9,1.3, 0.01);
+        //rangeSeekBarOG.setCurrentValue(1.2);
 
         LinearLayout OGlayout = (LinearLayout) view.findViewById(R.id.OGSeekBar);
-        OGlayout.addView(rangeSeekBar);
+        OGlayout.addView(rangeSeekBarOG);
 
         // *************** FG *********************
-        RangeSeekBar<Integer> rangeSeekBar1 = new RangeSeekBar<>(getActivity());
+        rangeSeekBarFG = new RangeSeekBar<>(getActivity());
         // Set the range
-        rangeSeekBar1.setRangeValues(15, 90);
-        rangeSeekBar1.setSelectedMinValue(20);
-        rangeSeekBar1.setSelectedMaxValue(88);
-        rangeSeekBar1.setCurrentValue(50);
+        rangeSeekBarFG.setRangeValues(0.9,1.3,0.01);
+        //rangeSeekBarFG.setCurrentValue(0.9);
 
         LinearLayout FGlayout = (LinearLayout) view.findViewById(R.id.FGSeekBar);
-        FGlayout.addView(rangeSeekBar1);
+        FGlayout.addView(rangeSeekBarFG);
         // Add to layout
 
         // *************** ABV *********************
-        RangeSeekBar<Integer> rangeSeekBar2 = new RangeSeekBar<>(getActivity());
+        rangeSeekBarABV = new RangeSeekBar<>(getActivity());
         // Set the range
-        rangeSeekBar2.setRangeValues(15, 90);
-        rangeSeekBar2.setSelectedMinValue(20);
-        rangeSeekBar2.setSelectedMaxValue(88);
-        rangeSeekBar2.setCurrentValue(50);
+        rangeSeekBarABV.setRangeValues(0.0,20.0,0.01);
+        //rangeSeekBarABV.setCurrentValue(0.0);
 
         LinearLayout ABVlayout = (LinearLayout) view.findViewById(R.id.ABVSeekBar);
-        ABVlayout.addView(rangeSeekBar2);
+        ABVlayout.addView(rangeSeekBarABV);
 
         // *************** IBU *********************
-        RangeSeekBar<Integer> rangeSeekBar3 = new RangeSeekBar<>(getActivity());
+        rangeSeekBarIBU = new RangeSeekBar<>(getActivity());
         // Set the range
-        rangeSeekBar3.setRangeValues(15, 90);
-        rangeSeekBar3.setSelectedMinValue(20);
-        rangeSeekBar3.setSelectedMaxValue(88);
-        rangeSeekBar3.setCurrentValue(50);
+        rangeSeekBarIBU.setRangeValues(0, 140);
+       // rangeSeekBarIBU.setCurrentValue(0);
 
         LinearLayout IBUlayout = (LinearLayout) view.findViewById(R.id.IBUSeekBar);
-        IBUlayout.addView(rangeSeekBar3);
+        IBUlayout.addView(rangeSeekBarIBU);
 
 
         // *************** SRM *********************
-        RangeSeekBar<Integer> rangeSeekBar4 = new RangeSeekBar<>(getActivity());
+        rangeSeekBarSRM = new RangeSeekBar<>(getActivity());
         // Set the range
-        rangeSeekBar4.setRangeValues(15, 90);
-        rangeSeekBar4.setSelectedMinValue(20);
-        rangeSeekBar4.setSelectedMaxValue(88);
-        rangeSeekBar4.setCurrentValue(50);
+        rangeSeekBarSRM.setRangeValues(0, 50);
+        //rangeSeekBarSRM.setCurrentValue(0);
 
         LinearLayout SRMlayout = (LinearLayout) view.findViewById(R.id.SRMSeekBar);
-        SRMlayout.addView(rangeSeekBar4);
+        SRMlayout.addView(rangeSeekBarSRM);
 
 
         setStyleTypeSpinner();
         setStyleSpinner();
 
+        updateRanges(null);
+
         return view;
+    }
+
+    private void updateRanges(BrewStyleSchema aBrewStyleSchema) {
+
+        if(aBrewStyleSchema == null) return;
+
+        rangeSeekBarOG.setSelectedMinValue(aBrewStyleSchema.getMinOG());
+        rangeSeekBarOG.setSelectedMaxValue(aBrewStyleSchema.getMaxOG());
+
+        rangeSeekBarFG.setSelectedMinValue(aBrewStyleSchema.getMinFG());
+        rangeSeekBarFG.setSelectedMaxValue(aBrewStyleSchema.getMaxFG());
+
+        rangeSeekBarABV.setSelectedMinValue(aBrewStyleSchema.getMinABV());
+        rangeSeekBarABV.setSelectedMaxValue(aBrewStyleSchema.getMaxABV());
+
+        rangeSeekBarIBU.setSelectedMinValue((int)aBrewStyleSchema.getMinIBU());
+        rangeSeekBarIBU.setSelectedMaxValue((int)aBrewStyleSchema.getMaxIBU());
+
+        rangeSeekBarSRM.setSelectedMinValue((int)aBrewStyleSchema.getMinSRM());
+        rangeSeekBarSRM.setSelectedMaxValue((int)aBrewStyleSchema.getMaxSRM());
+
     }
 
     private void setStyleTypeSpinner()
@@ -129,21 +150,36 @@ public class AddEditViewBrewStyle extends Fragment {
         styleTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         styleTypeSpinner.setAdapter(styleTypeAdapter);
+
+        try {
+            styleTypeSpinner.setSelection(styleTypeAdapter.getPosition(BrewActivityData.getInstance().getAddEditViewBrew().getStyleType()));
+        }
+        catch (Exception e){
+            styleTypeSpinner.setSelection(0);
+        }
+
     }
 
     private void setStyleSpinner()
     {
         List<BrewStyleSchema> brewStyleSchemas = dbManager.getAllBrewsStyles();
 
-        String[] brewStyles = new String[ brewStyleSchemas.size()];
-
-        for(int i=0; i < brewStyleSchemas.size();i++) {
-            brewStyles[i]= brewStyleSchemas.get(i).getBrewStyleName();
-        }
-        styleAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, brewStyles); //selected item will look like a spinner set from XML
+        styleAdapter = new ArrayAdapter<BrewStyleSchema>(getActivity(), android.R.layout.simple_spinner_item, brewStyleSchemas); //selected item will look like a spinner set from XML
         // Specify the layout to use when the list of choices appears
         styleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         styleSpinner.setAdapter(styleAdapter);
+
+        styleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                updateRanges((BrewStyleSchema) adapterView.getItemAtPosition(i));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 }

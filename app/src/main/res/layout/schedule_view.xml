@@ -4,10 +4,6 @@
     android:orientation="vertical" android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <include  android:id="@+id/app_bar"
-        layout="@layout/app_bar"/>
-
-
     <RelativeLayout android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -31,8 +27,7 @@
                 android:layout_height="wrap_content"
                 android:text="Delete"
                 android:id="@+id/DeleteButton"
-                android:layout_gravity="center"
-                android:onClick="onDeleteClick"/>
+                android:layout_gravity="center" />
 
             <Button
                 android:layout_width="wrap_content"
@@ -41,8 +36,7 @@
                 android:id="@+id/EditScheduleButton"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:onClick="onEditClick"/>
+                android:layout_alignParentEnd="true" />
 
         </RelativeLayout>
 

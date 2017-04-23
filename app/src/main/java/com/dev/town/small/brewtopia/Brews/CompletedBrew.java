@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -32,8 +33,17 @@ public class CompletedBrew extends ActionBarActivity {
     // Log cat tag
     private static final String LOG = "CompletedBrew";
 
+    //State for AddEditView Brew and Brew Name if Edit/View
+    public enum DisplayMode {
+        ADD, EDIT, VIEW
+    };
+    private DisplayMode AddEditViewState = DisplayMode.VIEW; // STATES: Add, Edit, View
+
     private long  userId;
     private ScrollView ScrollView;
+
+    private Button editScheduleButton;
+    private Button deleteScheduleButton;
 
     private EditText brewName;
     private EditText StartDate;
@@ -42,6 +52,7 @@ public class CompletedBrew extends ActionBarActivity {
     private EditText FinalGravity;
     private EditText ABV;
     private ListView ScheduleEventsListView;
+    private KeyListener NotesListener;
 
     private Spinner colorSpinner;
     private CheckBox dateRollUpCheckBox;
@@ -65,7 +76,7 @@ public class CompletedBrew extends ActionBarActivity {
         ScrollView = (ScrollView)findViewById(R.id.ScheduleScrollView);
         ScrollView.addView(view);
 
-        brewName = (EditText)findViewById(R.id.ScheduleBNameeditText);
+        brewName = (EditText)findViewById(R.id.ScheduleBNameEditText);
         StartDate = (EditText)findViewById(R.id.ScheduleStarteditText);
         Notes = (EditText)findViewById(R.id.ScheduleNoteseditText);
         OriginalGravity = (EditText)findViewById(R.id.ScheduleOGeditText);
@@ -78,17 +89,22 @@ public class CompletedBrew extends ActionBarActivity {
         dateRollUpCheckBox = (CheckBox)findViewById(R.id.DateRollUpCheckBox);
         usingStater = (CheckBox)findViewById(R.id.HasStaterCheckBox);
 
-        RelativeLayout buttonlayout = (RelativeLayout)findViewById(R.id.ButtonRow);
-        buttonlayout.setVisibility(View.GONE);
+        NotesListener = Notes.getKeyListener();
 
-        toolbar=(Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle("Completed Brew");
         dbManager = DataBaseManager.getInstance(getApplicationContext());
 
         userId = CurrentUser.getInstance().getUser().getUserId();
+
+
+        editScheduleButton = (Button)findViewById(R.id.EditScheduleButton);
+        editScheduleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ifEdit();
+            }
+        });
+        deleteScheduleButton = (Button)findViewById(R.id.DeleteButton);
+        deleteScheduleButton.setVisibility(View.GONE);
 
         Button addScheduleEventButton = (Button) view.findViewById(R.id.AddEventButton);
         addScheduleEventButton.setVisibility(View.GONE);
@@ -106,6 +122,19 @@ public class CompletedBrew extends ActionBarActivity {
         aScheduleSchema = dbManager.getNonActiveScheduledScheduleId(BrewActivityData.getInstance().getScheduleId());
         DisplaySchedule(aScheduleSchema);
         ToggleFieldEditable(false);
+    }
+
+    public void ifEdit()
+    {
+        if(AddEditViewState != DisplayMode.EDIT )
+        {
+            editScheduleButton.setText("Submit");
+            AddEditViewState = DisplayMode.EDIT;
+            ToggleFieldEditable(true);
+        }
+        else{
+            validateSubmit();
+        }
     }
 
     private void DisplaySchedule(ScheduledBrewSchema aScheduleSchema)
@@ -138,6 +167,18 @@ public class CompletedBrew extends ActionBarActivity {
         colorSpinner.setAdapter(colorAdapter);
     }
 
+    private void validateSubmit()
+    {
+        //update only notes
+        aScheduleSchema.setNotes(Notes.getText().toString());
+
+        dbManager.updateScheduledBrew(aScheduleSchema);
+
+        ifView();
+    }
+
+    public void onEditClick(View aView){ifEdit();}
+
     private void ToggleFieldEditable(boolean aEditable)
     {
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: ToggleFieldEditable");
@@ -168,10 +209,20 @@ public class CompletedBrew extends ActionBarActivity {
         ABV.setEnabled(false);
         //ABV.setFocusable(false);
 
-        Notes.setKeyListener(null);
-        Notes.setClickable(false);
-        Notes.setEnabled(false);
-        //Notes.setFocusable(false);
+        if(aEditable)
+        {
+            Notes.setKeyListener(NotesListener);
+            Notes.setClickable(true);
+            Notes.setEnabled(true);
+            //Notes.setFocusable(false);
+        }
+        else
+        {
+            Notes.setKeyListener(null);
+            Notes.setClickable(false);
+            Notes.setEnabled(false);
+            //Notes.setFocusable(false);
+        }
 
         colorSpinner.setClickable(false);
         colorSpinner.setEnabled(false);

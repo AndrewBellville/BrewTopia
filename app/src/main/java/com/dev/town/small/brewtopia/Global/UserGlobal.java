@@ -12,9 +12,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.dev.town.small.brewtopia.Brews.BrewActivityData;
 import com.dev.town.small.brewtopia.Brews.CustomBListAdapter;
 import com.dev.town.small.brewtopia.Brews.UserBrew;
@@ -26,6 +28,8 @@ import com.dev.town.small.brewtopia.WebAPI.JSONBrewParser;
 import com.dev.town.small.brewtopia.WebAPI.WebController;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,14 +112,27 @@ public class UserGlobal extends Fragment {
     {
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: GetGlobalBrews");
 
-        Response.Listener<JSONArray> ResponseListener = new Response.Listener<JSONArray>() {
+        Response.Listener<String> ResponseListener = new Response.Listener<String>() {
             @Override
-            public void onResponse(JSONArray response) {
+            public void onResponse(String response) {
                 if(APPUTILS.isLogging)Log.d(LOG, response.toString());
-                //Get respose and  parse JSON into BrewSchema
-                LoadGlobalBrews(new JSONBrewParser(getActivity()).ParseGlobalBrews(response));
-                // Now we call setRefreshing(false) to signal refresh has finished
-                swipeContainer.setRefreshing(false);
+                try {
+                    JSONArray jsonArray = new JSONArray("["+response+"]");
+                    JSONObject JSONResponse = (JSONObject) jsonArray.get(0);
+                    if (JSONResponse.getString("status").equals("Error"))// no match for user exists
+                    {
+                        DisplayError(JSONResponse.getString("message"));
+                    } else {
+
+                        //Get respose and  parse JSON into BrewSchema
+                        LoadGlobalBrews(new JSONBrewParser(getActivity()).ParseGlobalBrews(new JSONArray(JSONResponse.getString("message"))));
+                        // Now we call setRefreshing(false) to signal refresh has finished
+                        swipeContainer.setRefreshing(false);
+                    }
+                }
+                catch (JSONException e) {
+                    DisplayError("Brew Data Load Failed");
+                }
             }
         };
 
@@ -184,6 +201,15 @@ public class UserGlobal extends Fragment {
 
         //start next activity
         startActivity(intent);
+    }
+
+    private void DisplayError(String errorText)
+    {
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: DisplayError");
+
+        swipeContainer.setRefreshing(false);
+
+        Toast.makeText(getActivity(), errorText, Toast.LENGTH_SHORT).show();
     }
 
     @Override

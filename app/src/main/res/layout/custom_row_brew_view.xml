@@ -88,6 +88,23 @@
         android:layout_toRightOf="@+id/ColorlinearLayout"
         android:layout_below="@+id/list_item_string1"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:id="@+id/list_item_string3"
+        android:focusableInTouchMode="false"
+        android:clickable="false"
+        android:focusable="false"
+        android:maxLines="1"
+        android:maxLength="28"
+        android:layout_alignLeft="@+id/list_item_string2"
+        android:layout_alignStart="@+id/list_item_string2"
+        android:layout_toEndOf="@+id/ColorlinearLayout"
+        android:layout_toRightOf="@+id/ColorlinearLayout"
+        android:layout_below="@+id/list_item_string2"/>
+
     <Button
         android:id="@+id/delete_btn"
         android:layout_width="wrap_content"

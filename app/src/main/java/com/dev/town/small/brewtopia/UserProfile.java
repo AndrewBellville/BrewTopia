@@ -28,7 +28,7 @@ import com.dev.town.small.brewtopia.Calculations.UserCalculations;
 import com.dev.town.small.brewtopia.DataClass.APPUTILS;
 import com.dev.town.small.brewtopia.Global.UserGlobal;
 import com.dev.town.small.brewtopia.Inventory.UserInventory;
-import com.dev.town.small.brewtopia.Schedule.UserSchedule;
+import com.dev.town.small.brewtopia.Schedule.UserCalendar;
 import com.dev.town.small.brewtopia.Utilites.SlidingTabLayout;
 
 
@@ -123,7 +123,7 @@ public class UserProfile extends ActionBarActivity {
             if(position == 0)
                 fragment = new UserBrewList();
             else if (position == 1)
-                fragment = new UserSchedule();
+                fragment = new UserCalendar();
             else if (position == 2)
                 fragment = new UserInventory();
             else if (position == 3)

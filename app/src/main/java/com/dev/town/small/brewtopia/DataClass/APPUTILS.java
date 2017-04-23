@@ -45,7 +45,7 @@ public class APPUTILS {
     //********************Brew Style Hash Map Name/Color**********************
     public static final Map StyleMap = new HashMap(){
         {
-            put("None","");
+            put("None","#0000ff");
             put("Amber","#330000");
             put("Blonde","#ffff99");
             put("Red","#660000");

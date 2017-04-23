@@ -128,4 +128,14 @@ public class BrewStyleSchema {
     public void setIsNew(int isNew) {
         this.isNew = isNew;
     }
+
+
+    /**
+     * Used for  Spinner display
+     * @return BrewStyleName
+     */
+    @Override
+    public String toString() {
+        return BrewStyleName;
+    }
 }

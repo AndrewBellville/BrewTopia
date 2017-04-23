@@ -48,11 +48,6 @@
             android:icon="@drawable/beer_dark"
             android:label="@string/title_activity_specific_gravity" />
         <activity
-            android:name=".Schedule.AddEditViewSchedule"
-            android:icon="@drawable/beer_dark"
-            android:label="@string/title_activity_add_edit_view_schedule"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
             android:name=".Brews.UserBrew"
             android:icon="@drawable/beer_dark"
             android:windowSoftInputMode="adjustPan" />
@@ -86,6 +81,11 @@
             android:windowSoftInputMode="adjustPan" />
 
         <activity android:name=".Brews.BrewImageView" />
+
+        <activity
+            android:name=".Schedule.UserSchedule"
+            android:icon="@drawable/beer_dark"
+            android:windowSoftInputMode="adjustPan" />
 
         <activity android:name=".AppSettings.UpdateUserInfo" />
     </application>

@@ -18,7 +18,8 @@ import com.dev.town.small.brewtopia.R;
 import java.util.*;
 
 import com.dev.town.small.brewtopia.DataClass.*;
-
+import com.dev.town.small.brewtopia.Schedule.ScheduleActivityData;
+import com.dev.town.small.brewtopia.Schedule.UserSchedule;
 
 
 public class UserCompletedBrewList extends Fragment {
@@ -53,7 +54,7 @@ public class UserCompletedBrewList extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 ScheduledBrewSchema selectedRow = completedbrewList.get(position);
-                BrewSelect(selectedRow.getScheduleId());
+                BrewSelect(selectedRow);
             }
         });
         dbManager = DataBaseManager.getInstance(getActivity());
@@ -92,12 +93,13 @@ public class UserCompletedBrewList extends Fragment {
         }
     }
 
-    private void BrewSelect(long aScheduleId)
+    private void BrewSelect(ScheduledBrewSchema aSchedule)
     {
-        Intent intent = new Intent(getActivity(), CompletedBrew.class);
+        Intent intent = new Intent(getActivity(), UserSchedule.class);
 
         // Set the state of display if View brew cannot be null
-        BrewActivityData.getInstance().setScheduleId(aScheduleId);
+        ScheduleActivityData.getInstance().setAddEditViewState(ScheduleActivityData.DisplayMode.COMPLETE);
+        ScheduleActivityData.getInstance().setScheduledBrewSchema(aSchedule);
 
         //start next activity
         startActivity(intent);

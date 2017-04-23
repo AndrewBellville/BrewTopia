@@ -127,6 +127,14 @@ public class CustomBListAdapter extends BaseAdapter implements ListAdapter  {
         listItemText2.setText(truncatedString);*/
         listItemText2.setText("Times Brewed:  "+  brewSchema.getTotalBrewed());
 
+        TextView listItemText3 = (TextView)view.findViewById(R.id.list_item_string3);
+        if(brewSchema.getDescription().length() >= 25)
+            truncatedString = brewSchema.getDescription().substring(0,25)+"...";
+        else
+            truncatedString = brewSchema.getDescription();
+
+        listItemText3.setText(truncatedString);
+
         // Icons
         ImageView favoriteIcon = (ImageView) view.findViewById(R.id.favoriteImage);
         ImageView scheduledIcon = (ImageView) view.findViewById(R.id.scheduledImage);

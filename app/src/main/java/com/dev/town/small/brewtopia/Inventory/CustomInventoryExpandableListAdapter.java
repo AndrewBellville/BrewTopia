@@ -110,7 +110,7 @@ public class CustomInventoryExpandableListAdapter extends BaseExpandableListAdap
 
         TextView addTextView = (TextView) convertView.findViewById(R.id.AddTextView);
 
-        if(!isEditable)
+        if(!isEditable || true)
             addTextView.setVisibility(View.INVISIBLE);
 
         addTextView.setOnClickListener(new View.OnClickListener() {

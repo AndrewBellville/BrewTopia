@@ -23,6 +23,7 @@ import com.dev.town.small.brewtopia.WebAPI.WebController;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class UpdateUserInfo extends ActionBarActivity {
 
@@ -75,24 +76,26 @@ public class UpdateUserInfo extends ActionBarActivity {
             @Override
             public void onResponse(String response) {
                 if(APPUTILS.isLogging) Log.e(LOG, response);
-                if (response.equals("Error"))// no match for user password
-                {
-                    updateUser(false,null);
-                } else {
-                    try{
-                        //Parse response into BrewShcema list
-                        JSONArray jsonArray = new JSONArray(response);
-                        JSONUserParser jsonParser = new JSONUserParser();
+                try{
+                    JSONArray jsonArray = new JSONArray("["+response+"]");
+                    JSONObject JSONResponse = (JSONObject) jsonArray.get(0);
+                    if (JSONResponse.getString("status").equals("Error"))// no match for user exists
+                    {
+                        DisplayError(JSONResponse.getString("message"));
+                    }else{
 
-                        UserSchema userSchema = jsonParser.ParseUser(jsonArray);
+                        //Parse response into BrewShcema list
+                        JSONUserParser jsonParser = new JSONUserParser();
+                        UserSchema userSchema = jsonParser.ParseUser(new JSONArray(JSONResponse.getString("message")));
+
                         userSchema.setPassword(NewPassword.getText().toString());
 
-                        updateUser(true, userSchema);
+                        updateUser(userSchema);
                         CurrentUser.getInstance().setUser(userSchema);
                     }
-                    catch (JSONException e) {
-                        updateUser(false,null);
-                    }
+                }
+                catch (JSONException e) {
+                    DisplayError("User was not updated");
                 }
             }
         };
@@ -110,24 +113,22 @@ public class UpdateUserInfo extends ActionBarActivity {
         WebController.getInstance().addToRequestQueue(updateRequest);
     }
 
-    private void updateUser(boolean isSuccess, UserSchema aUserSchema)
+    private void updateUser(UserSchema aUserSchema)
     {
-        if (isSuccess)
-        {
-            if(dbManager.DoesUserExist(aUserSchema.getUserId())) {
-                dbManager.updateUser(aUserSchema);
-                Toast.makeText(this, "User Successfully Update", Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
-                Toast.makeText(this, "User was not update", Toast.LENGTH_SHORT).show();
-            }
 
+        if(dbManager.DoesUserExist(aUserSchema.getUserId())) {
+            dbManager.updateUser(aUserSchema);
+            Toast.makeText(this, "User Successfully Updated", Toast.LENGTH_SHORT).show();
         }
         else
         {
-            Toast.makeText(this, "User was not update", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "User was not updated", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void DisplayError(String errorText)
+    {
+        Toast.makeText(this, errorText, Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -1,173 +1,149 @@
 package com.dev.town.small.brewtopia.Schedule;
 
-
+import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.Fragment;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
-import com.dev.town.small.brewtopia.Login;
+import com.dev.town.small.brewtopia.AppSettings.AppSettings;
+import com.dev.town.small.brewtopia.Brews.AddEditViewBoilAdditions;
+import com.dev.town.small.brewtopia.Brews.AddEditViewBrew;
+import com.dev.town.small.brewtopia.Brews.AddEditViewBrewNotes;
+import com.dev.town.small.brewtopia.Brews.AddEditViewBrewStyle;
+import com.dev.town.small.brewtopia.Brews.BrewActivityData;
+import com.dev.town.small.brewtopia.Brews.UserCompletedBrewList;
+import com.dev.town.small.brewtopia.DataClass.APPUTILS;
+import com.dev.town.small.brewtopia.Inventory.UserInventory;
 import com.dev.town.small.brewtopia.R;
-import com.dev.town.small.brewtopia.DataClass.*;
-import com.dev.town.small.brewtopia.Utilites.SlidingUpPaneLayout;
+import com.dev.town.small.brewtopia.Utilites.SlidingTabLayout;
 
-public class UserSchedule extends Fragment {
+public class UserSchedule extends ActionBarActivity {
 
     // Log cat tag
-    private static final String LOG = "UserSchedule";
+    private static final String LOG = "UserBrew";
 
-    private DataBaseManager dbManager;
+    private Toolbar toolbar;
+    private SlidingTabLayout tabLayout;
+    private ViewPager viewPager;
 
-    List<ScheduledBrewSchema> sBrewList;
-    ArrayList<ScheduledBrewSchema> list;
-    SlidingUpPaneLayout slidingUpPaneLayout;
-    private ListView ScheduledBrewListView;
-    private String userName;
-
-    MyCalendar mc;
-
-
-    private SimpleDateFormat formatter = APPUTILS.dateFormatCompare;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = inflater.inflate(R.layout.activity_user_schedule,container,false);
+        setContentView(R.layout.activity_user_schedule);
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: onCreate");
 
-        dbManager = DataBaseManager.getInstance(getActivity());
-        try {
-            userName = CurrentUser.getInstance().getUser().getUserName();
+        toolbar=(Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle("Schedule");
 
-            sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserId());
-            mc = ((MyCalendar) view.findViewById(R.id.calendar_view));
-            mc.updateCalendarList(sBrewList);
+        viewPager = (ViewPager)findViewById(R.id.schedulePager);
+        PagerAdapter pa = new PagerAdapter(getSupportFragmentManager());
+        pa.setContext(getApplicationContext());
+        viewPager.setAdapter(pa);
 
-            final float density = getResources().getDisplayMetrics().density;
+        tabLayout = (SlidingTabLayout)findViewById(R.id.scheduleTabs);
+        tabLayout.setCustomTabView(R.layout.custom_tab_view, R.id.tabTextView);
+        tabLayout.setDistributeEvenly(true);
+        tabLayout.setBackgroundColor(getResources().getColor(R.color.ColorToneL2));
+        tabLayout.setSelectedIndicatorColors(getResources().getColor(R.color.ColorToneD1));
 
-            slidingUpPaneLayout = (SlidingUpPaneLayout) view.findViewById(R.id.sliding_layout);
-            slidingUpPaneLayout.setParallaxDistance((int) (200 * density));
-            slidingUpPaneLayout.setShadowResourceTop(R.drawable.shadow_top);
-
-            slidingUpPaneLayout.openPane();
-
-            // assign event handler
-            mc.setEventHandler(new MyCalendar.EventHandler() {
-                @Override
-                public void onDayLongPress(Date date) {
-                    if(slidingUpPaneLayout.isOpen())
-                        LoadScheduleView(date);
-                }
-
-                @Override
-            public void OnClickListener(){
-                    updateCalendarView();
-                }
-            });
-
-            ScheduledBrewListView = (ListView)view.findViewById(R.id.ScheduledListView);
-            ScheduledBrewListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        int position, long id) {
-                    ScheduleSelect(list.get(position));
-                }
-            });
-
-
-
-        }
-        catch (Exception e){
-            // if  we fail to get user name open login activity
-            Intent intent = new Intent(getActivity(), Login.class);
-            startActivity(intent);
-        }
-
-        return view;
+        tabLayout.setViewPager(viewPager);
 
     }
 
     @Override
-    public void setMenuVisibility(boolean isShown) {
-        if(isShown)
-        {
-            updateCalendarView();
-            slidingUpPaneLayout.openPane();
-        }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.user_brews, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();  // Always call the superclass method first
-
-        updateCalendarView();
-        slidingUpPaneLayout.openPane();
-    }
-
-    private void  updateCalendarView()
-    {
-        clearListDate();
-        sBrewList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserId());
-        mc.updateCalendarList(sBrewList);
-    }
-
-    private void LoadScheduleView(Date date) {
-        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadBrews");
-
-        List<ScheduledBrewSchema> scheduledDayList = dbManager.getAllActiveScheduledBrews(CurrentUser.getInstance().getUser().getUserId());
-        list = new ArrayList<ScheduledBrewSchema>();
-
-        for(ScheduledBrewSchema sbrew : scheduledDayList)
-        {
-            if(sbrew.DateHasEvent(date))
-            {
-                if(sbrew.DateHasAction(date))
-                    sbrew.setShowAsAlert(true);
-
-                list.add(sbrew);
-            }
-
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_help:
+                //showHelp();
+                return true;
+            case R.id.action_settings:
+                showSettings();
+                return true;
+            default:
+                onBackPressed();
+                return true;
         }
-
-        //instantiate custom adapter
-        CustomSListAdapter adapter = new CustomSListAdapter(list, getActivity());
-        adapter.hasColor(true);
-        adapter.setEventHandler(new CustomSListAdapter.EventHandler() {
-            @Override
-            public void OnDeleteClickListener(int aScheduleId) {
-                dbManager.deleteBrewScheduledById(aScheduleId);
-                updateCalendarView();
-            }
-        });
-
-        ScheduledBrewListView.setAdapter(adapter);
     }
 
-    private void ScheduleSelect(ScheduledBrewSchema aSBrew)
+    private void showSettings()
     {
-        Intent intent = new Intent(getActivity(), AddEditViewSchedule.class);
-
-        //Set what Schedule was selected before we load Schedule Activity
-        ScheduleActivityData.getInstance().setScheduledBrewSchema(aSBrew);
-
-        //start next activity
+        //Create and intent which will open next activity AppSettings
+        Intent intent = new Intent(this, AppSettings.class);
         startActivity(intent);
     }
 
-    private void clearListDate()
-    {
-        Date d = new Date();
-        d.setTime(0);
-        LoadScheduleView(d);
+    private class PagerAdapter extends FragmentPagerAdapter {
+
+
+        int[] icons;
+        String[] tabNames;
+        Context context;
+
+        public PagerAdapter(FragmentManager fm) {
+            super(fm);
+            tabNames = new  String[]{"Schedule","Inventory"};
+            icons = new  int[]{R.drawable.schedule,R.drawable.document};
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Fragment fragment = new AddEditViewBrew();
+            if(position == 0)
+                fragment = new AddEditViewSchedule();
+            else if (position == 1)
+                fragment = new UserInventory();
+
+            return fragment;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int possition)
+        {
+
+            Drawable drawable = ContextCompat.getDrawable(context,icons[possition]);
+            drawable.setBounds(0,0,90,90);
+            ImageSpan imageSpan=  new ImageSpan(drawable);
+            SpannableString spannableString = new SpannableString(" ");
+            spannableString.setSpan(imageSpan,0,spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            return spannableString;
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+        public void setContext(Context context) {
+            this.context = context;
+        }
     }
+
 }
+
+
+

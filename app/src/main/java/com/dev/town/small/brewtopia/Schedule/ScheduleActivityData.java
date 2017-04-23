@@ -7,6 +7,13 @@ import com.dev.town.small.brewtopia.DataClass.ScheduledBrewSchema;
  */
 public class ScheduleActivityData {
 
+    //State for AddEditView Brew and Brew Name if Edit/View
+    public enum DisplayMode {
+        ADD, EDIT, VIEW, COMPLETE
+    };
+
+    private DisplayMode AddEditViewState = DisplayMode.VIEW; // STATES: Add, Edit, View
+
     private ScheduledBrewSchema scheduledBrewSchema;
 
     //Singleton
@@ -26,9 +33,15 @@ public class ScheduleActivityData {
     public ScheduledBrewSchema getScheduledBrewSchema() {
         return scheduledBrewSchema;
     }
-    
+    public DisplayMode getAddEditViewState() {
+        return AddEditViewState;
+    }
+
     //setters
     public void setScheduledBrewSchema(ScheduledBrewSchema scheduledBrewSchema) {
         this.scheduledBrewSchema = scheduledBrewSchema;
+    }
+    public void setAddEditViewState(DisplayMode addEditViewState) {
+        AddEditViewState = addEditViewState;
     }
 }
