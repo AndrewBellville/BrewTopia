@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
 import com.dev.town.small.brewtopia.DataClass.ScheduledBrewSchema;
 import com.dev.town.small.brewtopia.DataClass.ScheduledEventSchema;
 import com.dev.town.small.brewtopia.R;
+import com.dev.town.small.brewtopia.Utilites.DatePickerFrag;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -57,13 +59,8 @@ public class AddEditViewSchedule extends Fragment {
     };
     private DisplayMode AddEditViewState = DisplayMode.VIEW; // STATES: Add, Edit, View
 
-    private int dialogDay;
-    private int dialogMonth;
-    private int dialogYear;
-    private EditText DateToEdit;
-    private EditText[] datesList;
-    static final int DIALOG_ID = 0;
 
+    private EditText DateToEdit;
 
     private EditText brewName;
     private EditText StartDate;
@@ -97,7 +94,6 @@ public class AddEditViewSchedule extends Fragment {
     private Toolbar toolbar;
     private SchedulerHelper schedulerHelper;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,10 +106,9 @@ public class AddEditViewSchedule extends Fragment {
         ScrollView = (ScrollView)returnView.findViewById(R.id.ScheduleScrollView);
         ScrollView.addView(mainView);
 
-        datesList = new EditText[4];
         brewName = (EditText)mainView.findViewById(R.id.ScheduleBNameEditText);
         StartDate = (EditText)mainView.findViewById(R.id.ScheduleStarteditText);
-        datesList[0] = StartDate;
+
         Notes = (EditText)mainView.findViewById(R.id.ScheduleNoteseditText);
         OriginalGravity = (EditText)mainView.findViewById(R.id.ScheduleOGeditText);
         FinalGravity = (EditText)mainView.findViewById(R.id.ScheduleFGeditText);
@@ -262,81 +257,6 @@ public class AddEditViewSchedule extends Fragment {
         colorSpinner.setAdapter(colorAdapter);
     }
 
-    public void showDatePickerDialog(View view)
-    {
-        //Set the date picker to show current day
-        Calendar cal = Calendar.getInstance();
-        dialogYear = cal.get(Calendar.YEAR);
-        dialogMonth = cal.get(Calendar.MONTH);
-        dialogDay = cal.get(Calendar.DAY_OF_MONTH);
-
-        //set what view we want to update after we show datePicker
-        DateToEdit = (EditText)view;
-
-        // show the date picker
-        getActivity().showDialog(DIALOG_ID);
-
-    }
-
-    private void updateEditTextDate()
-    {
-        String month = String.format("%02d", dialogMonth);
-        String day = String.format("%02d", dialogDay);
-
-        String originalTime = DateToEdit.getText().toString();
-        DateToEdit.setText( Integer.toString(dialogYear)+"-"+month+"-"+day+" 12:00:00" );
-
-        if(dateRollUpCheckBox.isChecked() && DateToEdit != eventDate)
-        {
-            long daysInBetween=0;
-            try
-            {
-                Date d1 = APPUTILS.dateFormatCompare.parse(originalTime);
-                Date d2 = APPUTILS.dateFormatCompare.parse(DateToEdit.getText().toString());
-
-                long timeDifference = d2.getTime() - d1.getTime();
-                daysInBetween = timeDifference / (24*60*60*1000);
-
-            }
-            catch (Exception e){}
-
-            rollDateUpdateForward(Arrays.asList(datesList).indexOf(DateToEdit)+1, (int)daysInBetween);
-        }
-
-    }
-
-    private void rollDateUpdateForward(int pos, int daysToAdd)
-    {
-        if(APPUTILS.isLogging)Log.e(LOG, "Entering: rollDateUpdateForward Pos["+pos+"] days["+daysToAdd+"] Total["+datesList.length+"]");
-
-        if(pos ==  datesList.length)
-            return;
-
-        // for each  date after the one edited we want to update by days add / deleted
-        for(int i = pos; i < datesList.length; i++)
-        {
-            try
-            {
-                Date parsedDate = APPUTILS.dateFormat.parse(datesList[i].getText().toString());
-                datesList[i].setText(gScheduleSchema.addDateTime(daysToAdd,parsedDate));
-            }
-            catch (Exception e){}
-        }
-    }
-
-
-
-    private DatePickerDialog.OnDateSetListener dPickerListener =
-            new DatePickerDialog.OnDateSetListener(){
-        @Override
-        public  void onDateSet(DatePicker view,int year,int month, int day){
-            dialogYear = year;
-            dialogMonth = month + 1;
-            dialogDay = day;
-            updateEditTextDate();
-        }
-    };
-
     private void validateSubmit()
     {
         if(APPUTILS.isLogging) Log.e(LOG, "Entering: validateSubmit");
@@ -459,7 +379,10 @@ public class AddEditViewSchedule extends Fragment {
         eventDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDatePickerDialog(view);
+                DateToEdit = (EditText) view;
+                DatePickerFrag newFragment = new DatePickerFrag();
+                newFragment.setEditText(DateToEdit);
+                newFragment.show(getFragmentManager(), "DatePicker");
             }
         });
 
@@ -627,3 +550,4 @@ public class AddEditViewSchedule extends Fragment {
         }
     }
 }
+

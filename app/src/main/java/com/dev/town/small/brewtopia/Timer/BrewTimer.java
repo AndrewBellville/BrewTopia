@@ -214,19 +214,33 @@ public class BrewTimer extends Fragment {
         if(nextAddition.getAdditionTime()*60000 >= millisUntilFinished )
         {
             if(!td.isAllAdditionsComplete())FireAlarm();
-
-            HighlightAddition(nextAddition.getAdditionTime());
         }
+
+        HighlightAddition(nextAddition.getAdditionTime(), millisUntilFinished);
     }
 
-    private void HighlightAddition(int nextAdditionTime)
+    private void HighlightAddition(int nextAdditionTime, long millisUntilFinished)
     {
-        for (int i = 0;i < td.getAdditionsList().size();i++)
+        int lastTime = 0;
+        for (int i = td.getAdditionsList().size()-1; i >= 0; i--)
         {
-            if(td.getAdditionsList().get(i).getAdditionTime()== nextAdditionTime)
+            //if we match the last element and time has passed
+            if(td.getAdditionsList().get(i).getAdditionTime() == nextAdditionTime &&
+                    i == td.getAdditionsList().size()-1 &&
+                    nextAdditionTime*60000 >= millisUntilFinished)
+                lastTime = td.getAdditionsList().get(i).getAdditionTime();
+
+            //find the first element that is greater then addition time looking in revers ordered
+            if(lastTime == 0 && td.getAdditionsList().get(i).getAdditionTime() > nextAdditionTime)
+                lastTime = td.getAdditionsList().get(i).getAdditionTime();
+
+            if(lastTime == 0)
+                continue;
+            else if(td.getAdditionsList().get(i).getAdditionTime() == lastTime)
                 addition.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.AccentColor));
-            else if(td.getAdditionsList().get(i).getAdditionTime()> nextAdditionTime)
+            else if(td.getAdditionsList().get(i).getAdditionTime()> lastTime)
                 addition.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.ColorToneD2));
+
         }
 
 

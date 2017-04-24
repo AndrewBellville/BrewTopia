@@ -79,10 +79,13 @@ public class CustomCompListAdapter extends BaseAdapter implements ListAdapter  {
 
         //Handle TextView and display string from list
         TextView listItemText = (TextView)view.findViewById(R.id.list_item_string);
-        listItemText.setText(sbrewSchema.getEndBrewDate());
+        listItemText.setText(sbrewSchema.getBrewName());
 
         TextView listItemText1 = (TextView)view.findViewById(R.id.list_item_string1);
-        listItemText1.setText("ABV: " + Double.toString(APPUTILS.GetTruncatedABVPercent(sbrewSchema.getABV())) + "%");
+        listItemText1.setText(sbrewSchema.getEndBrewDate());
+
+        TextView listItemText2 = (TextView)view.findViewById(R.id.list_item_string2);
+        listItemText2.setText("ABV: " + Double.toString(APPUTILS.GetTruncatedABVPercent(sbrewSchema.getABV())) + "%");
 
         return view;
     }

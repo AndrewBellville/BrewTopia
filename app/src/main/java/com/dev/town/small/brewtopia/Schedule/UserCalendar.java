@@ -25,7 +25,7 @@ import com.dev.town.small.brewtopia.Utilites.SlidingUpPaneLayout;
 public class UserCalendar extends Fragment {
 
     // Log cat tag
-    private static final String LOG = "UserSchedule";
+    private static final String LOG = "UserCalendar";
 
     private DataBaseManager dbManager;
 
