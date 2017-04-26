@@ -62,9 +62,18 @@
         android:layout_below="@+id/UserNameTextBox"
         android:layout_alignLeft="@+id/UserNameTextBox"
         android:layout_alignStart="@+id/UserNameTextBox"
-        android:layout_marginBottom="34dp"
         android:layout_alignRight="@+id/UserNameTextBox"
         android:layout_alignEnd="@+id/UserNameTextBox" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remember Me"
+        android:id="@+id/saveLogin"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/PasswordTextBox"
+        android:layout_centerHorizontal="true"
+        android:checked="true"/>
 
 
     <Button
@@ -76,7 +85,7 @@
         android:onClick="onLoginClick"
         android:textColor="#ffffff"
         android:background="@drawable/button1"
-        android:layout_below="@+id/PasswordTextBox"
+        android:layout_below="@+id/saveLogin"
         android:layout_alignLeft="@+id/PasswordTextBox"
         android:layout_alignStart="@+id/PasswordTextBox"
         android:layout_alignRight="@+id/PasswordTextBox"
@@ -99,13 +108,7 @@
         android:layout_alignRight="@+id/LoginButton"
         android:layout_alignEnd="@+id/LoginButton" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/MessageText"
-        android:textColor="#ffff1800"
-        android:layout_below="@+id/CreateUserButton"
-        android:layout_centerHorizontal="true"/>
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -114,27 +117,9 @@
         android:id="@+id/textViewNoLogin"
         android:textColor="@android:color/holo_blue_dark"
         android:onClick="onNoUserLogin"
-        android:layout_below="@+id/MessageText"
+        android:layout_below="@+id/CreateUserButton"
         android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Supported By"
-        android:id="@+id/sponsordText"
-        android:textColor="#FFFFFF"
-        android:layout_below="@+id/textViewNoLogin"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
-
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/imageView"
-        android:scaleType="fitXY"
-        android:background="@drawable/witheredtreebrewerysmall"
-        android:layout_below="@+id/sponsordText"
-        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -146,5 +131,7 @@
         android:layout_centerHorizontal="true"
         android:textColor="#B3A7A7"
         android:onClick="onVersionClick"/>
+
+
 
 </RelativeLayout>

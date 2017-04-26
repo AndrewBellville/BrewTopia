@@ -73,7 +73,7 @@ public class AddEditViewBrew extends Fragment {
     private long  UserId;
     private ScrollView ScrollView;
     private Spinner styleSpinner;
-    ArrayAdapter<String> styleAdapter;
+    private ArrayAdapter<String> styleAdapter;
     private ArrayAdapter<String> brewMethodAdapter;
 
     private KeyListener brewNameListener;

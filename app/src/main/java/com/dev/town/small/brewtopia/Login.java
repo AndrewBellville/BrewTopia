@@ -3,6 +3,7 @@ package com.dev.town.small.brewtopia;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -46,10 +48,15 @@ public class Login extends ActionBarActivity {
     private static final String LOG = "Login";
     private static final String VERSION = "v0.1.1.2";
 
+    public static final String PREFS_NAME = "BrewTopiaPref";
+    private static final String PREF_USERNAME = "username";
+    private static final String PREF_PASSWORD = "password";
+
     private EditText userName;
     private EditText password;
     private TextView version;
     private TextView noLogin;
+    private CheckBox rememberMe;
     private DataBaseManager dbManager;
     private CurrentUser currentUser;
     private AppSettingsHelper  appSettingsHelper;
@@ -74,7 +81,19 @@ public class Login extends ActionBarActivity {
         password = (EditText)findViewById(R.id.PasswordTextBox);
         version = (TextView)findViewById(R.id.verionNumber);
         noLogin = (TextView)findViewById(R.id.textViewNoLogin);
+        rememberMe = (CheckBox)findViewById(R.id.saveLogin);
         version.setText(VERSION);
+
+        //try and load saved user login
+        SharedPreferences pref = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+        String savedUsername = pref.getString(PREF_USERNAME, null);
+        String savedPassword = pref.getString(PREF_PASSWORD, null);
+
+        if ((savedUsername != null && savedPassword != null) &&
+                !savedUsername.isEmpty() && !savedPassword.isEmpty()) {
+            userName.setText(savedUsername);
+            password.setText(savedPassword);
+        }
     }
 
     //******************Login****************************
@@ -153,6 +172,8 @@ public class Login extends ActionBarActivity {
             //load all app setting for user
             appSettingsHelper.LoadMap();
 
+            saveUserLogin(aUserSchema);
+
             preLoad();
         }
         else
@@ -168,6 +189,38 @@ public class Login extends ActionBarActivity {
                 DisplayError("Failed Login");
 
         }
+    }
+
+    //save user login info
+    private void saveUserLogin(UserSchema aUserSchema)
+    {
+        String username = "";
+        String password = "";
+        if(rememberMe.isChecked())
+        {
+            username = aUserSchema.getUserName();
+            password = aUserSchema.getPassword();
+        }
+        //if exists apply new changes
+        if(getSharedPreferences(PREFS_NAME,MODE_PRIVATE).contains(PREF_USERNAME))
+        {
+            getSharedPreferences(PREFS_NAME,MODE_PRIVATE)
+                    .edit()
+                    .putString(PREF_USERNAME, username)
+                    .putString(PREF_PASSWORD, password)
+                    .apply();
+        }
+        else
+        {
+            //else create
+            getSharedPreferences(PREFS_NAME,MODE_PRIVATE)
+                    .edit()
+                    .putString(PREF_USERNAME, username)
+                    .putString(PREF_PASSWORD, password)
+                    .commit();
+        }
+
+
     }
 
     //******************Create****************************

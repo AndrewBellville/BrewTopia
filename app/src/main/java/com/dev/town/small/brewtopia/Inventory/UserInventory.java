@@ -11,9 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.dev.town.small.brewtopia.Brews.BrewActivityData;
@@ -30,7 +33,9 @@ import com.dev.town.small.brewtopia.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 public class UserInventory extends Fragment {
@@ -52,6 +57,9 @@ public class UserInventory extends Fragment {
     private CustomInventoryExpandableListAdapter InventoryListAdapter;
     private List<String> InventoryListDataHeader;
     private HashMap<String, List<InventorySchema>> InventoryListDataChild;
+    private SearchView categorySearchView;
+    private Spinner categorySpinner;
+    private ArrayAdapter<String> categoryAdapter;
 
     private DataBaseManager dbManager;
     private long userId;
@@ -66,6 +74,24 @@ public class UserInventory extends Fragment {
 
         // get the listview
         expInventoryListView = (ExpandableListView) view.findViewById(R.id.inventoryExpandableInventoryList);
+        categorySearchView = (SearchView) view.findViewById(R.id.categorySearchView);
+
+        categorySpinner = (Spinner)  view.findViewById(R.id.categorySpinner);
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                toggleSearch(categorySpinner.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+        setCategorySpinner();
+        toggleSearch(categorySpinner.getSelectedItem().toString());
 
         dbManager = DataBaseManager.getInstance(getActivity());
         userId = CurrentUser.getInstance().getUser().getUserId();
@@ -83,6 +109,7 @@ public class UserInventory extends Fragment {
         super.onResume();
         CheckForBrewDisplay();
         SetUpInventoryList();
+        toggleSearch(categorySpinner.getSelectedItem().toString());
 
     }
 
@@ -90,6 +117,31 @@ public class UserInventory extends Fragment {
     {
         // If this is being displayed by the brew class we want to perform brew specific functionality
         if( getActivity().getLocalClassName().contains("Brews.UserBrew") || getActivity().getLocalClassName().contains("Global.UserGlobal")) isBrewDisplay = true;
+    }
+
+    private void setCategorySpinner()
+    {
+        List<String> categories = new ArrayList<>();
+        categories.add("None");
+        for(InventoryCategories inventoryCategories :  InventoryCategories.values()) {
+            categories.add(inventoryCategories.toString());
+        }
+
+        categoryAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, categories); //selected item will look like a spinner set from XML
+        // Specify the layout to use when the list of choices appears
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        categorySpinner.setAdapter(categoryAdapter);
+    }
+
+    private void toggleSearch(String aCategorySelected)
+    {
+        if(aCategorySelected.equals("None")) {
+            categorySearchView.setVisibility(View.GONE);
+            return;
+        }
+
+        categorySearchView.setVisibility(View.VISIBLE);
     }
 
     private void SetUpInventoryList()
