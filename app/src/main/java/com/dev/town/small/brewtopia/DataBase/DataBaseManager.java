@@ -226,31 +226,31 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     //CREATE_TABLE_INVENTORY_HOPS
     protected static final String CREATE_TABLE_INVENTORY_HOPS = "CREATE TABLE "
-            + TABLE_INVENTORY_HOPS + "("+ HOPS_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
+            + TABLE_INVENTORY_HOPS + "("+ HOPS_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + SCHEDULE_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_AMOUNT + " REAL," + INVENTORY_TYPE + " TEXT," + INVENTORY_AA + " REAL," + INVENTORY_USE + " TEXT," + INVENTORY_TIME + " INTEGER,"+ IS_NEW + " INTEGER,"
             + INVENTORY_UOFM + " TEXT )";
 
     //CREATE_TABLE_INVENTORY_FERMENTABLES
     protected static final String CREATE_TABLE_INVENTORY_FERMENTABLES = "CREATE TABLE "
-            + TABLE_INVENTORY_FERMENTABLES + "(" + FERMENTABLES_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER,"
+            + TABLE_INVENTORY_FERMENTABLES + "(" + FERMENTABLES_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + SCHEDULE_ID + " INTEGER," + INVENTORY_QTY + " INTEGER,"
             + INVENTORY_NAME + " TEXT," + INVENTORY_AMOUNT + " REAL," + INVENTORY_PPG + " REAL," + INVENTORY_LOV + " REAL," + INVENTORY_UOFM + " TEXT,"+ INVENTORY_POTENTIAL + " REAL,"
             + INVENTORY_TYPE + " TEXT,"+ IS_NEW + " INTEGER,"+ INVENTORY_YIELD + " REAL )";
 
     //CREATE_TABLE_INVENTORY_YEAST
     protected static final String CREATE_TABLE_INVENTORY_YEAST = "CREATE TABLE "
-            + TABLE_INVENTORY_YEAST + "(" + YEAST_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
+            + TABLE_INVENTORY_YEAST + "(" + YEAST_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + SCHEDULE_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_AMOUNT + " REAL," + INVENTORY_FLOCCULATION + " TEXT," + INVENTORY_STARTER + " INTEGER," + INVENTORY_ATTENUATION + " REAL,"
             + INVENTORY_OTL + " REAL," + INVENTORY_UOFM + " TEXT," + INVENTORY_LABORATORY + " TEXT,"+ INVENTORY_TYPE + " TEXT,"+ INVENTORY_FORM+ " TEXT,"+ IS_NEW + " INTEGER,"
             + INVENTORY_OTH + " REAL )";
 
     //CREATE_TABLE_INVENTORY_EQUIPMENT
     protected static final String CREATE_TABLE_INVENTORY_EQUIPMENT = "CREATE TABLE "
-            + TABLE_INVENTORY_EQUIPMENT + "(" + EQUIPMENT_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER,"
+            + TABLE_INVENTORY_EQUIPMENT + "(" + EQUIPMENT_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + SCHEDULE_ID + " INTEGER," + INVENTORY_QTY + " INTEGER,"
             + INVENTORY_NAME + " TEXT," + INVENTORY_UOFM + " TEXT,"+ IS_NEW + " INTEGER," + INVENTORY_AMOUNT + " REAL )";
 
     //CREATE_TABLE_INVENTORY_OTHER
     protected static final String CREATE_TABLE_INVENTORY_OTHER = "CREATE TABLE "
-            + TABLE_INVENTORY_OTHER + "(" + OTHER_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
+            + TABLE_INVENTORY_OTHER + "(" + OTHER_ID + " INTEGER PRIMARY KEY," + USER_ID + " INTEGER," + BREW_ID + " INTEGER," + SCHEDULE_ID + " INTEGER," + INVENTORY_QTY + " INTEGER," + INVENTORY_NAME + " TEXT,"
             + INVENTORY_UOFM + " TEXT," + INVENTORY_USE + " TEXT,"+ IS_NEW + " INTEGER," + INVENTORY_AMOUNT + " REAL )";
 
     //CREATE_TABLE_BREW_IMAGES
@@ -343,7 +343,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         if(APPUTILS.isLogging)Log.e(LOG, "Insert: User["+aUser.getUserName()+"] Password["+aUser.getPassword()+"]");
 
         if(db.insert(TABLE_USERS,null,values) > 0)
-            return addAllAppSettings(aUser.getAppSettingsSchemas());
+            return updateAllAppSettings(aUser.getAppSettingsSchemas());
 
         return false;
     }
@@ -1666,8 +1666,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     /*
     * add All App settings
     */
-    public boolean addAllAppSettings(List <AppSettingsSchema> aAppSettingsSchema) {
-        if(APPUTILS.isLogging)Log.e(LOG, "Insert: addAllAppSettings");
+    public boolean updateAllAppSettings(List <AppSettingsSchema> aAppSettingsSchema) {
+        if(APPUTILS.isLogging)Log.e(LOG, "Insert: updateAllAppSettings");
 
         if(aAppSettingsSchema.size() < 1)
             return true;
@@ -1676,8 +1676,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
         for(Iterator<AppSettingsSchema> i = aAppSettingsSchema.iterator(); i.hasNext(); )
         {
             AppSettingsSchema appSettingsSchema = i.next();
-            if(!addAppSetting(appSettingsSchema))
-                return false;
+            if(!updateAppSetting(appSettingsSchema))
+                if(!addAppSetting(appSettingsSchema))
+                    return false;
         }
 
         return true;
@@ -1783,6 +1784,32 @@ public class DataBaseManager extends SQLiteOpenHelper {
     }
     //************************************Inventory functions***************
 
+    //update inventory in list will try and add if update fails
+    public boolean UpdateInventory(List<InventorySchema> aInventorySchemas)
+    {
+        boolean retVal = true;
+        boolean rsts = true;
+
+        for (InventorySchema inventorySchema : aInventorySchemas) {
+
+            if (inventorySchema instanceof HopsSchema)
+                rsts=updateHops((HopsSchema) inventorySchema);
+            else if (inventorySchema instanceof FermentablesSchema)
+                rsts=updateFermentable((FermentablesSchema) inventorySchema);
+            else if (inventorySchema instanceof YeastSchema)
+                rsts=updateYeast((YeastSchema) inventorySchema);
+            else if (inventorySchema instanceof EquipmentSchema)
+                rsts=updateEquipment((EquipmentSchema) inventorySchema);
+            else if (inventorySchema instanceof OtherSchema)
+                rsts=updateOther((OtherSchema) inventorySchema);
+
+            if(!rsts)
+                retVal  = false;
+        }
+
+        return retVal;
+    }
+
     //************************************Hops functions***************
     /*
     * add Hops
@@ -1795,6 +1822,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(USER_ID, aHopsSchema.getUserId());
         values.put(BREW_ID, aHopsSchema.getBrewId());
+        values.put(SCHEDULE_ID, aHopsSchema.getScheduleId());
         values.put(INVENTORY_NAME, aHopsSchema.getInventoryName());
         values.put(INVENTORY_QTY, aHopsSchema.getInvetoryQty());
         values.put(INVENTORY_UOFM, aHopsSchema.getInventoryUOfM());
@@ -1840,6 +1868,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             hopsSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
             hopsSchema.setInventoryId(c.getLong(c.getColumnIndex(HOPS_ID)));
             hopsSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
+            hopsSchema.setScheduleId(c.getLong(c.getColumnIndex(SCHEDULE_ID)));
             hopsSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
             hopsSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             hopsSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
@@ -1861,8 +1890,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<InventorySchema> getAllHopsByUserId(long aUserId) {
         List<InventorySchema> hopsSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_HOPS + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId)
-                + " AND " + BREW_ID + " = " + (0);
+                + USER_ID + " = " +Long.toString(aUserId);
+                //+ " AND " + BREW_ID + " = " + 0;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -1925,6 +1954,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(USER_ID, aHopsSchema.getUserId());
         values.put(BREW_ID, aHopsSchema.getBrewId());
+        values.put(SCHEDULE_ID, aHopsSchema.getScheduleId());
         values.put(INVENTORY_NAME, aHopsSchema.getInventoryName());
         values.put(INVENTORY_QTY, aHopsSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aHopsSchema.getAmount());
@@ -1936,10 +1966,13 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(IS_NEW, aHopsSchema.getIsNew());
 
         // updating row
-        int retVal = db.update(TABLE_INVENTORY_HOPS, values, HOPS_ID + " = ?",
+        long retVal = db.update(TABLE_INVENTORY_HOPS, values, HOPS_ID + " = ?",
                 new String[] { Long.toString(aHopsSchema.getInventoryId()) });
 
-        //Update brew
+        //if we cant update try and add
+        if(!(retVal > 0) )
+            retVal = CreateHops(aHopsSchema);
+
         if(!(retVal > 0) )
             return false;
 
@@ -1981,6 +2014,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(USER_ID, aFermentablesSchema.getUserId());
         values.put(BREW_ID, aFermentablesSchema.getBrewId());
+        values.put(SCHEDULE_ID, aFermentablesSchema.getScheduleId());
         values.put(INVENTORY_NAME, aFermentablesSchema.getInventoryName());
         values.put(INVENTORY_QTY, aFermentablesSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aFermentablesSchema.getAmount());
@@ -2028,6 +2062,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             fermentablesSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
             fermentablesSchema.setInventoryId(c.getLong(c.getColumnIndex(FERMENTABLES_ID)));
             fermentablesSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
+            fermentablesSchema.setScheduleId(c.getLong(c.getColumnIndex(SCHEDULE_ID)));
             fermentablesSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
             fermentablesSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             fermentablesSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
@@ -2051,8 +2086,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<InventorySchema> getAllFermentablesByUserId(long aUserId) {
         List<InventorySchema> fermentablesSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_FERMENTABLES + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId)
-                + " AND " + BREW_ID + " = " + (0);
+                + USER_ID + " = " +Long.toString(aUserId);
+                //+ " AND " + BREW_ID + " = " + 0;
 
         if(APPUTILS.isLogging)Log.e(LOG, selectQuery);
 
@@ -2115,6 +2150,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(USER_ID, aFermentablesSchema.getUserId());
         values.put(BREW_ID, aFermentablesSchema.getBrewId());
+        values.put(SCHEDULE_ID, aFermentablesSchema.getScheduleId());
         values.put(INVENTORY_NAME, aFermentablesSchema.getInventoryName());
         values.put(INVENTORY_QTY, aFermentablesSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aFermentablesSchema.getAmount());
@@ -2127,10 +2163,13 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(IS_NEW, aFermentablesSchema.getIsNew());
 
         // updating row
-        int retVal = db.update(TABLE_INVENTORY_FERMENTABLES, values, FERMENTABLES_ID + " = ?",
+        long retVal = db.update(TABLE_INVENTORY_FERMENTABLES, values, FERMENTABLES_ID + " = ?",
                 new String[] { Long.toString(aFermentablesSchema.getInventoryId()) });
 
-        //Update brew
+        //Update if we cant update try and add
+        if(!(retVal > 0) )
+            retVal = CreateFermentable(aFermentablesSchema);
+
         if(!(retVal > 0) )
             return false;
 
@@ -2172,6 +2211,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(USER_ID, aYeastSchema.getUserId());
         values.put(BREW_ID, aYeastSchema.getBrewId());
+        values.put(SCHEDULE_ID, aYeastSchema.getScheduleId());
         values.put(INVENTORY_NAME, aYeastSchema.getInventoryName());
         values.put(INVENTORY_QTY, aYeastSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aYeastSchema.getAmount());
@@ -2221,6 +2261,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             yeastSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
             yeastSchema.setInventoryId(c.getLong(c.getColumnIndex(YEAST_ID)));
             yeastSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
+            yeastSchema.setScheduleId(c.getLong(c.getColumnIndex(SCHEDULE_ID)));
             yeastSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
             yeastSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             yeastSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
@@ -2246,8 +2287,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<InventorySchema> getAllYeastByUserId(long aUserId) {
         List<InventorySchema> yeastSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_YEAST + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId)
-                + " AND " + BREW_ID + " = " + (0);
+                + USER_ID + " = " +Long.toString(aUserId);
+                //+ " AND " + BREW_ID + " = " + 0;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -2310,6 +2351,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(USER_ID, aYeastSchema.getUserId());
         values.put(BREW_ID, aYeastSchema.getBrewId());
+        values.put(SCHEDULE_ID, aYeastSchema.getScheduleId());
         values.put(INVENTORY_NAME, aYeastSchema.getInventoryName());
         values.put(INVENTORY_QTY, aYeastSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aYeastSchema.getAmount());
@@ -2325,10 +2367,13 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(IS_NEW, aYeastSchema.getIsNew());
 
         // updating row
-        int retVal = db.update(TABLE_INVENTORY_YEAST, values, YEAST_ID + " = ?",
+        long retVal = db.update(TABLE_INVENTORY_YEAST, values, YEAST_ID + " = ?",
                 new String[] { Long.toString(aYeastSchema.getInventoryId()) });
 
-        //Update brew
+        //Update if we cant update try and add
+        if(!(retVal > 0) )
+            retVal = CreateYeast(aYeastSchema);
+
         if(!(retVal > 0) )
             return false;
 
@@ -2370,6 +2415,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(USER_ID, aEquipmentSchema.getUserId());
         values.put(BREW_ID, aEquipmentSchema.getBrewId());
+        values.put(SCHEDULE_ID, aEquipmentSchema.getScheduleId());
         values.put(INVENTORY_NAME, aEquipmentSchema.getInventoryName());
         values.put(INVENTORY_QTY, aEquipmentSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aEquipmentSchema.getAmount());
@@ -2411,6 +2457,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             equipmentSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
             equipmentSchema.setInventoryId(c.getLong(c.getColumnIndex(EQUIPMENT_ID)));
             equipmentSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
+            equipmentSchema.setScheduleId(c.getLong(c.getColumnIndex(SCHEDULE_ID)));
             equipmentSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
             equipmentSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             equipmentSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
@@ -2428,8 +2475,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<InventorySchema> getAllEquipmentByUserId(long aUserId) {
         List<InventorySchema> equipmentSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_EQUIPMENT + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId)
-                + " AND " + BREW_ID + " = " + (0);
+                + USER_ID + " = " +Long.toString(aUserId);
+                //+ " AND " + BREW_ID + " = " + 0;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -2492,6 +2539,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(USER_ID, aEquipmentSchema.getUserId());
         values.put(BREW_ID, aEquipmentSchema.getBrewId());
+        values.put(SCHEDULE_ID, aEquipmentSchema.getScheduleId());
         values.put(INVENTORY_NAME, aEquipmentSchema.getInventoryName());
         values.put(INVENTORY_QTY, aEquipmentSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aEquipmentSchema.getAmount());
@@ -2499,10 +2547,13 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(IS_NEW, aEquipmentSchema.getIsNew());
 
         // updating row
-        int retVal = db.update(TABLE_INVENTORY_EQUIPMENT, values, EQUIPMENT_ID + " = ?",
+        long retVal = db.update(TABLE_INVENTORY_EQUIPMENT, values, EQUIPMENT_ID + " = ?",
                 new String[] { Long.toString(aEquipmentSchema.getInventoryId()) });
 
-        //Update brew
+        //Update if we cant update try and add
+        if(!(retVal > 0) )
+            retVal = CreateEquipment(aEquipmentSchema);
+
         if(!(retVal > 0) )
             return false;
 
@@ -2544,6 +2595,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(USER_ID, aOtherSchema.getUserId());
         values.put(BREW_ID, aOtherSchema.getBrewId());
+        values.put(SCHEDULE_ID, aOtherSchema.getScheduleId());
         values.put(INVENTORY_NAME, aOtherSchema.getInventoryName());
         values.put(INVENTORY_QTY, aOtherSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aOtherSchema.getAmount());
@@ -2586,6 +2638,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             otherSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
             otherSchema.setInventoryId(c.getLong(c.getColumnIndex(OTHER_ID)));
             otherSchema.setBrewId(c.getLong(c.getColumnIndex(BREW_ID)));
+            otherSchema.setScheduleId(c.getLong(c.getColumnIndex(SCHEDULE_ID)));
             otherSchema.setInventoryName(c.getString(c.getColumnIndex(INVENTORY_NAME)));
             otherSchema.setInvetoryQty(c.getInt(c.getColumnIndex(INVENTORY_QTY)));
             otherSchema.setAmount(c.getDouble(c.getColumnIndex(INVENTORY_AMOUNT)));
@@ -2604,8 +2657,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<InventorySchema> getAllOtherByUserId(long aUserId) {
         List<InventorySchema> otherSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_OTHER + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId)
-                + " AND " + BREW_ID + " = " + (0);
+                + USER_ID + " = " +Long.toString(aUserId);
+                //+ " AND " + BREW_ID + " = " + 0;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -2668,6 +2721,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(USER_ID, aOtherSchema.getUserId());
         values.put(BREW_ID, aOtherSchema.getBrewId());
+        values.put(SCHEDULE_ID, aOtherSchema.getScheduleId());
         values.put(INVENTORY_NAME, aOtherSchema.getInventoryName());
         values.put(INVENTORY_QTY, aOtherSchema.getInvetoryQty());
         values.put(INVENTORY_AMOUNT, aOtherSchema.getAmount());
@@ -2676,10 +2730,13 @@ public class DataBaseManager extends SQLiteOpenHelper {
         values.put(IS_NEW, aOtherSchema.getIsNew());
 
         // updating row
-        int retVal = db.update(TABLE_INVENTORY_OTHER, values, OTHER_ID + " = ?",
+        long retVal = db.update(TABLE_INVENTORY_OTHER, values, OTHER_ID + " = ?",
                 new String[] { Long.toString(aOtherSchema.getInventoryId()) });
 
-        //Update brew
+        //Update if we cant update try and add
+        if(!(retVal > 0) )
+            retVal = CreateOther(aOtherSchema);
+
         if(!(retVal > 0) )
             return false;
 

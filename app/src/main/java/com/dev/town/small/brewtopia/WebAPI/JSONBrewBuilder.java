@@ -195,6 +195,7 @@ public class JSONBrewBuilder {
         tempMap.put("HopsId",Long.toString(aInventorySchema.getInventoryId()));
         tempMap.put("BrewId",Long.toString(aInventorySchema.getBrewId()));
         tempMap.put("UserId",Long.toString(aInventorySchema.getUserId()));
+        tempMap.put("ScheduleId",Long.toString(aInventorySchema.getScheduleId()));
         tempMap.put("InventoryQty",Integer.toString(aInventorySchema.getInvetoryQty()));
         tempMap.put("InventoryName",aInventorySchema.getInventoryName());
         tempMap.put("InventoryAmount",Double.toString(aInventorySchema.getAmount()));
@@ -214,6 +215,7 @@ public class JSONBrewBuilder {
         tempMap.put("FermentablesId",Long.toString(aInventorySchema.getInventoryId()));
         tempMap.put("BrewId",Long.toString(aInventorySchema.getBrewId()));
         tempMap.put("UserId",Long.toString(aInventorySchema.getUserId()));
+        tempMap.put("ScheduleId",Long.toString(aInventorySchema.getScheduleId()));
         tempMap.put("InventoryQty",Integer.toString(aInventorySchema.getInvetoryQty()));
         tempMap.put("InventoryName",aInventorySchema.getInventoryName());
         tempMap.put("InventoryAmount",Double.toString(aInventorySchema.getAmount()));
@@ -234,6 +236,7 @@ public class JSONBrewBuilder {
         tempMap.put("YeastId",Long.toString(aInventorySchema.getInventoryId()));
         tempMap.put("BrewId",Long.toString(aInventorySchema.getBrewId()));
         tempMap.put("UserId",Long.toString(aInventorySchema.getUserId()));
+        tempMap.put("ScheduleId",Long.toString(aInventorySchema.getScheduleId()));
         tempMap.put("InventoryQty",Integer.toString(aInventorySchema.getInvetoryQty()));
         tempMap.put("InventoryName",aInventorySchema.getInventoryName());
         tempMap.put("InventoryAmount",Double.toString(aInventorySchema.getAmount()));
@@ -257,6 +260,7 @@ public class JSONBrewBuilder {
         tempMap.put("EquipmentId",Long.toString(aInventorySchema.getInventoryId()));
         tempMap.put("BrewId",Long.toString(aInventorySchema.getBrewId()));
         tempMap.put("UserId",Long.toString(aInventorySchema.getUserId()));
+        tempMap.put("ScheduleId",Long.toString(aInventorySchema.getScheduleId()));
         tempMap.put("InventoryQty",Integer.toString(aInventorySchema.getInvetoryQty()));
         tempMap.put("InventoryName",aInventorySchema.getInventoryName());
         tempMap.put("InventoryAmount",Double.toString(aInventorySchema.getAmount()));
@@ -272,6 +276,7 @@ public class JSONBrewBuilder {
         tempMap.put("OtherInventoryId",Long.toString(aInventorySchema.getInventoryId()));
         tempMap.put("BrewId",Long.toString(aInventorySchema.getBrewId()));
         tempMap.put("UserId",Long.toString(aInventorySchema.getUserId()));
+        tempMap.put("ScheduleId",Long.toString(aInventorySchema.getScheduleId()));
         tempMap.put("InventoryQty",Integer.toString(aInventorySchema.getInvetoryQty()));
         tempMap.put("InventoryName",aInventorySchema.getInventoryName());
         tempMap.put("InventoryAmount",Double.toString(aInventorySchema.getAmount()));

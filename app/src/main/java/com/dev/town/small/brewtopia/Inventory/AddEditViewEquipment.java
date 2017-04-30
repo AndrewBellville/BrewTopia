@@ -105,7 +105,7 @@ public class AddEditViewEquipment extends ActionBarActivity {
         }
 
         //Hide Button if We cant edit
-        if(!BrewActivityData.getInstance().CanEdit()) {
+        if(true) {
             editInventoryButton.setVisibility(View.INVISIBLE);
             deleteInventoryButton.setVisibility(View.INVISIBLE);
         }

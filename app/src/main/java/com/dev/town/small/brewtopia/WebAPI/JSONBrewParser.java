@@ -442,6 +442,7 @@ public class JSONBrewParser {
             inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("HopsId")));
             inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
             inventorySchema.setUserId(Long.parseLong(aInventory.getString("UserId")));
+            inventorySchema.setUserId(Long.parseLong(aInventory.getString("ScheduleId")));
 
             inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
             inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
@@ -496,6 +497,7 @@ public class JSONBrewParser {
             inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("FermentablesId")));
             inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
             inventorySchema.setUserId(Long.parseLong(aInventory.getString("UserId")));
+            inventorySchema.setUserId(Long.parseLong(aInventory.getString("ScheduleId")));
 
             inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
             inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
@@ -550,6 +552,7 @@ public class JSONBrewParser {
             inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("YeastId")));
             inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
             inventorySchema.setUserId(Long.parseLong(aInventory.getString("UserId")));
+            inventorySchema.setUserId(Long.parseLong(aInventory.getString("ScheduleId")));
 
             inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
             inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
@@ -608,6 +611,7 @@ public class JSONBrewParser {
             inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("EquipmentId")));
             inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
             inventorySchema.setUserId(Long.parseLong(aInventory.getString("UserId")));
+            inventorySchema.setUserId(Long.parseLong(aInventory.getString("ScheduleId")));
 
             inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
             inventorySchema.setInventoryName(aInventory.getString("InventoryName"));
@@ -658,6 +662,7 @@ public class JSONBrewParser {
             inventorySchema.setInventoryId(Long.parseLong(aInventory.getString("OtherInventoryId")));
             inventorySchema.setBrewId(Long.parseLong(aInventory.getString("BrewId")));
             inventorySchema.setUserId(Long.parseLong(aInventory.getString("UserId")));
+            inventorySchema.setUserId(Long.parseLong(aInventory.getString("ScheduleId")));
 
             inventorySchema.setInvetoryQty(Integer.parseInt(aInventory.getString("InventoryQty")));
             inventorySchema.setInventoryName(aInventory.getString("InventoryName"));

@@ -30,6 +30,7 @@ import com.dev.town.small.brewtopia.DataClass.InventorySchema;
 import com.dev.town.small.brewtopia.DataClass.OtherSchema;
 import com.dev.town.small.brewtopia.DataClass.YeastSchema;
 import com.dev.town.small.brewtopia.R;
+import com.dev.town.small.brewtopia.SharedMemory.InventoryMemory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -226,7 +227,7 @@ public class UserInventory extends Fragment {
                 else if(isBrewDisplay)
                     inventorySchemaList = dbManager.getAllHopsByUserIdandBrewId(userId, BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
                 else
-                    inventorySchemaList = dbManager.getAllHopsByUserId(userId);
+                    inventorySchemaList = InventoryMemory.getInstance().getHopsSchemas();
             }
             else if(inventoryCategories == InventoryCategories.Fermentables)
             {
@@ -235,7 +236,7 @@ public class UserInventory extends Fragment {
                 else if(isBrewDisplay)
                     inventorySchemaList = dbManager.getAllFermentablesByUserIdandBrewId(userId, BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
                 else
-                    inventorySchemaList = dbManager.getAllFermentablesByUserId(userId);
+                    inventorySchemaList = InventoryMemory.getInstance().getFermentablesSchemas();
             }
             else if(inventoryCategories == InventoryCategories.Yeast)
             {
@@ -244,7 +245,7 @@ public class UserInventory extends Fragment {
                 else if(isBrewDisplay)
                     inventorySchemaList = dbManager.getAllYeastByUserIdandBrewId(userId, BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
                 else
-                    inventorySchemaList = dbManager.getAllYeastByUserId(userId);
+                    inventorySchemaList = InventoryMemory.getInstance().getYeastSchemas();
             }
             else if(inventoryCategories == InventoryCategories.Equipment)
             {
@@ -253,7 +254,7 @@ public class UserInventory extends Fragment {
                 else if(isBrewDisplay)
                     inventorySchemaList = dbManager.getAllEquipmentByUserIdandBrewId(userId, BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
                 else
-                    inventorySchemaList = dbManager.getAllEquipmentByUserId(userId);
+                    inventorySchemaList = InventoryMemory.getInstance().getEquipmentSchemas();
             }
             else if(inventoryCategories == InventoryCategories.Other)
             {
@@ -262,7 +263,7 @@ public class UserInventory extends Fragment {
                 else if(isBrewDisplay)
                     inventorySchemaList = dbManager.getAllOtherByUserIdandBrewId(userId, BrewActivityData.getInstance().getAddEditViewBrew().getBrewId());
                 else
-                    inventorySchemaList = dbManager.getAllOtherByUserId(userId);
+                    inventorySchemaList = InventoryMemory.getInstance().getOtherSchemas();
             }
             else
                 inventorySchemaList = new ArrayList<InventorySchema>();
@@ -495,15 +496,15 @@ public class UserInventory extends Fragment {
         final List<InventorySchema> inventorySchemas;
 
         if(aInventoryCategories == InventoryCategories.Hops)
-            inventorySchemas = dbManager.getAllHopsByUserId(userId);
+            inventorySchemas = InventoryMemory.getInstance().getHopsSchemas();
         else if(aInventoryCategories == InventoryCategories.Fermentables)
-            inventorySchemas = dbManager.getAllFermentablesByUserId(userId);
+            inventorySchemas = InventoryMemory.getInstance().getFermentablesSchemas();
         else if(aInventoryCategories == InventoryCategories.Yeast)
-            inventorySchemas = dbManager.getAllYeastByUserId(userId);
+            inventorySchemas = InventoryMemory.getInstance().getYeastSchemas();
         else if(aInventoryCategories == InventoryCategories.Equipment)
-            inventorySchemas = dbManager.getAllEquipmentByUserId(userId);
+            inventorySchemas = InventoryMemory.getInstance().getEquipmentSchemas();
         else if(aInventoryCategories == InventoryCategories.Other)
-            inventorySchemas = dbManager.getAllOtherByUserId(userId);
+            inventorySchemas = InventoryMemory.getInstance().getOtherSchemas();
         else
             inventorySchemas= new ArrayList<InventorySchema>();
 

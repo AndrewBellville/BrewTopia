@@ -41,9 +41,12 @@ public class UserBrewList extends Fragment {
     private ListView BrewListView;
     private DataBaseManager dbManager;
     private boolean isDelete = false;
-    List<BrewSchema> brewList;
+    private List<BrewSchema> brewList;
+    private List<BrewSchema> searchBrewList;
     private TextView noData;
     private ImageView addBrewImage;
+    private CustomBListAdapter adapter;
+    private SearchView searchView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,7 +67,7 @@ public class UserBrewList extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                BrewSchema selectedRow = brewList.get(position);
+                BrewSchema selectedRow = searchBrewList.get(position);
                 BrewSelect(selectedRow);
             }
         });
@@ -97,7 +100,7 @@ public class UserBrewList extends Fragment {
             }
         });
 
-        SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
+        searchView = (SearchView) view.findViewById(R.id.searchView);
         //added so keyboard doesn't popup
         searchView.setFocusable(false);
         searchView.setIconified(false);
@@ -105,14 +108,14 @@ public class UserBrewList extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                LoadSearchBrews(s);
+
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
                 //Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
-                if(s.equals("")) LoadBrews();
+                LoadSearchBrews(s);
                 return false;
             }
         });
@@ -135,6 +138,7 @@ public class UserBrewList extends Fragment {
         super.onResume();
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: onResume");
         LoadBrews();
+        LoadSearchBrews(searchView.getQuery().toString());
     }
 
     private void LoadBrews() {
@@ -142,13 +146,16 @@ public class UserBrewList extends Fragment {
 
         brewList = dbManager.getAllBrews(userId);
 
+        searchBrewList = new ArrayList<>();
+        searchBrewList.addAll(brewList);
+
         if (brewList.size() > 0) {
 
             BrewListView.setVisibility(View.VISIBLE);
             noData.setVisibility(View.GONE);
 
             //instantiate custom adapter
-            CustomBListAdapter adapter = new CustomBListAdapter(brewList, getActivity());
+            adapter = new CustomBListAdapter(searchBrewList, getActivity());
             adapter.setDeleteView(isDelete);
             adapter.hasColor(true);
             adapter.setEventHandler(new CustomBListAdapter.EventHandler() {
@@ -170,35 +177,21 @@ public class UserBrewList extends Fragment {
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadSearchBrews "+ searchText);
 
         //search current brewlist for Brew names containing search text
-        List<BrewSchema> tempBrewList = new ArrayList<BrewSchema>();
+        searchBrewList.removeAll(searchBrewList);
+        searchBrewList.addAll(brewList);
         for(BrewSchema bs : brewList)
         {
-            if(bs.getBrewName().toUpperCase().contains(searchText.toUpperCase()))
-                tempBrewList.add(bs);
+            if(!bs.getBrewName().toUpperCase().contains(searchText.toUpperCase()))
+                searchBrewList.remove(bs);
         }
 
-        if (tempBrewList.size() > 0) {
-
-            BrewListView.setVisibility(View.VISIBLE);
+        if (searchBrewList.size() > 0)
             noData.setVisibility(View.GONE);
-
-            //instantiate custom adapter
-            CustomBListAdapter adapter = new CustomBListAdapter(tempBrewList, getActivity());
-            adapter.setDeleteView(isDelete);
-            adapter.hasColor(true);
-            adapter.setEventHandler(new CustomBListAdapter.EventHandler() {
-                @Override
-                public void OnDeleteClickListener(BrewSchema aBrewSchema) {
-                    DeleteBrew(aBrewSchema.getBrewId(),aBrewSchema.getIsNew());
-                }
-            });
-            BrewListView.setAdapter(adapter);
-        }
         else
-        {
-            BrewListView.setVisibility(View.INVISIBLE);
             noData.setVisibility(View.VISIBLE);
-        }
+
+        //update adapter
+        adapter.notifyDataSetChanged();
     }
 
     private void BrewSelect(BrewSchema aBrew) {

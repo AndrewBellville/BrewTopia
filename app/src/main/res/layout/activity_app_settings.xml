@@ -39,9 +39,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Data Settings"
+            android:id="@+id/DataTextView"
+            android:layout_below="@+id/appSettingsListView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textStyle="bold"/>
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/DataSettingsListView"
+            android:layout_below="@+id/DataTextView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Other Settings"
             android:id="@+id/textView3"
-            android:layout_below="@+id/appSettingsListView"
+            android:layout_below="@+id/DataSettingsListView"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:textStyle="bold"/>
@@ -53,6 +72,26 @@
             android:layout_below="@+id/textView3"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="User Settings"
+            android:id="@+id/UserTextView"
+            android:layout_below="@+id/OtherSettingsListView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textStyle="bold"/>
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/UserSettingsListView"
+            android:layout_below="@+id/UserTextView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
 
 
     </RelativeLayout>

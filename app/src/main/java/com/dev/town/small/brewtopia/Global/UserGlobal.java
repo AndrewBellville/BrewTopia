@@ -40,8 +40,10 @@ public class UserGlobal extends Fragment {
     private static final String LOG = "UserGlobal";
     private ListView GlobalbrewListView;
     private TextView noData;
-    List<BrewSchema> GlobalBrewList;
+    private List<BrewSchema> GlobalBrewList;
+    private List<BrewSchema> searchGlobalBrewList;
     private SwipeRefreshLayout swipeContainer;
+    CustomBListAdapter adapter;
 
 
     @Override
@@ -56,7 +58,7 @@ public class UserGlobal extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                BrewSchema selectedRow = GlobalBrewList.get(position);
+                BrewSchema selectedRow = searchGlobalBrewList.get(position);
                 BrewSelect(selectedRow);
             }
         });
@@ -85,14 +87,14 @@ public class UserGlobal extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                LoadSerachedGlobalBrews(s);
+
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
                 //Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
-                if(s.equals("")) GetGlobalBrews();
+                LoadSearchedGlobalBrews(s);
                 return false;
             }
         });
@@ -152,6 +154,8 @@ public class UserGlobal extends Fragment {
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadGlobalBrews");
 
         GlobalBrewList = brewSchemaList;
+        searchGlobalBrewList= new ArrayList<>();
+        searchGlobalBrewList.addAll(brewSchemaList);
 
         if (GlobalBrewList.size() > 0)
             noData.setVisibility(View.GONE);
@@ -159,7 +163,7 @@ public class UserGlobal extends Fragment {
             noData.setVisibility(View.VISIBLE);
 
         //instantiate custom adapter
-        CustomBListAdapter adapter = new CustomBListAdapter(GlobalBrewList, getActivity());
+        adapter = new CustomBListAdapter(searchGlobalBrewList, getActivity());
         adapter.setDeleteView(false);
         adapter.hasColor(true);
 
@@ -167,28 +171,25 @@ public class UserGlobal extends Fragment {
 
     }
 
-    private void LoadSerachedGlobalBrews(String searchText) {
-        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadSerachedGlobalBrews");
+    private void LoadSearchedGlobalBrews(String searchText) {
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: LoadSearchedGlobalBrews");
 
         //search current brewlist for Brew names containing search text
-        List<BrewSchema> tempBrewList = new ArrayList<BrewSchema>();
+        searchGlobalBrewList.removeAll(searchGlobalBrewList);
+        searchGlobalBrewList.addAll(GlobalBrewList);
         for(BrewSchema bs : GlobalBrewList)
         {
-            if(bs.getBrewName().toUpperCase().contains(searchText.toUpperCase()))
-                tempBrewList.add(bs);
+            if(!bs.getBrewName().toUpperCase().contains(searchText.toUpperCase()))
+                searchGlobalBrewList.remove(bs);
         }
 
-        if (tempBrewList.size() > 0)
+        if (searchGlobalBrewList.size() > 0)
             noData.setVisibility(View.GONE);
         else
             noData.setVisibility(View.VISIBLE);
 
-        //instantiate custom adapter
-        CustomBListAdapter adapter = new CustomBListAdapter(tempBrewList, getActivity());
-        adapter.setDeleteView(false);
-        adapter.hasColor(true);
-
-        GlobalbrewListView.setAdapter(adapter);
+        //update adapter
+        adapter.notifyDataSetChanged();
 
     }
 

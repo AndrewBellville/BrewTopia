@@ -33,9 +33,13 @@ public class AppSettings extends ActionBarActivity {
 
     private Toolbar toolbar;
     private ListView settingsListView;
+    private ListView dataSettingsListView;
     private ListView otherSettingsListView;
+    private ListView userSettingsListView;
     private List<AppSettingsSchema> settingsList;
+    private List<AppSettingsSchema> dataSettingsList;
     private List<AppSettingsSchema> otherSettingsList;
+    private List<AppSettingsSchema> userSettingsList;
     private DataBaseManager dbManager;
     private long userId;
     private AppSettingsHelper appSettingsHelper;
@@ -66,6 +70,17 @@ public class AppSettings extends ActionBarActivity {
             }
         });
 
+        dataSettingsList = new ArrayList<>();
+        dataSettingsListView = (ListView) findViewById(R.id.DataSettingsListView);
+        dataSettingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                AppSettingsSchema selectedRow = dataSettingsList.get(position);
+                SettingSelected(selectedRow);
+            }
+        });
+
         otherSettingsList = new ArrayList<>();
         otherSettingsListView = (ListView) findViewById(R.id.OtherSettingsListView);
         otherSettingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -73,6 +88,18 @@ public class AppSettings extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 AppSettingsSchema selectedRow = otherSettingsList.get(position);
+                SettingSelected(selectedRow);
+            }
+        });
+
+
+        userSettingsList = new ArrayList<>();
+        userSettingsListView = (ListView) findViewById(R.id.UserSettingsListView);
+        userSettingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                AppSettingsSchema selectedRow = userSettingsList.get(position);
                 SettingSelected(selectedRow);
             }
         });
@@ -90,9 +117,17 @@ public class AppSettings extends ActionBarActivity {
             {
                 settingsList.add(appSettingsSchema);
             }
+            else if(appSettingsSchema.getSettingScreen().equals(appSettingsHelper.DATA))
+            {
+                dataSettingsList.add(appSettingsSchema);
+            }
             else if(appSettingsSchema.getSettingScreen().equals(appSettingsHelper.OTHER))
             {
                 otherSettingsList.add(appSettingsSchema);
+            }
+            else if(appSettingsSchema.getSettingScreen().equals(appSettingsHelper.USER))
+            {
+                userSettingsList.add(appSettingsSchema);
             }
         }
 
@@ -103,20 +138,34 @@ public class AppSettings extends ActionBarActivity {
             settingsListView.setAdapter(adapter);
         }
 
+        if (dataSettingsList.size() > 0) {
+            //instantiate custom adapter
+            CustomASListAdapter adapter = new CustomASListAdapter(dataSettingsList, this);
+            adapter.setEditable(true);
+            dataSettingsListView.setAdapter(adapter);
+        }
+
         if (otherSettingsList.size() > 0) {
             //instantiate custom adapter
             CustomASListAdapter adapter = new CustomASListAdapter(otherSettingsList, this);
-            adapter.setEditable(false);
+            adapter.setEditable(true);
             otherSettingsListView.setAdapter(adapter);
+        }
+
+        if (userSettingsList.size() > 0) {
+            //instantiate custom adapter
+            CustomASListAdapter adapter = new CustomASListAdapter(userSettingsList, this);
+            adapter.setEditable(false);
+            userSettingsListView.setAdapter(adapter);
         }
     }
 
     private void SettingSelected(AppSettingsSchema selectedRow)
     {
         if(APPUTILS.isLogging)Log.e(LOG, "Entering: SettingSelected " + selectedRow.getSettingName());
-        if(selectedRow.getSettingName().equals(AppSettingsHelper.OTHER_DELETE_USER ))
+        if(selectedRow.getSettingName().equals(AppSettingsHelper.USER_DELETE_USER))
             Verify();
-        if(selectedRow.getSettingName().equals(AppSettingsHelper.OTHER_CHANGE_USER_INFO ))
+        if(selectedRow.getSettingName().equals(AppSettingsHelper.USER_CHANGE_USER_INFO))
             UpdateUserInfo();
     }
 

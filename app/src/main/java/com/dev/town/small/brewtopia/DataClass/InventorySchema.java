@@ -8,6 +8,7 @@ public class InventorySchema {
     private long InventoryId=0;
     private long BrewId=0;
     private long UserId=-1;
+    private long ScheduleId=0;
     private String InventoryName="";
     private int InvetoryQty=0;
     private double amount=0.0;
@@ -24,6 +25,9 @@ public class InventorySchema {
     }
     public long getUserId() {
         return UserId;
+    }
+    public long getScheduleId() {
+        return ScheduleId;
     }
     public String getInventoryName() {
         return InventoryName;
@@ -50,6 +54,9 @@ public class InventorySchema {
     }
     public void setUserId(long userId) {
         UserId = userId;
+    }
+    public void setScheduleId(long scheduleId) {
+        ScheduleId = scheduleId;
     }
     public void setInventoryName(String inventoryName) {
         InventoryName = inventoryName;

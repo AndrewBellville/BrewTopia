@@ -25,11 +25,14 @@ import com.android.volley.VolleyError;
 import com.dev.town.small.brewtopia.AppSettings.AppSettingsHelper;
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
 import com.dev.town.small.brewtopia.DataClass.*;
+import com.dev.town.small.brewtopia.SharedMemory.InventoryMemory;
 import com.dev.town.small.brewtopia.WebAPI.CreateUserRequest;
 import com.dev.town.small.brewtopia.WebAPI.GetBrewRequest;
+import com.dev.town.small.brewtopia.WebAPI.GetInventoryRequest;
 import com.dev.town.small.brewtopia.WebAPI.GetStylesRequest;
 import com.dev.town.small.brewtopia.WebAPI.GetUserBrewsRequest;
 import com.dev.town.small.brewtopia.WebAPI.JSONBrewParser;
+import com.dev.town.small.brewtopia.WebAPI.JSONInventoryParser;
 import com.dev.town.small.brewtopia.WebAPI.JSONStyleParser;
 import com.dev.town.small.brewtopia.WebAPI.JSONUserParser;
 import com.dev.town.small.brewtopia.WebAPI.LoginRequest;
@@ -365,8 +368,11 @@ public class Login extends ActionBarActivity {
             //if new device try and get any brew data
             if(newDevice)
                 getNewDeviceUserBrews(CurrentUser.getInstance().getUser().getUserId());
-            else
+
+            if(appSettingsHelper.GetBoolAppSettingsByName(AppSettingsHelper.DATA_UPDATE_ON_LOGIN))
                 getStyles();
+            else
+                OpenApp();
         }
         else
         {
@@ -376,6 +382,8 @@ public class Login extends ActionBarActivity {
 
     private void OpenApp()
     {
+        InventoryMemory.getInstance().load(getApplicationContext());
+
         //Create and intent which will open next activity UserProfile
         Intent intent = new Intent(this, UserProfile.class);
 
@@ -462,7 +470,7 @@ public class Login extends ActionBarActivity {
                         //add or update the styles
                         dbManager.updateAllBrewStyles(brewStyleSchemas);
 
-                        OpenApp();
+                        getInventory();
                     }
                 }
                 catch (JSONException e) {
@@ -474,6 +482,41 @@ public class Login extends ActionBarActivity {
         updateLoading("Style Data");
         GetStylesRequest getStylesRequest = new GetStylesRequest(ResponseListener,null);
         WebController.getInstance().addToRequestQueue(getStylesRequest);
+    }
+
+    private void getInventory()
+    {
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: getInventory");
+
+        Response.Listener<String> ResponseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if(APPUTILS.isLogging)Log.e(LOG, response);
+                try{
+                    JSONArray jsonArray = new JSONArray("["+response+"]");
+                    JSONObject JSONResponse = (JSONObject) jsonArray.get(0);
+                    if (JSONResponse.getString("status").equals("Error"))// no match for user exists
+                    {
+                        DisplayError(JSONResponse.getString("message"));
+                    } else {
+                        //Parse response into style list
+                        JSONInventoryParser jsonParser = new JSONInventoryParser();
+                        List<InventorySchema> inventorySchemas = jsonParser.ParseInventory(new JSONArray("["+JSONResponse.getString("message")+"]"));
+                        //add or update the inventory
+                        dbManager.UpdateInventory(inventorySchemas);
+
+                        OpenApp();
+                    }
+                }
+                catch (JSONException e) {
+                    DisplayError("Inventory Loading failed");
+                }
+            }
+        };
+
+        updateLoading("Inventory Data");
+        GetInventoryRequest getInventoryRequest = new GetInventoryRequest(ResponseListener,null);
+        WebController.getInstance().addToRequestQueue(getInventoryRequest);
     }
 
     private void updateLoading(String displayText)
