@@ -995,6 +995,50 @@ public class DataBaseManager extends SQLiteOpenHelper {
     }
 
     /*
+* getting all Brews styles by type
+*/
+    public List<BrewStyleSchema> getAllBrewsStylesByType(String aStyleType) {
+        List<BrewStyleSchema> brewStyleList = new ArrayList<BrewStyleSchema>();
+        String selectQuery = "SELECT  * FROM " + TABLE_BREWS_STYLES + " WHERE "
+                + STYLE_TYPE + " = '" + aStyleType +"'";
+
+        if(APPUTILS.isLogging)Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if(APPUTILS.isLogging)Log.e(LOG, "getAllBrewsStylesByType Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                BrewStyleSchema brewStyleSchema = new BrewStyleSchema();
+                brewStyleSchema.setStyleId((c.getLong(c.getColumnIndex(STYLE_ID))));
+                brewStyleSchema.setBrewStyleName(c.getString(c.getColumnIndex(STYLE_NAME)));
+                brewStyleSchema.setUserId(c.getLong(c.getColumnIndex(USER_ID)));
+                brewStyleSchema.setBrewStyleColor(c.getString(c.getColumnIndex(STYLE_COLOR)));
+                brewStyleSchema.setType(c.getString(c.getColumnIndex(STYLE_TYPE)));
+                brewStyleSchema.setMinOG(c.getDouble(c.getColumnIndex(OG_MIN)));
+                brewStyleSchema.setMaxOG(c.getDouble(c.getColumnIndex(OG_MAX)));
+                brewStyleSchema.setMinFG(c.getDouble(c.getColumnIndex(FG_MIN)));
+                brewStyleSchema.setMaxFG(c.getDouble(c.getColumnIndex(FG_MAX)));
+                brewStyleSchema.setMinIBU(c.getDouble(c.getColumnIndex(IBU_MIN)));
+                brewStyleSchema.setMaxIBU(c.getDouble(c.getColumnIndex(IBU_MAX)));
+                brewStyleSchema.setMinSRM(c.getDouble(c.getColumnIndex(SRM_MIN)));
+                brewStyleSchema.setMaxSRM(c.getDouble(c.getColumnIndex(SRM_MAX)));
+                brewStyleSchema.setMinABV(c.getDouble(c.getColumnIndex(ABV_MIN)));
+                brewStyleSchema.setMaxABV(c.getDouble(c.getColumnIndex(ABV_MAX)));
+                brewStyleSchema.setIsNew(c.getInt(c.getColumnIndex(IS_NEW)));
+
+                // adding to brewStyleList
+                brewStyleList.add(brewStyleSchema);
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return brewStyleList;
+    }
+
+    /*
 * getting a Brews styles
 */
     public BrewStyleSchema getBrewsStylesById(Long aStyleId) {

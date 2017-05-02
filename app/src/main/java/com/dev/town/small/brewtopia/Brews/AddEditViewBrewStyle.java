@@ -151,6 +151,18 @@ public class AddEditViewBrewStyle extends Fragment {
         // Apply the adapter to the spinner
         styleTypeSpinner.setAdapter(styleTypeAdapter);
 
+        styleTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                setStyleSpinner();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         try {
             styleTypeSpinner.setSelection(styleTypeAdapter.getPosition(BrewActivityData.getInstance().getAddEditViewBrew().getStyleType()));
         }
@@ -162,7 +174,7 @@ public class AddEditViewBrewStyle extends Fragment {
 
     private void setStyleSpinner()
     {
-        List<BrewStyleSchema> brewStyleSchemas = dbManager.getAllBrewsStyles();
+        List<BrewStyleSchema> brewStyleSchemas = dbManager.getAllBrewsStylesByType(styleTypeSpinner.getSelectedItem().toString());
 
         styleAdapter = new ArrayAdapter<BrewStyleSchema>(getActivity(), android.R.layout.simple_spinner_item, brewStyleSchemas); //selected item will look like a spinner set from XML
         // Specify the layout to use when the list of choices appears

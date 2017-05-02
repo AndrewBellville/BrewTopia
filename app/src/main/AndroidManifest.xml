@@ -79,15 +79,13 @@
             android:name=".Brews.CompletedBrew"
             android:icon="@drawable/beer_dark"
             android:windowSoftInputMode="adjustPan" />
-
         <activity android:name=".Brews.BrewImageView" />
-
         <activity
             android:name=".Schedule.UserSchedule"
             android:icon="@drawable/beer_dark"
             android:windowSoftInputMode="adjustPan" />
-
         <activity android:name=".AppSettings.UpdateUserInfo" />
+        <activity android:name=".Inventory.InventorySearch"></activity>
     </application>
 
 </manifest>

@@ -76,11 +76,10 @@ android:orientation="vertical">
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <EditText
-        android:layout_width="match_parent"
+    <Spinner
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:id="@+id/typeEditText"
+        android:id="@+id/TypeSpinner"
         android:layout_below="@+id/typeTextView" />
 
     <TextView
@@ -88,7 +87,7 @@ android:orientation="vertical">
         android:layout_height="wrap_content"
         android:text="AA"
         android:id="@+id/AATextView"
-        android:layout_below="@+id/typeEditText" />
+        android:layout_below="@+id/TypeSpinner" />
 
     <EditText
         android:layout_width="match_parent"
@@ -105,11 +104,10 @@ android:orientation="vertical">
         android:id="@+id/useTextView"
         android:layout_below="@+id/AAEditText" />
 
-    <EditText
-        android:layout_width="match_parent"
+    <Spinner
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:id="@+id/useEditText"
+        android:id="@+id/UseSpinner"
         android:layout_below="@+id/useTextView" />
 
     <TextView
@@ -117,7 +115,7 @@ android:orientation="vertical">
         android:layout_height="wrap_content"
         android:text="Time"
         android:id="@+id/timeTextView"
-        android:layout_below="@+id/useEditText" />
+        android:layout_below="@+id/UseSpinner" />
 
     <EditText
         android:layout_width="match_parent"

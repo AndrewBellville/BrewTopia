@@ -10,6 +10,8 @@ public class HopsSchema extends InventorySchema {
     private String Use="";
     private int time=0;
     private double Amount=0.0;
+    private String[] types = new String[]{"Pellet", "Leaf"};
+    private String[] uses = new String[]{"Boil", "Dry Hop", "Whirlpool"};
 
 
     //Getters
@@ -28,6 +30,8 @@ public class HopsSchema extends InventorySchema {
     public double getAmount() {
         return Amount;
     }
+    public String[] getTypes() {return types;}
+    public String[] getUses() {return uses;}
 
     //Setters
     public void setType(String type) {

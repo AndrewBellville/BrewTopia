@@ -50,10 +50,10 @@ public class APPUTILS {
             put("Blonde","#ffff99");
             put("Red","#660000");
             put("Hefeweizen","#DAA520");
-            put("Belgian","#DAA520");
+            put("Belgian","#E1AF33");
             put("Bock","#2F4F4F");
             put("Brown Ale","#A52A2A");
-            put("Cream","#FFA500");
+            put("Ale","#FFA500");
             put("Fruit","#9370DB");
             put("IPA","#008000");
             put("Pale Ale","#EEE8AA");
@@ -62,6 +62,8 @@ public class APPUTILS {
             put("Scottish","#8B0000");
             put("Stout","#000000");
             put("Wheat","#FFD700");
+            put("Lager","#78FF33");
+            put("Specialty","#9F2F16");
         }
     };
 

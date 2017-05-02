@@ -40,18 +40,18 @@ public class AddEditViewHops extends ActionBarActivity {
     private EditText hopsName;
     private EditText hopsQty;
     private EditText amount;
-    private EditText type;
+    private Spinner type;
     private EditText AA;
-    private EditText use;
+    private Spinner use;
     private EditText time;
     private Spinner editUOfMSpinner;
     private ArrayAdapter<String> UofMAdapter;
+    private ArrayAdapter<String> typeAdapter;
+    private ArrayAdapter<String> useAdapter;
 
     private KeyListener hopsNameListener;
     private KeyListener amountListener;
-    private KeyListener typeListener;
     private KeyListener AAListener;
-    private KeyListener useListener;
     private KeyListener timeListener;
     private KeyListener hopsQtyListener;
 
@@ -80,24 +80,16 @@ public class AddEditViewHops extends ActionBarActivity {
 
         hopsName = (EditText)findViewById(R.id.hopsNameEditText);
         amount = (EditText)findViewById(R.id.amountEditText);
-        type = (EditText)findViewById(R.id.typeEditText);
+        type = (Spinner)findViewById(R.id.TypeSpinner);
         AA = (EditText)findViewById(R.id.AAEditText);
-        use = (EditText)findViewById(R.id.useEditText);
+        use = (Spinner)findViewById(R.id.UseSpinner);
         time = (EditText)findViewById(R.id.timeEditText);
         hopsQty = (EditText)findViewById(R.id.hopsQtyEditText);
-
-        List<String> UOfMs = APPUTILS.UofM;
-        UofMAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, UOfMs);
-        // Specify the layout to use when the list of choices appears
-        UofMAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         editUOfMSpinner = (Spinner) findViewById(R.id.UofMSpinner);
-        editUOfMSpinner.setAdapter(UofMAdapter);
 
         hopsNameListener = hopsName.getKeyListener();
         amountListener = amount.getKeyListener();
-        typeListener = type.getKeyListener();
         AAListener = AA.getKeyListener();
-        useListener = use.getKeyListener();
         timeListener = time.getKeyListener();
         hopsQtyListener = hopsQty.getKeyListener();
 
@@ -106,6 +98,8 @@ public class AddEditViewHops extends ActionBarActivity {
 
         AddEditViewState = InventoryActivityData.getInstance().getAddEditViewState();
         dbManager = DataBaseManager.getInstance(getApplicationContext());
+
+        SetSpinners();
 
         ToggleFieldEditable(false);
 
@@ -167,14 +161,32 @@ public class AddEditViewHops extends ActionBarActivity {
         ToggleFieldEditable(false);
     }
 
+    private void  SetSpinners()
+    {
+        HopsSchema hops =new HopsSchema();
+
+        UofMAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, APPUTILS.UofM);
+        // Specify the layout to use when the list of choices appears
+        UofMAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        editUOfMSpinner.setAdapter(UofMAdapter);
+
+        typeAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, hops.getTypes());
+        // Specify the layout to use when the list of choices appears
+        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        type.setAdapter(typeAdapter);
+
+        useAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, hops.getUses());
+        // Specify the layout to use when the list of choices appears
+        useAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        use.setAdapter(useAdapter);
+    }
+
     private void ClearFields()
     {
         hopsName.setText("");
         hopsQty.setText("");
         amount.setText("");
-        type.setText("");
         AA.setText("");
-        use.setText("");
         time.setText("");
     }
 
@@ -186,10 +198,26 @@ public class AddEditViewHops extends ActionBarActivity {
         hopsName.setText(hopsSchema.getInventoryName());
         hopsQty.setText(Integer.toString(hopsSchema.getInvetoryQty()));
         amount.setText(Double.toString(hopsSchema.getAmount()));
-        type.setText(hopsSchema.getType());
         AA.setText(Double.toString(hopsSchema.getAA()));
-        use.setText(hopsSchema.getUse());
         time.setText(Integer.toString(hopsSchema.getTime()));
+
+        try
+        {
+            type.setSelection(typeAdapter.getPosition(hopsSchema.getType()));
+        }
+        catch (Exception e)
+        {
+            type.setSelection(0);
+        }
+
+        try
+        {
+            use.setSelection(useAdapter.getPosition(hopsSchema.getUse()));
+        }
+        catch (Exception e)
+        {
+            use.setSelection(0);
+        }
 
         try
         {
@@ -254,8 +282,8 @@ public class AddEditViewHops extends ActionBarActivity {
         aHops.setInvetoryQty(qt);
         aHops.setInventoryUOfM(editUOfMSpinner.getSelectedItem().toString());
 
-        aHops.setUse(use.getText().toString());
-        aHops.setType(type.getText().toString());
+        aHops.setUse(use.getSelectedItem().toString());
+        aHops.setType(type.getSelectedItem().toString());
 
         // If we are doing any adding we want to always create the base Inventory record
         if(AddEditViewState == InventoryActivityData.DisplayMode.ADD || AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD)
@@ -329,20 +357,16 @@ public class AddEditViewHops extends ActionBarActivity {
             amount.setEnabled(false);
             //amount.setFocusable(false);
 
-            type.setKeyListener(null);
             type.setClickable(false);
             type.setEnabled(false);
-            //type.setFocusable(false);
 
             AA.setKeyListener(null);
             AA.setClickable(false);
             AA.setEnabled(false);
             //AA.setFocusable(false);
 
-            use.setKeyListener(null);
             use.setClickable(false);
             use.setEnabled(false);
-            //use.setFocusable(false);
 
             time.setKeyListener(null);
             time.setClickable(false);
@@ -370,20 +394,16 @@ public class AddEditViewHops extends ActionBarActivity {
             amount.setEnabled(true);
             //amount.setFocusable(true);
 
-            type.setKeyListener(typeListener);
             type.setClickable(true);
             type.setEnabled(true);
-            //type.setFocusable(true);
 
             AA.setKeyListener(AAListener);
             AA.setClickable(true);
             AA.setEnabled(true);
             //AA.setFocusable(true);
 
-            use.setKeyListener(useListener);
             use.setClickable(true);
             use.setEnabled(true);
-            //use.setFocusable(true);
 
             time.setKeyListener(timeListener);
             time.setClickable(true);
