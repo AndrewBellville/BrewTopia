@@ -1,6 +1,7 @@
 package com.dev.town.small.brewtopia.Inventory;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ public class CustomInventoryListAdapter extends BaseAdapter implements ListAdapt
     private Context context;
     private boolean isDeleteView = false;
     private boolean hasColor = false;
+    private List<Integer> selected = new ArrayList<>();
 
     //event handling
     private EventHandler eventHandler = null;
@@ -58,6 +60,15 @@ public class CustomInventoryListAdapter extends BaseAdapter implements ListAdapt
             view = inflater.inflate(R.layout.custom_row_inventory, null);
         }
 
+        int textColor = Color.WHITE;
+        if(isSelected(position)) {
+            view.setBackgroundColor(context.getResources().getColor(R.color.AccentColor));
+            textColor = Color.BLACK;
+        }
+        else {
+            view.setBackgroundColor(Color.TRANSPARENT);
+        }
+
         InventorySchema inventorySchema = list.get(position);
 
         TextView inventoryName = (TextView) view.findViewById(R.id.inventoryName);
@@ -65,12 +76,27 @@ public class CustomInventoryListAdapter extends BaseAdapter implements ListAdapt
         TextView inventoryAmount = (TextView) view.findViewById(R.id.inventoryAmount);
         TextView inventoryUse = (TextView) view.findViewById(R.id.inventoryUse);
 
+        inventoryName.setTextColor(textColor);
+        inventoryQty.setTextColor(textColor);
+        inventoryAmount.setTextColor(textColor);
+        inventoryUse.setTextColor(textColor);
+
         inventoryName.setText(inventorySchema.getInventoryName());
         inventoryQty.setText("Qty: "+ Integer.toString(inventorySchema.getInvetoryQty()));
         inventoryAmount.setText("Amount: "+Double.toString(inventorySchema.getAmount()));
         inventoryUse.setText("");
 
         return view;
+    }
+
+    private boolean isSelected(int index)
+    {
+        for (Integer i: selected) {
+            if(i==index)
+                return true;
+        }
+
+        return false;
     }
 
     public void setDeleteView(boolean isDeleteView) {
@@ -88,7 +114,9 @@ public class CustomInventoryListAdapter extends BaseAdapter implements ListAdapt
     {
         this.eventHandler = eventHandler;
     }
-
+    public void setSelected(List<Integer> selected) {
+        this.selected = selected;
+    }
     /**
      * This interface defines what events to be reported to
      * the outside world

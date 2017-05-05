@@ -98,16 +98,14 @@ public class AddEditViewEquipment extends ActionBarActivity {
             ifAdd();
         else if (AddEditViewState == InventoryActivityData.DisplayMode.BREW_ADD )
             ifAddBrew();
+        else if (AddEditViewState == InventoryActivityData.DisplayMode.VIEW_ONLY ) {
+            equipmentSchema = (EquipmentSchema) InventoryActivityData.getInstance().getEquipmentSchema();
+            ifViewOnly();
+        }
         else
         {
             equipmentSchema = (EquipmentSchema) InventoryActivityData.getInstance().getEquipmentSchema();
             ifView();
-        }
-
-        //Hide Button if We cant edit
-        if(true) {
-            editInventoryButton.setVisibility(View.INVISIBLE);
-            deleteInventoryButton.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -149,6 +147,17 @@ public class AddEditViewEquipment extends ActionBarActivity {
         //Set EditText to not editable and hide button
         AddEditViewState = InventoryActivityData.DisplayMode.VIEW;
         deleteInventoryButton.setVisibility(View.VISIBLE);
+        ToggleFieldEditable(false);
+    }
+
+    public void ifViewOnly()
+    {
+        DisplayEquipment();
+        editInventoryButton.setText("Edit");
+        //Set EditText to not editable and hide button
+        AddEditViewState = InventoryActivityData.DisplayMode.VIEW_ONLY;
+        editInventoryButton.setVisibility(View.INVISIBLE);
+        deleteInventoryButton.setVisibility(View.INVISIBLE);
         ToggleFieldEditable(false);
     }
 

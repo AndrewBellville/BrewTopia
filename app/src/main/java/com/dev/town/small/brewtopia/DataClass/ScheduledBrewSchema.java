@@ -29,6 +29,7 @@ public class ScheduledBrewSchema {
     private String styleType;
     private int hasStarter=0; //0 = no 1 = yes
     private List<ScheduledEventSchema> scheduledEventSchemaList = new ArrayList<>();
+    private List <InventorySchema> inventorySchemaList = new ArrayList<InventorySchema>();
     private int isNew = 1;//1=new 0=not new
 
     //visual
@@ -238,6 +239,10 @@ public class ScheduledBrewSchema {
     public int getIsNew() {
         return isNew;
     }
+    public List<InventorySchema> getInventorySchemaList() {
+        return inventorySchemaList;
+    }
+
 
     //Setters
     public void setUserId(long userId) {
@@ -294,5 +299,8 @@ public class ScheduledBrewSchema {
     }
     public void setIsNew(int isNew) {
         this.isNew = isNew;
+    }
+    public void setInventorySchemaList(List<InventorySchema> inventorySchemaList) {
+        this.inventorySchemaList = inventorySchemaList;
     }
 }

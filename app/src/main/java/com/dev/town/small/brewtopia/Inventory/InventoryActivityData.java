@@ -1,5 +1,6 @@
 package com.dev.town.small.brewtopia.Inventory;
 
+import com.dev.town.small.brewtopia.Brews.BrewActivityData;
 import com.dev.town.small.brewtopia.DataClass.InventorySchema;
 
 /**
@@ -9,7 +10,7 @@ public class InventoryActivityData {
 
     //State for AddEditView Brew and Brew Name if Edit/View
     public enum DisplayMode {
-        ADD, BREW_ADD, EDIT, VIEW
+        ADD, BREW_ADD, EDIT, VIEW, VIEW_ONLY
     };
 
     private DisplayMode AddEditViewState = DisplayMode.VIEW; // STATES: Add, Edit, View
@@ -20,6 +21,11 @@ public class InventoryActivityData {
     private InventorySchema yeastSchema;
     private InventorySchema equipmentSchema;
     private InventorySchema otherSchema;
+
+    private boolean isBrew = false;
+    private boolean isGlobal = false;
+    private boolean isSchedule = false;
+    private boolean isUser = false;
 
     //Singleton
     private static InventoryActivityData mInstance = null;
@@ -33,6 +39,20 @@ public class InventoryActivityData {
 
     // constructor
     private InventoryActivityData() {
+    }
+
+
+    public void SetDisplay(String aDisplayClass)
+    {
+        isBrew =  aDisplayClass.contains("UserBrew");
+
+        if(isBrew)
+            isGlobal = (BrewActivityData.getInstance().getAddEditViewState() == BrewActivityData.DisplayMode.GLOBAL);
+
+
+        isSchedule = aDisplayClass.contains("UserSchedule");
+
+        isUser = aDisplayClass.contains("UserProfile");
     }
 
     //getters
@@ -56,6 +76,18 @@ public class InventoryActivityData {
     }
     public InventorySchema getOtherSchema() {
         return otherSchema;
+    }
+    public boolean isBrew() {
+        return isBrew;
+    }
+    public boolean isGlobal() {
+        return isGlobal;
+    }
+    public boolean isSchedule() {
+        return isSchedule;
+    }
+    public boolean isUser() {
+        return isUser;
     }
 
     //Setters

@@ -1402,6 +1402,16 @@ public class DataBaseManager extends SQLiteOpenHelper {
             CreateScheduleEvent(scheduledEventSchema);
         }
 
+        //Add Inventory
+        for(InventorySchema inventorySchema: aSBrew.getInventorySchemaList())
+        {
+            inventorySchema.setInventoryId(0);
+            inventorySchema.setScheduleId(scheduleId);
+        }
+
+        CreateBrewInventoryHelper(aSBrew.getInventorySchemaList());
+
+
         return true;
     }
 
@@ -1636,6 +1646,12 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         //delete Schedule events
         deleteScheduleEventByScheduleId(aScheduleId);
+
+        deleteHopsByScheduleId(aScheduleId);
+        deleteFermentablesByScheduleId(aScheduleId);
+        deleteYeastByScheduleId(aScheduleId);
+        deleteEquipmentByScheduleId(aScheduleId);
+        deleteOtherByScheduleId(aScheduleId);
 
         db.delete(TABLE_BREWS_SCHEDULED, SCHEDULE_ID + " = ?",
                 new String[] { Long.toString(aScheduleId) });
@@ -1934,8 +1950,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<InventorySchema> getAllHopsByUserId(long aUserId) {
         List<InventorySchema> hopsSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_HOPS + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId);
-                //+ " AND " + BREW_ID + " = " + 0;
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " <= " + 1
+                + " AND " + SCHEDULE_ID + " <= " + 1;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -1965,7 +1982,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         List<InventorySchema> hopsSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_HOPS + " WHERE "
                 + USER_ID + " = " +Long.toString(aUserId)
-                + " AND " + BREW_ID + " = " +Long.toString(aBrewId);
+                + " AND " + BREW_ID + " = " +Long.toString(aBrewId)
+                + " AND " + SCHEDULE_ID + " = " + 0;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -1973,6 +1991,36 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
 
         if(APPUTILS.isLogging) Log.e(LOG, "getAllHopsByUserIdandBrewId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                HopsSchema hopsSchema = new HopsSchema();
+                hopsSchema.setInventoryId(c.getLong(c.getColumnIndex(HOPS_ID)));
+
+                // adding to hopsSchemaArrayList
+                hopsSchemaArrayList.add(getHops(hopsSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return hopsSchemaArrayList;
+    }
+
+    /*
+* getting all Hops by user Id and brew Id
+*/
+    public List<InventorySchema> getAllHopsByUserIdandScheduleId(long aUserId, long aScheduleId) {
+        List<InventorySchema> hopsSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_HOPS + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + SCHEDULE_ID + " = " +Long.toString(aScheduleId);
+
+        if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if(APPUTILS.isLogging) Log.e(LOG, "getAllHopsByUserIdandScheduleId Count["+c.getCount()+"]");
         if (c.getCount() > 0 ) {
             c.moveToFirst();
             do {
@@ -2032,6 +2080,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         db.delete(TABLE_INVENTORY_HOPS, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
                 new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
+    }
+
+    /*
+* Delete All brew Hops by Schedule ID
+*/
+    public void deleteHopsByScheduleId(long aScheduleId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        if(APPUTILS.isLogging) Log.e(LOG, "deleteHopsByScheduleId Name["+aScheduleId+"]");
+
+        db.delete(TABLE_INVENTORY_HOPS, SCHEDULE_ID + " = ? ",
+                new String[] { Long.toString(aScheduleId)});
     }
 
     /*
@@ -2130,8 +2189,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<InventorySchema> getAllFermentablesByUserId(long aUserId) {
         List<InventorySchema> fermentablesSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_FERMENTABLES + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId);
-                //+ " AND " + BREW_ID + " = " + 0;
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " <= " + 1
+                + " AND " + SCHEDULE_ID + " <= " + 1;
 
         if(APPUTILS.isLogging)Log.e(LOG, selectQuery);
 
@@ -2161,7 +2221,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         List<InventorySchema> fermentablesSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_FERMENTABLES + " WHERE "
                 + USER_ID + " = " +Long.toString(aUserId)
-                +" AND "+ BREW_ID + " = " +Long.toString(aBrewId);
+                +" AND "+ BREW_ID + " = " +Long.toString(aBrewId)
+                + " AND " + SCHEDULE_ID + " = " + 0;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -2169,6 +2230,36 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
 
         if(APPUTILS.isLogging)Log.e(LOG, "getAllFermentablesByUserIdandBrewId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                FermentablesSchema fermentablesSchema = new FermentablesSchema();
+                fermentablesSchema.setInventoryId(c.getLong(c.getColumnIndex(FERMENTABLES_ID)));
+
+                // adding to fermentablesSchemaArrayList
+                fermentablesSchemaArrayList.add(getFermentable(fermentablesSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return fermentablesSchemaArrayList;
+    }
+
+    /*
+* getting all Fermentables by user Id and Brew Id
+*/
+    public List<InventorySchema> getAllFermentablesByUserIdandScheduleId(long aUserId,  long aScheduleId) {
+        List<InventorySchema> fermentablesSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_FERMENTABLES + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                +" AND "+ SCHEDULE_ID + " = " +Long.toString(aScheduleId);
+
+        if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if(APPUTILS.isLogging)Log.e(LOG, "getAllFermentablesByUserIdandScheduleId Count["+c.getCount()+"]");
         if (c.getCount() > 0 ) {
             c.moveToFirst();
             do {
@@ -2229,6 +2320,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         db.delete(TABLE_INVENTORY_FERMENTABLES, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
                 new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
+    }
+
+    /*
+* Delete All brew Fermentables by Schedule ID
+*/
+    public void deleteFermentablesByScheduleId(long aScheduleId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        if(APPUTILS.isLogging) Log.e(LOG, "deleteFermentablesByScheduleId Name["+aScheduleId+"]");
+
+        db.delete(TABLE_INVENTORY_FERMENTABLES, SCHEDULE_ID + " = ? ",
+                new String[] { Long.toString(aScheduleId)});
     }
 
     /*
@@ -2331,8 +2433,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<InventorySchema> getAllYeastByUserId(long aUserId) {
         List<InventorySchema> yeastSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_YEAST + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId);
-                //+ " AND " + BREW_ID + " = " + 0;
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " <= " + 1
+                + " AND " + SCHEDULE_ID + " <= " + 1;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -2362,7 +2465,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         List<InventorySchema> yeastSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_YEAST + " WHERE "
                 + USER_ID + " = " +Long.toString(aUserId)
-                + " AND "+ BREW_ID + " = " +Long.toString(aBrewId);
+                + " AND "+ BREW_ID + " = " +Long.toString(aBrewId)
+                + " AND " + SCHEDULE_ID + " = " + 0;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -2370,6 +2474,36 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
 
         if(APPUTILS.isLogging) Log.e(LOG, "getAllYeastByUserIdandBrewId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                YeastSchema yeastSchema = new YeastSchema();
+                yeastSchema.setInventoryId(c.getLong(c.getColumnIndex(YEAST_ID)));
+
+                // adding to yeastSchemaArrayList
+                yeastSchemaArrayList.add(getYeast(yeastSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return yeastSchemaArrayList;
+    }
+
+    /*
+* getting all Yeast by user Id and Brew Id
+*/
+    public List<InventorySchema> getAllYeastByUserIdandScheduleId(long aUserId, long  aScheduleId) {
+        List<InventorySchema> yeastSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_YEAST + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND "+ SCHEDULE_ID + " = " +Long.toString(aScheduleId);
+
+        if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if(APPUTILS.isLogging) Log.e(LOG, "getAllYeastByUserIdandScheduleId Count["+c.getCount()+"]");
         if (c.getCount() > 0 ) {
             c.moveToFirst();
             do {
@@ -2433,6 +2567,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         db.delete(TABLE_INVENTORY_YEAST, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
                 new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
+    }
+
+    /*
+* Delete All brew Yeast by Schedule ID
+*/
+    public void deleteYeastByScheduleId(long aScheduleId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        if(APPUTILS.isLogging) Log.e(LOG, "deleteYeastByScheduleId Name["+aScheduleId+"]");
+
+        db.delete(TABLE_INVENTORY_YEAST, SCHEDULE_ID + " = ? ",
+                new String[] { Long.toString(aScheduleId)});
     }
 
     /*
@@ -2519,8 +2664,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<InventorySchema> getAllEquipmentByUserId(long aUserId) {
         List<InventorySchema> equipmentSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_EQUIPMENT + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId);
-                //+ " AND " + BREW_ID + " = " + 0;
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " <= " + 1
+                + " AND " + SCHEDULE_ID + " <= " + 1;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -2550,7 +2696,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         List<InventorySchema> equipmentSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_EQUIPMENT + " WHERE "
                 + USER_ID + " = " +Long.toString(aUserId)
-                +" AND "+ BREW_ID + " = " +Long.toString(aBrewId);
+                +" AND "+ BREW_ID + " = " +Long.toString(aBrewId)
+                + " AND " + SCHEDULE_ID + " = " + 0;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -2558,6 +2705,36 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
 
         if(APPUTILS.isLogging) Log.e(LOG, "getAllEquipmentByUserIdandBrewId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                EquipmentSchema equipmentSchema = new EquipmentSchema();
+                equipmentSchema.setInventoryId(c.getLong(c.getColumnIndex(EQUIPMENT_ID)));
+
+                // adding to equipmentSchemaArrayList
+                equipmentSchemaArrayList.add(getEquipment(equipmentSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return equipmentSchemaArrayList;
+    }
+
+    /*
+* getting all Equipment by user Id and brew Id
+*/
+    public List<InventorySchema> getAllEquipmentByUserIdandScheduleId(long aUserId, long aScheduleId) {
+        List<InventorySchema> equipmentSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_EQUIPMENT + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                +" AND "+ SCHEDULE_ID + " = " +Long.toString(aScheduleId);
+
+        if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if(APPUTILS.isLogging) Log.e(LOG, "getAllEquipmentByUserIdandScheduleId Count["+c.getCount()+"]");
         if (c.getCount() > 0 ) {
             c.moveToFirst();
             do {
@@ -2613,6 +2790,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         db.delete(TABLE_INVENTORY_EQUIPMENT, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
                 new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
+    }
+
+    /*
+* Delete All brew Equipment by Schedule ID
+*/
+    public void deleteEquipmentByScheduleId(long aScheduleId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        if(APPUTILS.isLogging) Log.e(LOG, "deleteEquipmentByScheduleId Name["+aScheduleId+"]");
+
+        db.delete(TABLE_INVENTORY_EQUIPMENT, SCHEDULE_ID + " = ? ",
+                new String[] { Long.toString(aScheduleId)});
     }
 
     /*
@@ -2701,8 +2889,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
     public List<InventorySchema> getAllOtherByUserId(long aUserId) {
         List<InventorySchema> otherSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_OTHER + " WHERE "
-                + USER_ID + " = " +Long.toString(aUserId);
-                //+ " AND " + BREW_ID + " = " + 0;
+                + USER_ID + " = " +Long.toString(aUserId)
+                + " AND " + BREW_ID + " <= " + 1
+                + " AND " + SCHEDULE_ID + " <= " + 1;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -2732,7 +2921,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         List<InventorySchema> otherSchemaArrayList = new ArrayList<InventorySchema>();
         String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_OTHER + " WHERE "
                 + USER_ID + " = " +Long.toString(aUserId)
-                +" AND "+ BREW_ID + " = " +Long.toString(aBrewId);
+                +" AND "+ BREW_ID + " = " +Long.toString(aBrewId)
+                + " AND " + SCHEDULE_ID + " = " + 0;
 
         if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
 
@@ -2740,6 +2930,36 @@ public class DataBaseManager extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
 
         if(APPUTILS.isLogging) Log.e(LOG, "getAllOtherByUserIdandBrewId Count["+c.getCount()+"]");
+        if (c.getCount() > 0 ) {
+            c.moveToFirst();
+            do {
+                OtherSchema otherSchema = new OtherSchema();
+                otherSchema.setInventoryId(c.getLong(c.getColumnIndex(OTHER_ID)));
+
+                // adding to otherSchemaArrayList
+                otherSchemaArrayList.add(getOther(otherSchema));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return otherSchemaArrayList;
+    }
+
+    /*
+* getting all Other by user Id and brew Id
+*/
+    public List<InventorySchema> getAllOtherByUserIdandScheduleId(long aUserId, long aScheduleId) {
+        List<InventorySchema> otherSchemaArrayList = new ArrayList<InventorySchema>();
+        String selectQuery = "SELECT * FROM " + TABLE_INVENTORY_OTHER + " WHERE "
+                + USER_ID + " = " +Long.toString(aUserId)
+                +" AND "+ SCHEDULE_ID + " = " +Long.toString(aScheduleId);
+
+        if(APPUTILS.isLogging) Log.e(LOG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if(APPUTILS.isLogging) Log.e(LOG, "getAllOtherByUserIdandScheduleId Count["+c.getCount()+"]");
         if (c.getCount() > 0 ) {
             c.moveToFirst();
             do {
@@ -2796,6 +3016,17 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         db.delete(TABLE_INVENTORY_OTHER, BREW_ID + " = ? AND "+ USER_ID +  " = ? ",
                 new String[] { Long.toString(aBrewId), Long.toString(aUserId)});
+    }
+
+    /*
+* Delete All brew Other by Schedule ID
+*/
+    public void deleteOtherByScheduleId(long aScheduleId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        if(APPUTILS.isLogging) Log.e(LOG, "deleteOtherByScheduleId Name["+aScheduleId+"]");
+
+        db.delete(TABLE_INVENTORY_OTHER, SCHEDULE_ID + " = ? ",
+                new String[] { Long.toString(aScheduleId)});
     }
 
     /*
