@@ -45,6 +45,8 @@ public class AddEditViewBoilAdditions extends Fragment {
     private EditText editAdditionQty;
     private Spinner editUOfMSpinner;
 
+    private boolean init = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,12 +76,14 @@ public class AddEditViewBoilAdditions extends Fragment {
         setUofMAdapter();
         loadAll();
 
+
+        init  = true;
         return view;
     }
 
     @Override
     public void setMenuVisibility(boolean isShown) {
-        if(isShown)
+        if(isShown && init)
             loadAll();
     }
 

@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class DataBaseManager extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;//increment to have DB changes take effect
+    private static final int DATABASE_VERSION = 2;//increment to have DB changes take effect
     private static final String DATABASE_NAME = "BeerTopiaDB";
 
     // Log cat tag

@@ -123,6 +123,16 @@ public class DataBasePreLoad {
         values.put(dbm.CALCULATION_ABV, "SG->BRIX");
         values.put(dbm.CALCULATION_NAME, "Specific Gravity Calculations");
         db.insert(dbm.TABLE_BREWS_CALCULATIONS,null,values);
+
+        values = new ContentValues();
+        values.put(dbm.CALCULATION_ABV, "LME->DME");
+        values.put(dbm.CALCULATION_NAME, "LME to DME Conversion" );
+        db.insert(dbm.TABLE_BREWS_CALCULATIONS,null,values);
+
+        values = new ContentValues();
+        values.put(dbm.CALCULATION_ABV, "DME->LME");
+        values.put(dbm.CALCULATION_NAME, "DME to LME Conversion");
+        db.insert(dbm.TABLE_BREWS_CALCULATIONS,null,values);
     }
 
 }

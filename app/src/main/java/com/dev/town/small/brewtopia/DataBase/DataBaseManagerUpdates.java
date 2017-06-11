@@ -31,12 +31,11 @@ public class DataBaseManagerUpdates {
 
     protected void updateAllTables(SQLiteDatabase aSQLiteDatabase, int aOldVersion)
     {
-        /*
-        if(aOldVersion < 38)
-        {
-            aSQLiteDatabase.execSQL("DELETE FROM "+ dbm.TABLE_BREWS_CALCULATIONS +" ");
+        if(aOldVersion < 2) {
+            aSQLiteDatabase.execSQL("DELETE FROM " + dbm.TABLE_BREWS_CALCULATIONS + " ");
             dbm.dataBasePreLoad.PreLoadCalculations(aSQLiteDatabase);
         }
+        /*
         if(aOldVersion < 39)
         {
             String tempBoilAdditions = "CREATE TABLE "

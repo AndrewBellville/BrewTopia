@@ -108,5 +108,13 @@ public class UserCalculations extends Fragment {
             intent = new Intent(getActivity(), SpecificGravity.class);
             startActivity(intent);
         }
+        else if(selectedRow.get("text1").equals("LME->DME")){
+            intent = new Intent(getActivity(), LMEConversion.class);
+            startActivity(intent);
+        }
+        else if(selectedRow.get("text1").equals("DME->LME")){
+            intent = new Intent(getActivity(), DMEConversion.class);
+            startActivity(intent);
+        }
     }
 }

@@ -18,10 +18,17 @@ import com.dev.town.small.brewtopia.DataClass.APPUTILS;
 import com.dev.town.small.brewtopia.DataClass.AppSettingsSchema;
 import com.dev.town.small.brewtopia.DataClass.CurrentUser;
 import com.dev.town.small.brewtopia.DataBase.DataBaseManager;
+import com.dev.town.small.brewtopia.DataClass.UserSchema;
 import com.dev.town.small.brewtopia.Login;
 import com.dev.town.small.brewtopia.R;
 import com.dev.town.small.brewtopia.WebAPI.DeleteUserRequest;
+import com.dev.town.small.brewtopia.WebAPI.JSONUserParser;
+import com.dev.town.small.brewtopia.WebAPI.UpdateUserSettingsRequest;
 import com.dev.town.small.brewtopia.WebAPI.WebController;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -231,6 +238,54 @@ public class AppSettings extends ActionBarActivity {
         Intent intent = new Intent(getApplication(), UpdateUserInfo.class);
         //start next activity
         startActivity(intent);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();  // Always call the superclass method first
+
+        //try and update setting to server
+        UpdateUserSettings();
+    }
+
+    private void UpdateUserSettings()
+    {
+
+        if(!APPUTILS.HasInternet(this)) {
+            Toast.makeText(this, "No Internet cannot save to global settings", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Response.Listener<String> ResponseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if(APPUTILS.isLogging)Log.e(LOG, response);
+                try{
+                    JSONArray jsonArray = new JSONArray("["+response+"]");
+                    JSONObject JSONResponse = (JSONObject) jsonArray.get(0);
+                    if (JSONResponse.getString("status").equals("Error"))// no match for user exists
+                    {
+                        DisplayMessage(JSONResponse.getString("message"));
+                    } else {
+
+                        DisplayMessage("User Settings Updated");
+                    }
+                }
+                catch (JSONException e) {
+                    DisplayMessage("User Settings Update Failed");
+                }
+            }
+        };
+
+        UpdateUserSettingsRequest createUserRequest = new UpdateUserSettingsRequest(CurrentUser.getInstance().getUser(),ResponseListener,null);
+        WebController.getInstance().addToRequestQueue(createUserRequest);
+    }
+
+    private void DisplayMessage(String errorText)
+    {
+        if(APPUTILS.isLogging)Log.e(LOG, "Entering: DisplayMessage");
+
+        Toast.makeText(this, errorText, Toast.LENGTH_SHORT).show();
     }
 
 

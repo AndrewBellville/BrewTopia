@@ -88,6 +88,7 @@ public class AppSettingsHelper {
             aAppSettingsSchema.setSettingValue(OFF);
 
         dbManager.updateAppSetting(aAppSettingsSchema);
+        currentUser.setAppSettingsSchemas(dbManager.getAllAppSettingsByUserId(currentUser.getUserId()));
         LoadMap();
     }
 

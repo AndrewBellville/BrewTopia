@@ -174,24 +174,31 @@ public class AddEditViewBrewStyle extends Fragment {
 
     private void setStyleSpinner()
     {
-        List<BrewStyleSchema> brewStyleSchemas = dbManager.getAllBrewsStylesByType(styleTypeSpinner.getSelectedItem().toString());
+        try{
+            List<BrewStyleSchema> brewStyleSchemas = dbManager.getAllBrewsStylesByType(styleTypeSpinner.getSelectedItem().toString());
 
-        styleAdapter = new ArrayAdapter<BrewStyleSchema>(getActivity(), android.R.layout.simple_spinner_item, brewStyleSchemas); //selected item will look like a spinner set from XML
-        // Specify the layout to use when the list of choices appears
-        styleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        styleSpinner.setAdapter(styleAdapter);
+            styleAdapter = new ArrayAdapter<BrewStyleSchema>(getActivity(), android.R.layout.simple_spinner_item, brewStyleSchemas); //selected item will look like a spinner set from XML
+            // Specify the layout to use when the list of choices appears
+            styleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            // Apply the adapter to the spinner
+            styleSpinner.setAdapter(styleAdapter);
 
-        styleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                updateRanges((BrewStyleSchema) adapterView.getItemAtPosition(i));
-            }
+            styleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    updateRanges((BrewStyleSchema) adapterView.getItemAtPosition(i));
+                }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
 
-            }
-        });
+                }
+            });
+        }
+        catch (Exception e)
+        {
+
+        }
+
     }
 }
